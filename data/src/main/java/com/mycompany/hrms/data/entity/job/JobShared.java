@@ -13,7 +13,7 @@ public class JobShared {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int logId;
+    private long logId;
 
     @Column(nullable = false, unique = true)
     private String recipientEmail;

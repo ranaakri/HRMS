@@ -14,7 +14,7 @@ public class TravelDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int travelId;
+    private long travelId;
 
     @Column(nullable = false)
     private Date startDate;

@@ -12,7 +12,7 @@ public class TravelGallery {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int imageId;
+    private long imageId;
 
     @Column(nullable = false)
     private String filePath;

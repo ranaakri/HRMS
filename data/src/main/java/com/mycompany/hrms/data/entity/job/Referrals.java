@@ -14,7 +14,7 @@ public class Referrals {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int referralId;
+    private long referralId;
 
     @Column(nullable = false)
     private String candidateName;

@@ -10,7 +10,7 @@ public class TravelPlan {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int travelPlanId;
+    private long travelPlanId;
 
     @Column(nullable = false)
     private String startDate;

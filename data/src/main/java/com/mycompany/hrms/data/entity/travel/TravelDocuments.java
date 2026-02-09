@@ -13,7 +13,7 @@ import java.util.Date;
 public class TravelDocuments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int docId;
+    private long docId;
 
     @Column(nullable = false)
     private String filePath;

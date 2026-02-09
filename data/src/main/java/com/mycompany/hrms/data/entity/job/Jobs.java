@@ -15,7 +15,7 @@ public class Jobs {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int jobId;
+    private long jobId;
 
     @Column(nullable = false)
     private String title;
@@ -55,4 +55,100 @@ public class Jobs {
             inverseJoinColumns = @JoinColumn(name = "userId")
     )
     private Set<Users> cvReviewers;
+
+    public long getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(long jobId) {
+        this.jobId = jobId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public String getJobPost() {
+        return jobPost;
+    }
+
+    public void setJobPost(String jobPost) {
+        this.jobPost = jobPost;
+    }
+
+    public String getJdFilePath() {
+        return jdFilePath;
+    }
+
+    public void setJdFilePath(String jdFilePath) {
+        this.jdFilePath = jdFilePath;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Date getLastApplicationDate() {
+        return lastApplicationDate;
+    }
+
+    public void setLastApplicationDate(Date lastApplicationDate) {
+        this.lastApplicationDate = lastApplicationDate;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Users getHrContact() {
+        return hrContact;
+    }
+
+    public void setHrContact(Users hrContact) {
+        this.hrContact = hrContact;
+    }
+
+    public List<JobShared> getSharedTo() {
+        return sharedTo;
+    }
+
+    public void setSharedTo(List<JobShared> sharedTo) {
+        this.sharedTo = sharedTo;
+    }
+
+    public List<Referrals> getReferredTo() {
+        return referredTo;
+    }
+
+    public void setReferredTo(List<Referrals> referredTo) {
+        this.referredTo = referredTo;
+    }
+
+    public Set<Users> getCvReviewers() {
+        return cvReviewers;
+    }
+
+    public void setCvReviewers(Set<Users> cvReviewers) {
+        this.cvReviewers = cvReviewers;
+    }
 }

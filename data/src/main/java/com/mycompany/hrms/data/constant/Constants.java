@@ -11,4 +11,13 @@ public class Constants {
         SHOPPING,
         HOTEL
     }
+
+    public enum Designation{
+        INTERN,
+        CEO,
+        CTO,
+        HR,
+        MANAGER,
+        TEAM_LEAD,
+    }
 }

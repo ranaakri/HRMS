@@ -13,7 +13,7 @@ public class TravelingUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int travelingUserId;
+    private long travelingUserId;
 
     @Column(nullable = false)
     private float travelBalance;

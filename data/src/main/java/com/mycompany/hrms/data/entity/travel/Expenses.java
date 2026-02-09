@@ -13,7 +13,7 @@ public class Expenses {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int expenseId;
+    private long expenseId;
 
     @Column(nullable = false)
     private float amount;
