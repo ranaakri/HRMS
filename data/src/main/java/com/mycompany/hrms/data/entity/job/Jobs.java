@@ -30,10 +30,10 @@ public class Jobs {
     private String jdFilePath;
 
     @Column(nullable = false)
-    private String status;
+    private Date lastApplicationDate;
 
     @Column(nullable = false)
-    private Date lastApplicationDate;
+    private String status;
 
     @Column(nullable = false)
     private Date createdAt;

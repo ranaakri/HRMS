@@ -1,7 +1,9 @@
-package com.mycompany.hrms.api.users;
+package com.mycompany.hrms.api.controllers.users;
 
+import com.mycompany.hrms.api.response.ApiResponse;
 import com.mycompany.hrms.api.utils.JwtUtil;
 import com.mycompany.hrms.service.dtos.users.request.LoginRequest;
+import com.mycompany.hrms.service.users.UsersService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +22,17 @@ public class AuthController {
 
     AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final UsersService usersService;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil){
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UsersService usersService){
         this.authenticationManager = authenticationManager;
+        this.usersService = usersService;
         this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
+    public ResponseEntity<ApiResponse<String>> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(), loginRequest.getPassword()
@@ -41,12 +45,27 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
+                .sameSite("Strict")
                 .maxAge(60 * 60)
                 .build();
 
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        ResponseCookie springCookie = ResponseCookie.from("refreshToken", "refreshToken")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(60 * 60)
+                .sameSite("Strict")
+                .build();
 
-        return ResponseEntity.ok("login successful");
+        Cookie cookie1 = new Cookie("LoggedIn", "login");
+        cookie1.setPath("/");
+        cookie1.setMaxAge(60 * 60);
+
+        response.addCookie(cookie1);
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, springCookie.toString());
+
+        return ResponseEntity.ok(ApiResponse.success( usersService.getUserRole(loginRequest.getEmail()),"login successful"));
     }
 
     @PostMapping("/logout")

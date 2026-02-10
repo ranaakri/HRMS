@@ -20,4 +20,18 @@ public class Constants {
         MANAGER,
         TEAM_LEAD,
     }
+
+    public enum JobStatus{
+        REJECTED,
+        SELECTED,
+        UNDER_REVIEW,
+        PENDING
+    }
+
+    public enum TravelStatus{
+        PENDING,
+        ONHOLD,
+        CLOSED,
+        COMPETED
+    }
 }

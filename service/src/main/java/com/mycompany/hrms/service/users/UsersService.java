@@ -4,6 +4,7 @@ import com.mycompany.hrms.data.entity.user.Users;
 import com.mycompany.hrms.data.repository.users.DepartmentsRepo;
 import com.mycompany.hrms.data.repository.users.RolesRepo;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
+import com.mycompany.hrms.service.dtos.users.request.LoginRequest;
 import com.mycompany.hrms.service.dtos.users.request.UpdateUserProfileDto;
 import com.mycompany.hrms.service.dtos.users.request.UserProfileCreate;
 import com.mycompany.hrms.service.dtos.users.response.UpdatedUserProfileDto;
@@ -16,6 +17,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.ZonedDateTime;
 
 @Service
 public class UsersService implements IUserService {
@@ -44,8 +47,13 @@ public class UsersService implements IUserService {
     public UserProfileDto getUserProfileById(long userId){
         Users user = usersRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND));
-        System.out.println(user.getName());
         return modelMapper.map(user, UserProfileDto.class);
+    }
+
+    public String getUserRole(String email){
+        Users user = usersRepo.findUsersByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return user.getRole().getName();
     }
 
     public UserProfileDto getUserProfileByEmail(String email){
@@ -69,6 +77,7 @@ public class UsersService implements IUserService {
         Users profile = usersRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND));
         modelMapper.map(updatedProfile, profile);
+        profile.setUpdatedAt(ZonedDateTime.now());
         return  modelMapper.map(profile, UpdatedUserProfileDto.class);
     }
 }

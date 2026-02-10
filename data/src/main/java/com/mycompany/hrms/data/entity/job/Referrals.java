@@ -2,6 +2,7 @@ package com.mycompany.hrms.data.entity.job;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.mycompany.hrms.data.constant.Constants;
 import com.mycompany.hrms.data.entity.user.Users;
 import jakarta.persistence.*;
 
@@ -27,6 +28,9 @@ public class Referrals {
 
     @Column(nullable = false)
     private String referralNote;
+
+    @Column(nullable = false)
+    private Constants.JobStatus status;
 
     @Column(nullable = false)
     private Date createdAt;

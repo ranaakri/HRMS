@@ -2,9 +2,11 @@ package com.mycompany.hrms.data.entity.travel;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.mycompany.hrms.data.constant.Constants;
 import com.mycompany.hrms.data.entity.user.Users;
 import jakarta.persistence.*;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -17,16 +19,19 @@ public class TravelDetails {
     private long travelId;
 
     @Column(nullable = false)
-    private Date startDate;
+    private String title;
 
     @Column(nullable = false)
-    private Date endDate;
+    private ZonedDateTime startDate;
+
+    @Column(nullable = false)
+    private ZonedDateTime endDate;
 
     @Column(nullable = false)
     private String description;
 
     @Column(nullable = false)
-    private String status;
+    private Constants.TravelStatus status;
 
     @Column(nullable = false)
     private float assignedBudget;
@@ -46,4 +51,100 @@ public class TravelDetails {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "travelDetails")
     private List<TravelingUser> travelingUsers;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public long getTravelId() {
+        return travelId;
+    }
+
+    public void setTravelId(long travelId) {
+        this.travelId = travelId;
+    }
+
+    public ZonedDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(ZonedDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public ZonedDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(ZonedDateTime endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getStatus() {
+        return status.toString();
+    }
+
+    public void setStatus(Constants.TravelStatus status) {
+        this.status = status;
+    }
+
+    public float getAssignedBudget() {
+        return assignedBudget;
+    }
+
+    public void setAssignedBudget(float assignedBudget) {
+        this.assignedBudget = assignedBudget;
+    }
+
+    public float getTotalExpense() {
+        return totalExpense;
+    }
+
+    public void setTotalExpense(float totalExpense) {
+        this.totalExpense = totalExpense;
+    }
+
+    public Users getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Users createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public List<TravelGallery> getTravelGallery() {
+        return travelGallery;
+    }
+
+    public void setTravelGallery(List<TravelGallery> travelGallery) {
+        this.travelGallery = travelGallery;
+    }
+
+    public List<TravelPlan> getTravelPlans() {
+        return travelPlans;
+    }
+
+    public void setTravelPlans(List<TravelPlan> travelPlans) {
+        this.travelPlans = travelPlans;
+    }
+
+    public List<TravelingUser> getTravelingUsers() {
+        return travelingUsers;
+    }
+
+    public void setTravelingUsers(List<TravelingUser> travelingUsers) {
+        this.travelingUsers = travelingUsers;
+    }
 }

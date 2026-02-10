@@ -1,4 +1,4 @@
-package com.mycompany.hrms.api.users;
+package com.mycompany.hrms.api.controllers.users;
 
 import com.mycompany.hrms.service.dtos.users.request.UpdateUserProfileDto;
 import com.mycompany.hrms.service.dtos.users.request.UserProfileCreate;

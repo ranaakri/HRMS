@@ -37,4 +37,68 @@ public class TravelDocuments {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private Users uploadedBy;
+
+    public long getDocId() {
+        return docId;
+    }
+
+    public void setDocId(long docId) {
+        this.docId = docId;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public Constants.DocType getDocType() {
+        return docType;
+    }
+
+    public void setDocType(Constants.DocType docType) {
+        this.docType = docType;
+    }
+
+    public String getStaus() {
+        return staus;
+    }
+
+    public void setStaus(String staus) {
+        this.staus = staus;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
+
+    public Date getUploadedAt() {
+        return uploadedAt;
+    }
+
+    public void setUploadedAt(Date uploadedAt) {
+        this.uploadedAt = uploadedAt;
+    }
+
+    public TravelingUser getTravelingUser() {
+        return travelingUser;
+    }
+
+    public void setTravelingUser(TravelingUser travelingUser) {
+        this.travelingUser = travelingUser;
+    }
+
+    public Users getUploadedBy() {
+        return uploadedBy;
+    }
+
+    public void setUploadedBy(Users uploadedBy) {
+        this.uploadedBy = uploadedBy;
+    }
 }

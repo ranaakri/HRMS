@@ -6,11 +6,13 @@ import com.mycompany.hrms.data.constant.Constants;
 import com.mycompany.hrms.data.entity.job.JobShared;
 import com.mycompany.hrms.data.entity.job.Jobs;
 import com.mycompany.hrms.data.entity.job.Referrals;
+import com.mycompany.hrms.data.entity.travel.ExpensesSplits;
 import com.mycompany.hrms.data.entity.travel.TravelDetails;
 import com.mycompany.hrms.data.entity.travel.TravelDocuments;
 import com.mycompany.hrms.data.entity.travel.TravelingUser;
 import jakarta.persistence.*;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +44,17 @@ public class Users {
 
     @Column(nullable = false)
     private boolean isActive;
+
+    @Column(nullable = false)
+    private ZonedDateTime createdAt;
+
+    @Column(nullable = false)
+    private ZonedDateTime updatedAt;
+
+    public Users(){
+        updatedAt = ZonedDateTime.now();
+        createdAt = ZonedDateTime.now();
+    }
 
     //User
 
@@ -235,5 +248,21 @@ public class Users {
 
     public void setJobsCvReviewer(Set<Jobs> jobsCvReviewer) {
         this.jobsCvReviewer = jobsCvReviewer;
+    }
+
+    public ZonedDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public ZonedDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(ZonedDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
