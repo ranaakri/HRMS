@@ -3,8 +3,10 @@ package com.mycompany.hrms.data.entity.travel;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.mycompany.hrms.data.constant.Constants;
+import com.mycompany.hrms.data.entity.user.Users;
 import jakarta.persistence.*;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +14,11 @@ import java.util.List;
 @Entity
 public class Expenses {
 
+    public Expenses(){
+        status = Constants.ExpenseStatus.PENDING;
+        remarks = "Expense Added";
+        expensesProofs = null;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long expenseId;
@@ -29,14 +36,18 @@ public class Expenses {
     private String remarks;
 
     @Column(nullable = false)
-    private String status;
+    private Constants.ExpenseStatus status;
 
-    @Column(nullable = false)
-    private Date approvedAt;
+    @Column(nullable = true)
+    private ZonedDateTime approvedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "travelingUserId")
-    private TravelingUser travelingUser;
+    @JoinColumn(name = "uploadedBy")
+    private Users uploadedBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "travelId")
+    private TravelDetails travelDetails;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "expenses")
     private List<ExpensesProofs> expensesProofs;
@@ -85,27 +96,19 @@ public class Expenses {
     }
 
     public String getStatus() {
-        return status;
+        return status.toString();
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Constants.ExpenseStatus status) {
         this.status = status;
     }
 
-    public Date getApprovedAt() {
+    public ZonedDateTime getApprovedAt() {
         return approvedAt;
     }
 
-    public void setApprovedAt(Date approvedAt) {
+    public void setApprovedAt(ZonedDateTime approvedAt) {
         this.approvedAt = approvedAt;
-    }
-
-    public TravelingUser getTravelingUser() {
-        return travelingUser;
-    }
-
-    public void setTravelingUser(TravelingUser travelingUser) {
-        this.travelingUser = travelingUser;
     }
 
     public List<ExpensesProofs> getExpensesProofs() {
@@ -122,5 +125,21 @@ public class Expenses {
 
     public void setExpensesSplits(List<ExpensesSplits> expensesSplits) {
         this.expensesSplits = expensesSplits;
+    }
+
+    public Users getUploadedBy() {
+        return uploadedBy;
+    }
+
+    public void setUploadedBy(Users uploadedBy) {
+        this.uploadedBy = uploadedBy;
+    }
+
+    public TravelDetails getTravelDetails() {
+        return travelDetails;
+    }
+
+    public void setTravelDetails(TravelDetails travelDetails) {
+        this.travelDetails = travelDetails;
     }
 }

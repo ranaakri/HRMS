@@ -34,9 +34,6 @@ public class TravelingUser {
     private TravelDetails travelDetails;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "travelingUser")
-    private List<Expenses> expenses;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "travelingUser")
     private List<TravelDocuments> travelDocuments;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "travelingUser")
@@ -82,19 +79,19 @@ public class TravelingUser {
         this.travelDetails = travelDetails;
     }
 
-    public List<Expenses> getExpenses() {
-        return expenses;
-    }
-
-    public void setExpenses(List<Expenses> expenses) {
-        this.expenses = expenses;
-    }
-
     public List<TravelDocuments> getTravelDocuments() {
         return travelDocuments;
     }
 
     public void setTravelDocuments(List<TravelDocuments> travelDocuments) {
         this.travelDocuments = travelDocuments;
+    }
+
+    public List<ExpensesSplits> getExpensesSplits() {
+        return expensesSplits;
+    }
+
+    public void setExpensesSplits(List<ExpensesSplits> expensesSplits) {
+        this.expensesSplits = expensesSplits;
     }
 }

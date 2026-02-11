@@ -7,6 +7,7 @@ import com.mycompany.hrms.service.dtos.travel.response.TravelDetailsRes;
 import com.mycompany.hrms.service.travel.ITravelDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,12 @@ public class TravelDetailsController {
         return new ResponseEntity<>(ApiResponse.success(travelDetailsService.getTravelDetailsId(travelId), "Travel details fetched successfully"), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
+    @GetMapping("")
+    public ResponseEntity<ApiResponse<List<TravelDetailsRes>>> getTravelDetails(){
+        return ResponseEntity.ok(ApiResponse.success(travelDetailsService.getTravels(), "Travel List fetched successfully"));
+    }
+
     @Operation(
             summary = "Get Travel details by user id",
             description = "Get all travel details created by user"
@@ -50,7 +57,7 @@ public class TravelDetailsController {
             description = "Create new travel details"
     )
     @PreAuthorize("hasAnyAuthority('HR')")
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<ApiResponse<TravelDetailsRes>> addTravelDetails(@Valid @RequestBody TravelDetailsReq req){
         return new ResponseEntity<>(ApiResponse.created(travelDetailsService.addTravelDetail(req), "New Travel details created successfully"), HttpStatus.CREATED);
     }

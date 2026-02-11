@@ -6,11 +6,19 @@ import com.mycompany.hrms.data.constant.Constants;
 import com.mycompany.hrms.data.entity.user.Users;
 import jakarta.persistence.*;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "departmentId")
 @Entity
 public class TravelDocuments {
+
+    public TravelDocuments(){
+        this.uploadedAt = ZonedDateTime.now();
+        this.staus = Constants.DocStatus.PENDING;
+        this.isLocked = false;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long docId;
@@ -22,13 +30,13 @@ public class TravelDocuments {
     private Constants.DocType docType;
 
     @Column(nullable = false)
-    private String staus;
+    private Constants.DocStatus staus;
 
     @Column(nullable = false)
     private boolean isLocked;
 
     @Column(nullable = false)
-    private Date uploadedAt;
+    private ZonedDateTime uploadedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "travelingUserId")
@@ -63,10 +71,10 @@ public class TravelDocuments {
     }
 
     public String getStaus() {
-        return staus;
+        return staus.toString();
     }
 
-    public void setStaus(String staus) {
+    public void setStaus(Constants.DocStatus staus) {
         this.staus = staus;
     }
 
@@ -78,11 +86,11 @@ public class TravelDocuments {
         isLocked = locked;
     }
 
-    public Date getUploadedAt() {
+    public ZonedDateTime getUploadedAt() {
         return uploadedAt;
     }
 
-    public void setUploadedAt(Date uploadedAt) {
+    public void setUploadedAt(ZonedDateTime uploadedAt) {
         this.uploadedAt = uploadedAt;
     }
 

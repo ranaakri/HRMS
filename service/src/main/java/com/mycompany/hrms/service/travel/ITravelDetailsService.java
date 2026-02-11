@@ -12,4 +12,6 @@ public interface ITravelDetailsService {
     void deleteTravelDetails(long travelId);
     List<TravelDetailsRes> getTravelDetailsByUserId(long userId);
     TravelDetailsRes updateTravelDetails(long travelId, UpdateTravelDetailsReq travelDetailsReq);
+    List<TravelDetailsRes> getTravels();
+
 }

@@ -14,6 +14,7 @@ import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -41,6 +42,11 @@ public class TravelDetailService implements ITravelDetailsService{
 
     public List<TravelDetailsRes> getTravelDetailsByUserId(long userId) {
         List<TravelDetails> travelDetails = travelDetailsRepo.findAllByCreatedBy_UserId(userId);
+        return travelDetails.stream().map(this::travelDetailsMapper).toList();
+    }
+
+    public List<TravelDetailsRes> getTravels(){
+        List<TravelDetails> travelDetails = travelDetailsRepo.findAll(Sort.by("startDate").descending());
         return travelDetails.stream().map(this::travelDetailsMapper).toList();
     }
 

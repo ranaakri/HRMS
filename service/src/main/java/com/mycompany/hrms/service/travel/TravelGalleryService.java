@@ -6,6 +6,7 @@ import com.mycompany.hrms.data.repository.travel.TravelDetailsRepo;
 import com.mycompany.hrms.data.repository.travel.TravelGalleryRepo;
 import com.mycompany.hrms.service.exception.InternalServerException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,8 +25,9 @@ public class TravelGalleryService implements ITravelGalleryService {
     private final TravelDetailsRepo travelDetailsRepo;
     private final Path root;
 
+    @Autowired
     public TravelGalleryService(TravelGalleryRepo travelGalleryRepo, TravelDetailsRepo travelDetailsRepo){
-        this.root = Paths.get("uploads/travel/gallary");
+        this.root = Paths.get("/api/src/main/resources/static/uploads/travel/gallary");
         this.travelGalleryRepo = travelGalleryRepo;
         this.travelDetailsRepo = travelDetailsRepo;
         init();

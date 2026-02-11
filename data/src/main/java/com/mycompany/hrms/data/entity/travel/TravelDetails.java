@@ -7,7 +7,6 @@ import com.mycompany.hrms.data.entity.user.Users;
 import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "travelId")
@@ -51,6 +50,9 @@ public class TravelDetails {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "travelDetails")
     private List<TravelingUser> travelingUsers;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "travelDetails")
+    private List<Expenses> expenses;
 
     public String getTitle() {
         return title;
@@ -146,5 +148,13 @@ public class TravelDetails {
 
     public void setTravelingUsers(List<TravelingUser> travelingUsers) {
         this.travelingUsers = travelingUsers;
+    }
+
+    public List<Expenses> getExpenses() {
+        return expenses;
+    }
+
+    public void setExpenses(List<Expenses> expenses) {
+        this.expenses = expenses;
     }
 }

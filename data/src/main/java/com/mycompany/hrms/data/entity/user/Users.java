@@ -6,10 +6,7 @@ import com.mycompany.hrms.data.constant.Constants;
 import com.mycompany.hrms.data.entity.job.JobShared;
 import com.mycompany.hrms.data.entity.job.Jobs;
 import com.mycompany.hrms.data.entity.job.Referrals;
-import com.mycompany.hrms.data.entity.travel.ExpensesSplits;
-import com.mycompany.hrms.data.entity.travel.TravelDetails;
-import com.mycompany.hrms.data.entity.travel.TravelDocuments;
-import com.mycompany.hrms.data.entity.travel.TravelingUser;
+import com.mycompany.hrms.data.entity.travel.*;
 import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
@@ -83,6 +80,9 @@ public class Users {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "uploadedBy")
     private List<TravelDocuments> travelDocuments;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "uploadedBy")
+    private List<Expenses> expenses;
 
     //Jobs
 
@@ -264,5 +264,13 @@ public class Users {
 
     public void setUpdatedAt(ZonedDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<Expenses> getExpenses() {
+        return expenses;
+    }
+
+    public void setExpenses(List<Expenses> expenses) {
+        this.expenses = expenses;
     }
 }

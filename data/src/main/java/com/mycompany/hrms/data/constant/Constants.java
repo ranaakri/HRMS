@@ -34,4 +34,16 @@ public class Constants {
         CLOSED,
         COMPETED
     }
+
+    public enum DocStatus{
+        PENDING,
+        REJECTED,
+        VERIFIED
+    }
+
+    public enum ExpenseStatus{
+        PENDING,
+        REJECTED,
+        APPROVED
+    }
 }

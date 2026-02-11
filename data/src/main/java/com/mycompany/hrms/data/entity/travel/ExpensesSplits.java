@@ -2,7 +2,6 @@ package com.mycompany.hrms.data.entity.travel;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.mycompany.hrms.data.entity.user.Users;
 import jakarta.persistence.*;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "splitId")
