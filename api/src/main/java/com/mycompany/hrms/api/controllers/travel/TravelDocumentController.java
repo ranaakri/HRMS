@@ -24,23 +24,19 @@ public class TravelDocumentController {
     }
 
     @GetMapping("/{travelingUserId}")
-    public ResponseEntity<ApiResponse<List<TravelDocRes>>> getTravelDocByTravelingUserId(@PathVariable long travelingUserId){
-        return ResponseEntity.ok(
-                ApiResponse.success(travelDocumentService.getTravelDocuments(travelingUserId),
-                        "Documents fetched successfully"));
+    public ResponseEntity<List<TravelDocRes>> getTravelDocByTravelingUserId(@PathVariable long travelingUserId){
+        return ResponseEntity.ok(travelDocumentService.getTravelDocuments(travelingUserId));
     }
 
     @Operation(
             summary = "Upload travel related documents"
     )
     @PostMapping(value = "/{uploadedBy}/{travelingUser}/{docType}")
-    public ResponseEntity<ApiResponse<List<String>>> uploadTravelDocuments(@RequestPart("file") MultipartFile[] files,
+    public ResponseEntity<List<TravelDocRes>> uploadTravelDocuments(@RequestPart("file") MultipartFile[] files,
                           @PathVariable long uploadedBy,
                           @PathVariable long travelingUser,
                           @PathVariable Constants.DocType docType){
-        return ResponseEntity.ok(
-                ApiResponse.success(travelDocumentService.saveFiles(files, uploadedBy, travelingUser, docType),
-        "Travel documents uploaded successfully"));
+        return ResponseEntity.ok(travelDocumentService.saveFiles(files, uploadedBy, travelingUser, docType));
     }
 
     @Operation(

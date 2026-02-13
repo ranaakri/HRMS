@@ -1,6 +1,7 @@
 package com.mycompany.hrms.api.controllers.travel;
 
 import com.mycompany.hrms.api.response.ApiResponse;
+import com.mycompany.hrms.service.dtos.travel.response.TravelGalleryRes;
 import com.mycompany.hrms.service.travel.ITravelGalleryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.models.annotations.OpenAPI30;
@@ -29,9 +30,9 @@ public class TravelGalleryController {
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
     @PostMapping("/{travelId}")
-    public ResponseEntity<ApiResponse<List<String>>> uploadFiles(@RequestParam("files") MultipartFile[] files, @PathVariable long travelId) {
-        List<String> fileNames = travelGalleryService.saveFiles(files, travelId);
-        return ResponseEntity.ok(ApiResponse.success(fileNames, "Images uploaded successfully"));
+    public ResponseEntity<List<TravelGalleryRes>> uploadFiles(@RequestParam("files") MultipartFile[] files, @PathVariable long travelId) {
+        List<TravelGalleryRes> fileNames = travelGalleryService.saveFiles(files, travelId);
+        return ResponseEntity.ok(fileNames);
     }
 
     @Operation(

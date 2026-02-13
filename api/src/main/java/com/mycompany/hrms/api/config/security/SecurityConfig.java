@@ -27,15 +27,15 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http){
         http.csrf(csrf -> csrf.disable()
-                .authorizeHttpRequests( auth ->
-                        auth.requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/error").permitAll()
+                        .authorizeHttpRequests( auth ->
+                                        auth.requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/error").permitAll()
 //                                .requestMatchers("/api/users/**").hasAnyAuthority("Employee", "HR", "Manager")
 //                                .requestMatchers("/api/travel/gallery/upload-multiple").hasAnyAuthority("HR", "Employee") //Remove Employee form here just for testing
-                                .anyRequest()
-                                .authenticated()
-                                )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .cors(c -> c.configurationSource(customCorsConfiguration))
+                                                .anyRequest()
+                                                .authenticated()
+                        )
+                        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                        .cors(c -> c.configurationSource(customCorsConfiguration))
         );
         return http.build();
     }

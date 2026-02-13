@@ -6,10 +6,12 @@ import com.mycompany.hrms.data.constant.Constants;
 import com.mycompany.hrms.data.entity.job.JobShared;
 import com.mycompany.hrms.data.entity.job.Jobs;
 import com.mycompany.hrms.data.entity.job.Referrals;
+import com.mycompany.hrms.data.entity.notification.NotificationReceivers;
 import com.mycompany.hrms.data.entity.travel.*;
 import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
+import java.time.zone.ZoneRulesException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -33,8 +35,11 @@ public class Users {
     @Column(nullable = false)
     private Constants.Designation designation;
 
+    @Column(nullable = true)
+    private ZonedDateTime birthdate;
+
     @Column(nullable = false)
-    private Date joiningDate;
+    private ZonedDateTime joiningDate;
 
     @Column(nullable = true)
     private String profileUrl;
@@ -83,6 +88,9 @@ public class Users {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "uploadedBy")
     private List<Expenses> expenses;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private List<NotificationReceivers> notifications;
 
     //Jobs
 
@@ -138,11 +146,11 @@ public class Users {
         this.designation = designation;
     }
 
-    public Date getJoiningDate() {
+    public ZonedDateTime getJoiningDate() {
         return joiningDate;
     }
 
-    public void setJoiningDate(Date joiningDate) {
+    public void setJoiningDate(ZonedDateTime joiningDate) {
         this.joiningDate = joiningDate;
     }
 
@@ -272,5 +280,21 @@ public class Users {
 
     public void setExpenses(List<Expenses> expenses) {
         this.expenses = expenses;
+    }
+
+    public List<NotificationReceivers> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<NotificationReceivers> notifications) {
+        this.notifications = notifications;
+    }
+
+    public ZonedDateTime getBirthdate() {
+        return birthdate;
+    }
+
+    public void setBirthdate(ZonedDateTime birthdate) {
+        this.birthdate = birthdate;
     }
 }

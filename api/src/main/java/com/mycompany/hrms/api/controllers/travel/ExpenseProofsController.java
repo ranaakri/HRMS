@@ -22,22 +22,18 @@ public class ExpenseProofsController {
     }
 
     @GetMapping("/{expenseId}")
-    public ResponseEntity<ApiResponse<List<ExpenseProofRes>>> getTravelDocByTravelingUserId(@PathVariable long expenseId){
-        return ResponseEntity.ok(
-                ApiResponse.success(expenseProofService.getExpenseProofs(expenseId),
-                        "Expense Proof Documents fetched successfully"));
+    public ResponseEntity<List<ExpenseProofRes>> getTravelDocByTravelingUserId(@PathVariable long expenseId){
+        return ResponseEntity.ok(expenseProofService.getExpenseProofs(expenseId));
     }
 
     @Operation(
             summary = "Upload expense proof related documents"
     )
     @PostMapping(value = "/{uploadedBy}/{expenseId}")
-    public ResponseEntity<ApiResponse<List<String>>> uploadTravelDocuments(@RequestPart("file") MultipartFile[] files,
+    public ResponseEntity<List<String>> uploadTravelDocuments(@RequestPart("file") MultipartFile[] files,
                                                                            @PathVariable long uploadedBy,
                                                                            @PathVariable long expenseId){
-        return ResponseEntity.ok(
-                ApiResponse.success(expenseProofService.saveFiles(files, uploadedBy, expenseId),
-                        "Expense proof documents uploaded successfully"));
+        return ResponseEntity.ok(expenseProofService.saveFiles(files, uploadedBy, expenseId));
     }
 
     @Operation(

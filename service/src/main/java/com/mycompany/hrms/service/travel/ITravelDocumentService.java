@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface ITravelDocumentService {
-    List<String> saveFiles(MultipartFile[] files, long uploadedBy, long travelingUser, Constants.DocType docType);
+    List<TravelDocRes> saveFiles(MultipartFile[] files, long uploadedBy, long travelingUser, Constants.DocType docType);
     void deleteSavedFile(long docId);
     List<TravelDocRes> getTravelDocuments(long travelingUserId);
 }

@@ -46,4 +46,11 @@ public class Constants {
         REJECTED,
         APPROVED
     }
+
+    public enum JobDataStatus{
+        OPEN,
+        CLOSED,
+        ON_HOLD,
+        COMPLETED
+    }
 }

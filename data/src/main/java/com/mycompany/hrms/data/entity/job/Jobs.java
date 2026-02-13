@@ -2,9 +2,11 @@ package com.mycompany.hrms.data.entity.job;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.mycompany.hrms.data.constant.Constants;
 import com.mycompany.hrms.data.entity.user.Users;
 import jakarta.persistence.*;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +14,10 @@ import java.util.Set;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "jobId")
 @Entity
 public class Jobs {
+
+    public Jobs(){
+        createdAt = ZonedDateTime.now();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,13 +36,13 @@ public class Jobs {
     private String jdFilePath;
 
     @Column(nullable = false)
-    private Date lastApplicationDate;
+    private ZonedDateTime lastApplicationDate;
 
     @Column(nullable = false)
-    private String status;
+    private Constants.JobDataStatus status;
 
     @Column(nullable = false)
-    private Date createdAt;
+    private ZonedDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hrContact")
@@ -97,26 +103,26 @@ public class Jobs {
     }
 
     public String getStatus() {
-        return status;
+        return status.toString();
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Constants.JobDataStatus status) {
         this.status = status;
     }
 
-    public Date getLastApplicationDate() {
+    public ZonedDateTime getLastApplicationDate() {
         return lastApplicationDate;
     }
 
-    public void setLastApplicationDate(Date lastApplicationDate) {
+    public void setLastApplicationDate(ZonedDateTime lastApplicationDate) {
         this.lastApplicationDate = lastApplicationDate;
     }
 
-    public Date getCreatedAt() {
+    public ZonedDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(ZonedDateTime createdAt) {
         this.createdAt = createdAt;
     }
 

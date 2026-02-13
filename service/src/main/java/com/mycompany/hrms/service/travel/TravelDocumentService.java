@@ -33,7 +33,9 @@ public class TravelDocumentService implements ITravelDocumentService {
 
     @Autowired
     public TravelDocumentService(TravelDocumentsRepo travelDocumentsRepo, TravelingUserRepo travelingUserRepo, UsersRepo usersRepo, ModelMapper modelMapper){
-        this.root = Paths.get("uploads/travel/documents");
+        this.root = Paths.get(
+                System.getProperty("user.dir"), "../../","uploads", "travel", "documents"
+        );
         this.travelDocumentsRepo = travelDocumentsRepo;
         this.travelingUserRepo = travelingUserRepo;
         this.usersRepo = usersRepo;
@@ -54,13 +56,13 @@ public class TravelDocumentService implements ITravelDocumentService {
         return documents.stream().map(val -> modelMapper.map(val, TravelDocRes.class)).toList();
     }
 
-    public List<String> saveFiles(MultipartFile[] files, long uploadedBy, long travelingUser, Constants.DocType docType) {
+    public List<TravelDocRes> saveFiles(MultipartFile[] files, long uploadedBy, long travelingUser, Constants.DocType docType) {
         TravelingUser travelingUserInfo = travelingUserRepo.findById(travelingUser)
                 .orElseThrow(() -> new ResourceNotFoundException("Traveling user not found"));
         Users user = usersRepo.findById(uploadedBy)
                 .orElseThrow(() -> new ResourceNotFoundException("Uploaded by user not found"));
 
-        return Arrays.stream(files).map(file -> {
+        for(var file : files ) {
             try {
                 String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
                 Files.copy(file.getInputStream(), this.root.resolve(filename));
@@ -70,11 +72,11 @@ public class TravelDocumentService implements ITravelDocumentService {
                 travelDocument.setDocType(docType);
                 travelDocument.setUploadedBy(user);
                 travelDocumentsRepo.save(travelDocument);
-                return filename;
             } catch (Exception e) {
                 throw new InternalServerException("Could not store the file. Error: " + e.getMessage());
             }
-        }).toList();
+        }
+        return travelDocumentsRepo.findAll().stream().map(val -> modelMapper.map(val, TravelDocRes.class)).toList();
     }
 
     public void deleteSavedFile(long docId) {

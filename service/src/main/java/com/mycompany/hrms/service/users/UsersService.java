@@ -7,18 +7,20 @@ import com.mycompany.hrms.data.repository.users.UsersRepo;
 import com.mycompany.hrms.service.dtos.users.request.LoginRequest;
 import com.mycompany.hrms.service.dtos.users.request.UpdateUserProfileDto;
 import com.mycompany.hrms.service.dtos.users.request.UserProfileCreate;
-import com.mycompany.hrms.service.dtos.users.response.UpdatedUserProfileDto;
-import com.mycompany.hrms.service.dtos.users.response.UserProfileCreated;
-import com.mycompany.hrms.service.dtos.users.response.UserProfileDto;
+import com.mycompany.hrms.service.dtos.users.response.*;
 import com.mycompany.hrms.service.exception.IErrorMessages;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Service
 public class UsersService implements IUserService {
@@ -50,10 +52,21 @@ public class UsersService implements IUserService {
         return modelMapper.map(user, UserProfileDto.class);
     }
 
-    public String getUserRole(String email){
+    public List<EventRes> getUsersWithBirthday(){
+        return usersRepo.findUsersWithBirthdayToday().stream().map(val -> modelMapper.map(val, EventRes.class)).toList();
+    }
+
+    public List<UserListRes> getUsersListByName(String name){
+        List<Users> users =usersRepo.findUsersByNameLike(name + "%");
+        return users.stream().map(val -> modelMapper.map(val, UserListRes.class)).toList();
+    }
+
+    public AuthResponse getUserRole(String email){
         Users user = usersRepo.findUsersByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return user.getRole().getName();
+        AuthResponse response = modelMapper.map(user, AuthResponse.class);
+        response.setRole(user.getRole().getName());
+        return response;
     }
 
     public UserProfileDto getUserProfileByEmail(String email){

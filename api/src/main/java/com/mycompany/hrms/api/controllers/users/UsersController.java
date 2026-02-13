@@ -2,9 +2,7 @@ package com.mycompany.hrms.api.controllers.users;
 
 import com.mycompany.hrms.service.dtos.users.request.UpdateUserProfileDto;
 import com.mycompany.hrms.service.dtos.users.request.UserProfileCreate;
-import com.mycompany.hrms.service.dtos.users.response.UpdatedUserProfileDto;
-import com.mycompany.hrms.service.dtos.users.response.UserProfileCreated;
-import com.mycompany.hrms.service.dtos.users.response.UserProfileDto;
+import com.mycompany.hrms.service.dtos.users.response.*;
 import com.mycompany.hrms.service.users.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -13,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -46,9 +46,28 @@ public class UsersController {
     }
 
     @Operation(
+            summary = "Get List of users who's birthday is today"
+    )
+    @GetMapping("/birthday")
+    @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
+    public ResponseEntity<List<EventRes>> getBirthdays(){
+        return ResponseEntity.ok(usersService.getUsersWithBirthday());
+    }
+
+    @Operation(
+            summary = "Get list of users name and email by name"
+    )
+    @GetMapping("/list")
+    @PreAuthorize("hasAnyAuthority('Employee', 'HR', 'Manager')")
+    public ResponseEntity<List<UserListRes>> getUserListByName(@RequestParam String name){
+        return ResponseEntity.ok(usersService.getUsersListByName(name));
+    }
+
+    @Operation(
             summary = "Create new user profile",
             description = "Create new user profile"
     )
+    @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     @PostMapping("/")
     public ResponseEntity<UserProfileCreated> createUserProfile(@Valid @RequestBody UserProfileCreate userProfileCreate){
         return new ResponseEntity<>(usersService.createUserProfile(userProfileCreate), HttpStatus.CREATED);

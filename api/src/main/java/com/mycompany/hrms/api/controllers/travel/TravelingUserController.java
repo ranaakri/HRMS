@@ -28,10 +28,10 @@ public class TravelingUserController {
     @Operation(
             summary = "Get all traveling users by travel id"
     )
-    @PreAuthorize("hasAnyAuthority('HR','Manager')")
+    @PreAuthorize("hasAnyAuthority('HR','Manager','Employee')")
     @GetMapping("/{travelId}")
-    public ResponseEntity<ApiResponse<List<TravelingUserRes>>> getTravelingUserList(@PathVariable long travelId){
-        return ResponseEntity.ok(ApiResponse.success(travelingUserService.getTravelingUsers(travelId), "List of traveling users successfully fetched"));
+    public ResponseEntity<List<TravelingUserRes>> getTravelingUserList(@PathVariable long travelId){
+        return ResponseEntity.ok(travelingUserService.getTravelingUsers(travelId));
     }
 
     @Operation(

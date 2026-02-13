@@ -4,10 +4,13 @@ import com.mycompany.hrms.data.entity.travel.TravelDetails;
 import com.mycompany.hrms.data.entity.travel.TravelGallery;
 import com.mycompany.hrms.data.repository.travel.TravelDetailsRepo;
 import com.mycompany.hrms.data.repository.travel.TravelGalleryRepo;
+import com.mycompany.hrms.service.dtos.travel.response.TravelGalleryRes;
 import com.mycompany.hrms.service.exception.InternalServerException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -16,7 +19,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-//import java.util.stream.Collectors;
 
 @Service
 public class TravelGalleryService implements ITravelGalleryService {
@@ -24,12 +26,16 @@ public class TravelGalleryService implements ITravelGalleryService {
     private final TravelGalleryRepo travelGalleryRepo;
     private final TravelDetailsRepo travelDetailsRepo;
     private final Path root;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public TravelGalleryService(TravelGalleryRepo travelGalleryRepo, TravelDetailsRepo travelDetailsRepo){
-        this.root = Paths.get("/api/src/main/resources/static/uploads/travel/gallary");
+    public TravelGalleryService(TravelGalleryRepo travelGalleryRepo, TravelDetailsRepo travelDetailsRepo, ModelMapper modelMapper){
+        this.root = Paths.get(
+                System.getProperty("user.dir"),  "../../","uploads","travel", "gallary"
+        );
         this.travelGalleryRepo = travelGalleryRepo;
         this.travelDetailsRepo = travelDetailsRepo;
+        this.modelMapper = modelMapper;
         init();
     }
 
@@ -41,7 +47,7 @@ public class TravelGalleryService implements ITravelGalleryService {
         }
     }
 
-    public List<String> saveFiles(MultipartFile[] files, long travelId) {
+    public List<TravelGalleryRes> saveFiles(MultipartFile[] files, long travelId) {
         TravelDetails travelDetails = travelDetailsRepo.findById(travelId)
                 .orElseThrow(() -> new ResourceNotFoundException("Travel details not found"));
         return Arrays.stream(files).map(file -> {
@@ -52,7 +58,7 @@ public class TravelGalleryService implements ITravelGalleryService {
                 travelGallery.setFilePath(filename);
                 travelGallery.setTravelDetails(travelDetails);
                 travelGalleryRepo.save(travelGallery);
-                return filename;
+                return modelMapper.map(travelGallery, TravelGalleryRes.class);
             } catch (Exception e) {
                 throw new InternalServerException("Could not store the file. Error: " + e.getMessage());
             }

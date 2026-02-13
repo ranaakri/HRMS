@@ -3,6 +3,7 @@ package com.mycompany.hrms.api.controllers.users;
 import com.mycompany.hrms.api.response.ApiResponse;
 import com.mycompany.hrms.api.utils.JwtUtil;
 import com.mycompany.hrms.service.dtos.users.request.LoginRequest;
+import com.mycompany.hrms.service.dtos.users.response.AuthResponse;
 import com.mycompany.hrms.service.users.UsersService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<String>> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(), loginRequest.getPassword()

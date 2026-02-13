@@ -2,9 +2,9 @@ package com.mycompany.hrms.service.users;
 
 import com.mycompany.hrms.service.dtos.users.request.UpdateUserProfileDto;
 import com.mycompany.hrms.service.dtos.users.request.UserProfileCreate;
-import com.mycompany.hrms.service.dtos.users.response.UpdatedUserProfileDto;
-import com.mycompany.hrms.service.dtos.users.response.UserProfileCreated;
-import com.mycompany.hrms.service.dtos.users.response.UserProfileDto;
+import com.mycompany.hrms.service.dtos.users.response.*;
+
+import java.util.List;
 
 public interface IUserService {
     UserProfileDto getUserProfileById(long userId);
@@ -14,4 +14,8 @@ public interface IUserService {
     UserProfileCreated createUserProfile(UserProfileCreate userProfileCreate);
 
     UpdatedUserProfileDto updateUserProfile(long userId, UpdateUserProfileDto updatedProfile);
+
+    List<UserListRes> getUsersListByName(String name);
+
+    List<EventRes> getUsersWithBirthday();
 }
