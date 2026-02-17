@@ -1,7 +1,11 @@
 package com.mycompany.hrms.data.repository.travel;
 
+import com.mycompany.hrms.data.entity.travel.TravelGallery;
 import com.mycompany.hrms.data.entity.travel.TravelingUser;
+import com.mycompany.hrms.data.entity.user.Users;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 
@@ -23,4 +27,13 @@ public interface TravelingUserRepo extends JpaRepository<TravelingUser, Long> {
     );
 
     List<TravelingUser> getTravelingUsersByTravelDetails_TravelId(long travelDetailsTravelId);
+
+    Optional<TravelingUser> getTravelingUsersByUser_UserIdAndTravelDetails_TravelId(long userUserId, long travelDetailsTravelId);
+
+    @Query("SELECT u FROM TravelingUser u " +
+            "LEFT JOIN FETCH u.travelDetails t " +
+            "LEFT JOIN FETCH t.createdBy c" +
+            "LEFT JOIN FETCH t.travelGallery g " +
+            "WHERE u.user.userId = :id")
+    List<TravelingUser> getTravelingUsersByUser_UserId(@Param("id") long id);
 }

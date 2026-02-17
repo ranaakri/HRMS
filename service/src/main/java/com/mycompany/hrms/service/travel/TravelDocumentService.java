@@ -1,5 +1,7 @@
 package com.mycompany.hrms.service.travel;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.mycompany.hrms.data.constant.Constants;
 import com.mycompany.hrms.data.entity.travel.TravelDocuments;
 import com.mycompany.hrms.data.entity.travel.TravelingUser;
@@ -21,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TravelDocumentService implements ITravelDocumentService {
@@ -28,32 +31,33 @@ public class TravelDocumentService implements ITravelDocumentService {
     private final TravelDocumentsRepo travelDocumentsRepo;
     private final TravelingUserRepo travelingUserRepo;
     private final UsersRepo usersRepo;
-    private final Path root;
     private final ModelMapper modelMapper;
+    private final Cloudinary cloudinary;
 
     @Autowired
-    public TravelDocumentService(TravelDocumentsRepo travelDocumentsRepo, TravelingUserRepo travelingUserRepo, UsersRepo usersRepo, ModelMapper modelMapper){
-        this.root = Paths.get(
-                System.getProperty("user.dir"), "../../","uploads", "travel", "documents"
-        );
+    public TravelDocumentService(TravelDocumentsRepo travelDocumentsRepo, TravelingUserRepo travelingUserRepo, UsersRepo usersRepo, ModelMapper modelMapper, Cloudinary cloudinary){
+
         this.travelDocumentsRepo = travelDocumentsRepo;
         this.travelingUserRepo = travelingUserRepo;
         this.usersRepo = usersRepo;
-        init();
         this.modelMapper = modelMapper;
+        this.cloudinary = cloudinary;
     }
 
-    private void init() {
-        try {
-            Files.createDirectories(root);
-        } catch (IOException e) {
-            throw new InternalServerException("Could not initialize folder for upload!");
-        }
+    public List<TravelDocRes> getTravelDocuments(long userId, long travelId){
+        List<TravelDocuments> documents = travelDocumentsRepo.getTravelDocsForUser(userId, travelId);
+        return documents.stream().map(val -> modelMapper.map(val, TravelDocRes.class)).toList();
     }
 
-    public List<TravelDocRes> getTravelDocuments(long travelingUserId){
+    public List<TravelDocRes> getTravelDocumentsByTravelingUserId(long travelingUserId){
         List<TravelDocuments> documents = travelDocumentsRepo.getTravelDocumentsByTravelingUser_TravelingUserId(travelingUserId);
         return documents.stream().map(val -> modelMapper.map(val, TravelDocRes.class)).toList();
+    }
+
+    public List<TravelDocRes> saveByEmp(MultipartFile[] files, long userId, long travelId, Constants.DocType docType){
+        TravelingUser travelingUser = travelingUserRepo.getTravelingUsersByUser_UserIdAndTravelDetails_TravelId(userId, travelId)
+                .orElseThrow(() -> new ResourceNotFoundException("Traveling user not found"));
+        return saveFiles(files, userId, travelingUser.getTravelingUserId(), docType);
     }
 
     public List<TravelDocRes> saveFiles(MultipartFile[] files, long uploadedBy, long travelingUser, Constants.DocType docType) {
@@ -64,12 +68,17 @@ public class TravelDocumentService implements ITravelDocumentService {
 
         for(var file : files ) {
             try {
-                String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                Files.copy(file.getInputStream(), this.root.resolve(filename));
+                Map uploadRes = cloudinary.uploader().upload(
+                        file.getBytes(),
+                        ObjectUtils.asMap("folder", "travel/gallery/")
+                );
+                String imageUrl = uploadRes.get("secure_url").toString();
+                String publicId = uploadRes.get("public_id").toString();
                 TravelDocuments travelDocument = new TravelDocuments();
-                travelDocument.setFilePath(filename);
+                travelDocument.setFilePath(imageUrl);
                 travelDocument.setTravelingUser(travelingUserInfo);
                 travelDocument.setDocType(docType);
+                travelDocument.setPublicId(publicId);
                 travelDocument.setUploadedBy(user);
                 travelDocumentsRepo.save(travelDocument);
             } catch (Exception e) {
@@ -84,8 +93,7 @@ public class TravelDocumentService implements ITravelDocumentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Document not found"));
 
         try {
-            Path filePath = root.resolve(res.getFilePath()).normalize();
-            Files.deleteIfExists(filePath);
+            cloudinary.uploader().destroy(res.getPublicId(), ObjectUtils.emptyMap());
         } catch (IOException e) {
             throw new InternalServerException("Could not delete file from storage: " + e.getMessage());
         }

@@ -3,10 +3,13 @@ package com.mycompany.hrms.api.controllers.travel;
 import com.mycompany.hrms.api.response.ApiResponse;
 import com.mycompany.hrms.service.dtos.travel.request.AddTravelingUserReq;
 import com.mycompany.hrms.service.dtos.travel.request.UpdateTravelBalance;
+import com.mycompany.hrms.service.dtos.travel.response.BudgetResponse;
+import com.mycompany.hrms.service.dtos.travel.response.TravelDetailsRes;
 import com.mycompany.hrms.service.dtos.travel.response.TravelingUserRes;
 import com.mycompany.hrms.service.travel.ITravelingUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +29,15 @@ public class TravelingUserController {
     }
 
     @Operation(
+            summary = "Get users travel plans"
+    )
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
+    public ResponseEntity<ApiResponse<List<TravelDetailsRes>>> getTravelData(@PathVariable long userId){
+        return ResponseEntity.ok(ApiResponse.success(travelingUserService.getTravelPlansByForUser(userId), "success"));
+    }
+
+    @Operation(
             summary = "Get all traveling users by travel id"
     )
     @PreAuthorize("hasAnyAuthority('HR','Manager','Employee')")
@@ -35,11 +47,20 @@ public class TravelingUserController {
     }
 
     @Operation(
+            summary = "Get budget by travel and user id"
+    )
+    @GetMapping("/travelId/{travelId}/userId/{userId}")
+    @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
+    public ResponseEntity<BudgetResponse> getBudgetDetails(@PathVariable long travelId, @PathVariable long userId){
+        return ResponseEntity.ok(travelingUserService.getBudgetAndBalance(userId, travelId));
+    }
+
+    @Operation(
             summary = "Assign users to travel with balance",
             description = "Assign users to travel with balance"
     )
     @PreAuthorize("hasAnyAuthority('HR')")
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<ApiResponse<Void>> addTravelingUser(@Valid @RequestBody AddTravelingUserReq travelingUserReq){
         travelingUserService.assignUserToTravel(travelingUserReq);
         return ResponseEntity.ok(ApiResponse.successMsg("Users assigned to travel successfully"));

@@ -46,7 +46,7 @@ public class TravelDetailsController {
             summary = "Get Travel details by user id",
             description = "Get all travel details created by user"
     )
-    @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'employee')")
+    @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
     @GetMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<List<TravelDetailsRes>>> getTravelDetailsByUserId(@PathVariable long userId){
         return ResponseEntity.ok(ApiResponse.success(travelDetailsService.getTravelDetailsByUserId(userId), "Travel details list fetched successfully"));

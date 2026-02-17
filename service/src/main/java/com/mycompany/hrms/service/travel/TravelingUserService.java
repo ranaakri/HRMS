@@ -1,10 +1,14 @@
 package com.mycompany.hrms.service.travel;
 
+import com.mycompany.hrms.data.entity.travel.Expenses;
+import com.mycompany.hrms.data.entity.travel.TravelDetails;
 import com.mycompany.hrms.data.entity.travel.TravelingUser;
 import com.mycompany.hrms.data.repository.travel.TravelDetailsRepo;
 import com.mycompany.hrms.data.repository.travel.TravelingUserRepo;
 import com.mycompany.hrms.service.dtos.travel.request.AddTravelingUserReq;
 import com.mycompany.hrms.service.dtos.travel.request.TravelingUserReq;
+import com.mycompany.hrms.service.dtos.travel.response.BudgetResponse;
+import com.mycompany.hrms.service.dtos.travel.response.TravelDetailsRes;
 import com.mycompany.hrms.service.dtos.travel.response.TravelingUserRes;
 import com.mycompany.hrms.service.exception.BusinessException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
@@ -28,9 +32,20 @@ public class TravelingUserService implements ITravelingUserService{
         this.modelMapper = modelMapper;
     }
 
+    public List<TravelDetailsRes> getTravelPlansByForUser(long userId){
+        List<TravelingUser> travelingUsers = travelingUserRepo.getTravelingUsersByUser_UserId(userId);
+        return travelingUsers.stream().map(val -> modelMapper.map(val.getTravelDetails(), TravelDetailsRes.class)).toList();
+    }
+
     public List<TravelingUserRes> getTravelingUsers(long travelId){
         List<TravelingUser> users = travelingUserRepo.getTravelingUsersByTravelDetails_TravelId(travelId);
         return users.stream().map(val -> modelMapper.map(val, TravelingUserRes.class)).toList();
+    }
+
+    public BudgetResponse getBudgetAndBalance(long userId, long travelId){
+        TravelingUser travelingUser = travelingUserRepo.getTravelingUsersByUser_UserIdAndTravelDetails_TravelId(userId, travelId)
+                .orElseThrow(() -> new ResourceNotFoundException("Traveling user not found"));
+        return modelMapper.map(travelingUser, BudgetResponse.class);
     }
 
     public void assignUserToTravel(AddTravelingUserReq travelingUsers) {

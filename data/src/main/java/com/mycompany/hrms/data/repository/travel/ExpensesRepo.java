@@ -9,7 +9,10 @@ import java.util.Optional;
 
 public interface ExpensesRepo extends JpaRepository<Expenses, Long> {
     @EntityGraph(attributePaths = {"expensesSplits"})
-    List<Expenses> getExpensesByTravelDetails_TravelId(long travelId);
+    List<Expenses> findWithSplitsByTravelDetails_TravelId(long travelId);
+
+    @EntityGraph(attributePaths = {"expensesProofs"})
+    List<Expenses> findWithProofsByTravelDetails_TravelId(long travelId);
 
     @EntityGraph(attributePaths = {"expensesSplits"})
     Optional<Expenses> getExpensesByExpenseId(long expenseId);

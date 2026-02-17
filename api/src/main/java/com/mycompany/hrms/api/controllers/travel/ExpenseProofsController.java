@@ -6,6 +6,7 @@ import com.mycompany.hrms.service.travel.IExpenseProofService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,7 +31,7 @@ public class ExpenseProofsController {
             summary = "Upload expense proof related documents"
     )
     @PostMapping(value = "/{uploadedBy}/{expenseId}")
-    public ResponseEntity<List<String>> uploadTravelDocuments(@RequestPart("file") MultipartFile[] files,
+    public ResponseEntity<List<String>> uploadTravelDocumentExs(@RequestPart("file") MultipartFile[] files,
                                                                            @PathVariable long uploadedBy,
                                                                            @PathVariable long expenseId){
         return ResponseEntity.ok(expenseProofService.saveFiles(files, uploadedBy, expenseId));

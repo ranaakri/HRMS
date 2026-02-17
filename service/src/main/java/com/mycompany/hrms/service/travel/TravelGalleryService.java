@@ -1,5 +1,7 @@
 package com.mycompany.hrms.service.travel;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.mycompany.hrms.data.entity.travel.TravelDetails;
 import com.mycompany.hrms.data.entity.travel.TravelGallery;
 import com.mycompany.hrms.data.repository.travel.TravelDetailsRepo;
@@ -10,41 +12,27 @@ import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TravelGalleryService implements ITravelGalleryService {
 
     private final TravelGalleryRepo travelGalleryRepo;
     private final TravelDetailsRepo travelDetailsRepo;
-    private final Path root;
     private final ModelMapper modelMapper;
+    private final Cloudinary cloudinary;
 
     @Autowired
-    public TravelGalleryService(TravelGalleryRepo travelGalleryRepo, TravelDetailsRepo travelDetailsRepo, ModelMapper modelMapper){
-        this.root = Paths.get(
-                System.getProperty("user.dir"),  "../../","uploads","travel", "gallary"
-        );
+    public TravelGalleryService(TravelGalleryRepo travelGalleryRepo, TravelDetailsRepo travelDetailsRepo, ModelMapper modelMapper, Cloudinary cloudinary){
         this.travelGalleryRepo = travelGalleryRepo;
         this.travelDetailsRepo = travelDetailsRepo;
         this.modelMapper = modelMapper;
-        init();
-    }
-
-    private void init() {
-        try {
-            Files.createDirectories(root);
-        } catch (IOException e) {
-            throw new InternalServerException("Could not initialize folder for upload!");
-        }
+        this.cloudinary = cloudinary;
     }
 
     public List<TravelGalleryRes> saveFiles(MultipartFile[] files, long travelId) {
@@ -52,10 +40,15 @@ public class TravelGalleryService implements ITravelGalleryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Travel details not found"));
         return Arrays.stream(files).map(file -> {
             try {
-                String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                Files.copy(file.getInputStream(), this.root.resolve(filename));
+                Map uploadRes = cloudinary.uploader().upload(
+                        file.getBytes(),
+                        ObjectUtils.asMap("folder", "travel/gallery/")
+                );
+                String imageUrl = uploadRes.get("secure_url").toString();
+                String publicId = uploadRes.get("public_id").toString();
                 TravelGallery travelGallery = new TravelGallery();
-                travelGallery.setFilePath(filename);
+                travelGallery.setFilePath(imageUrl);
+                travelGallery.setPublicId(publicId);
                 travelGallery.setTravelDetails(travelDetails);
                 travelGalleryRepo.save(travelGallery);
                 return modelMapper.map(travelGallery, TravelGalleryRes.class);
@@ -70,13 +63,11 @@ public class TravelGalleryService implements ITravelGalleryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
 
         try {
-            Path filePath = root.resolve(res.getFilePath()).normalize();
-            Files.deleteIfExists(filePath);
+            cloudinary.uploader().destroy(res.getPublicId(), ObjectUtils.emptyMap());
         } catch (IOException e) {
             throw new InternalServerException("Could not delete file from storage: " + e.getMessage());
         }
 
         travelGalleryRepo.delete(res);
     }
-
 }

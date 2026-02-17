@@ -15,6 +15,8 @@ public class ExpensesProofs {
     @Column(nullable = false)
     private String proofFilePath;
 
+    private String publicId;
+
     @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "expenseId")
     private Expenses expenses;
@@ -41,5 +43,13 @@ public class ExpensesProofs {
 
     public void setExpenses(Expenses expenses) {
         this.expenses = expenses;
+    }
+
+    public String getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
     }
 }

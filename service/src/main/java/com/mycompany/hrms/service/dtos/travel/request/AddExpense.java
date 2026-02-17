@@ -1,13 +1,19 @@
 package com.mycompany.hrms.service.dtos.travel.request;
 
 import com.mycompany.hrms.data.constant.Constants;
+import com.mycompany.hrms.service.dtos.DocResponse;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
 public class AddExpense {
+
+    public AddExpense(){
+        this.expenseDate = ZonedDateTime.now();
+    }
 
     @NotNull
     @Min(0)
@@ -17,7 +23,7 @@ public class AddExpense {
     private Constants.Category category;
 
     @NotNull
-    private Date expenseDate;
+    private ZonedDateTime expenseDate;
 
     @NotNull
     private long uploadedByUserId;
@@ -27,6 +33,9 @@ public class AddExpense {
 
     @NotNull
     private List<AddExpenseSplit> expensesSplits;
+
+    @NotNull
+    private List<DocResponse> expenseProof;
 
     public float getAmount() {
         return amount;
@@ -44,11 +53,11 @@ public class AddExpense {
         this.category = category;
     }
 
-    public Date getExpenseDate() {
+    public ZonedDateTime getExpenseDate() {
         return expenseDate;
     }
 
-    public void setExpenseDate(Date expenseDate) {
+    public void setExpenseDate(ZonedDateTime expenseDate) {
         this.expenseDate = expenseDate;
     }
 
@@ -74,5 +83,13 @@ public class AddExpense {
 
     public void setExpensesSplits(List<AddExpenseSplit> expensesSplits) {
         this.expensesSplits = expensesSplits;
+    }
+
+    public List<DocResponse> getExpenseProof() {
+        return expenseProof;
+    }
+
+    public void setExpenseProof(List<DocResponse> expenseProof) {
+        this.expenseProof = expenseProof;
     }
 }

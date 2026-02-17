@@ -24,6 +24,9 @@ public class TravelGallery {
     @Column(nullable = false)
     private ZonedDateTime uploadedAt;
 
+    @Column(nullable = true)
+    private String publicId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "travelId")
     private TravelDetails travelDetails;
@@ -60,5 +63,11 @@ public class TravelGallery {
         this.travelDetails = travelDetails;
     }
 
+    public String getPublicId() {
+        return publicId;
+    }
 
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
+    }
 }

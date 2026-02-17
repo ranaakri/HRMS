@@ -1,6 +1,7 @@
 package com.mycompany.hrms.service.dtos.travel.response;
 
 import com.mycompany.hrms.data.constant.Constants;
+import com.mycompany.hrms.data.entity.travel.ExpensesProofs;
 import com.mycompany.hrms.service.dtos.travel.request.AddExpenseSplit;
 
 import java.time.ZonedDateTime;
@@ -22,7 +23,13 @@ public class ExpenseRes {
 
     private List<ExpenseSplitRes> expensesSplits;
 
+    private Constants.ExpenseStatus status;
+
+    private List<ExpenseProofRes> expensesProofs;
+
     private ZonedDateTime approvedAt;
+
+    private String remarks;
 
     private CreatedByUser uploadedBy;
 
@@ -94,7 +101,31 @@ public class ExpenseRes {
         return expensesSplits;
     }
 
+    public List<ExpenseProofRes> getExpensesProofs() {
+        return expensesProofs;
+    }
+
+    public void setExpensesProofs(List<ExpenseProofRes> expensesProofs) {
+        this.expensesProofs = expensesProofs;
+    }
+
     public void setExpensesSplits(List<ExpenseSplitRes> expensesSplits) {
         this.expensesSplits = expensesSplits;
+    }
+
+    public Constants.ExpenseStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(Constants.ExpenseStatus status) {
+        this.status = status;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }

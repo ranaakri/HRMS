@@ -1,9 +1,11 @@
 package com.mycompany.hrms.service.dtos.travel.request;
 
 import com.mycompany.hrms.data.constant.Constants;
+import com.mycompany.hrms.service.dtos.DocResponse;
 import jakarta.validation.constraints.*;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 public class TravelDetailsReq {
 

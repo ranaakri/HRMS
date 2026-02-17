@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,7 +33,7 @@ public class Jobs {
     @Column(nullable = false)
     private String jobPost;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String jdFilePath;
 
     @Column(nullable = false)
@@ -43,6 +44,8 @@ public class Jobs {
 
     @Column(nullable = false)
     private ZonedDateTime createdAt;
+
+    private String publicId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hrContact")
@@ -60,7 +63,7 @@ public class Jobs {
             joinColumns = @JoinColumn(name = "jobId"),
             inverseJoinColumns = @JoinColumn(name = "userId")
     )
-    private Set<Users> cvReviewers;
+    private Set<Users> cvReviewers = new HashSet<>();
 
     public long getJobId() {
         return jobId;
@@ -156,5 +159,13 @@ public class Jobs {
 
     public void setCvReviewers(Set<Users> cvReviewers) {
         this.cvReviewers = cvReviewers;
+    }
+
+    public String getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
     }
 }

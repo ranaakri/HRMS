@@ -30,7 +30,7 @@ public class Expenses {
     private Constants.Category category;
 
     @Column(nullable = false)
-    private Date expenseDate;
+    private ZonedDateTime expenseDate;
 
     @Column(nullable = false)
     private String remarks;
@@ -79,11 +79,11 @@ public class Expenses {
         this.category = category;
     }
 
-    public Date getExpenseDate() {
+    public ZonedDateTime getExpenseDate() {
         return expenseDate;
     }
 
-    public void setExpenseDate(Date expenseDate) {
+    public void setExpenseDate(ZonedDateTime expenseDate) {
         this.expenseDate = expenseDate;
     }
 

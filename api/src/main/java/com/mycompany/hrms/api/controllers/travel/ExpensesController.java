@@ -27,8 +27,8 @@ public class ExpensesController {
 
     @GetMapping("/{travelId}")
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
-    public ResponseEntity<ApiResponse<List<ExpenseRes>>> getListOfExpenseByTravelId(@PathVariable long travelId){
-        return ResponseEntity.ok(ApiResponse.success(expenseService.getAllExpenseByTravelId(travelId), "List of expenses fetched successfully"));
+    public ResponseEntity<List<ExpenseRes>> getListOfExpenseByTravelId(@PathVariable long travelId){
+        return ResponseEntity.ok(expenseService.getAllExpenseByTravelId(travelId));
     }
 
     @GetMapping("/expenseId/{expenseId}")
@@ -37,7 +37,7 @@ public class ExpensesController {
         return ResponseEntity.ok(ApiResponse.success(expenseService.getExpenseByExpenseId(expenseId), "Expense fetched successfully"));
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     public ResponseEntity<ApiResponse<Long>> addExpense(@RequestBody AddExpense expense){
         long expenseId = expenseService.addExpense(expense);
@@ -45,9 +45,9 @@ public class ExpensesController {
     }
 
     @PatchMapping("/{expenseId}")
-    @PreAuthorize("hasAnyAuthority('HR', 'Employee')")
+    @PreAuthorize("hasAnyAuthority('HR')")
     public ResponseEntity<ApiResponse<String>> updateExpenseStatus(@PathVariable long expenseId, @RequestBody UpdateExpenseStatus expenseStatus){
-        Constants.ExpenseStatus status = expenseService.changeExpenseStatus(expenseId, expenseStatus.getStatus());
+        Constants.ExpenseStatus status = expenseService.changeExpenseStatus(expenseId, expenseStatus.getStatus(), expenseStatus.getRemarks());
         return ResponseEntity.ok(ApiResponse.successMsg("Status updated successfully: " + status.toString()));
     }
 

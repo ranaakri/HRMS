@@ -28,7 +28,7 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http){
         http.csrf(csrf -> csrf.disable()
                         .authorizeHttpRequests( auth ->
-                                        auth.requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/error").permitAll()
+                                        auth.requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/error", "/auth/refresh").permitAll()
 //                                .requestMatchers("/api/users/**").hasAnyAuthority("Employee", "HR", "Manager")
 //                                .requestMatchers("/api/travel/gallery/upload-multiple").hasAnyAuthority("HR", "Employee") //Remove Employee form here just for testing
                                                 .anyRequest()

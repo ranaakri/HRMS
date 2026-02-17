@@ -38,6 +38,9 @@ public class TravelDocuments {
     @Column(nullable = false)
     private ZonedDateTime uploadedAt;
 
+    @Column(nullable = false)
+    private String publicId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "travelingUserId")
     private TravelingUser travelingUser;
@@ -108,5 +111,13 @@ public class TravelDocuments {
 
     public void setUploadedBy(Users uploadedBy) {
         this.uploadedBy = uploadedBy;
+    }
+
+    public String getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
     }
 }

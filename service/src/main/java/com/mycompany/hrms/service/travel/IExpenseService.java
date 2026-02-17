@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface IExpenseService {
     long addExpense(AddExpense expense);
-    Constants.ExpenseStatus changeExpenseStatus(long expenseId, Constants.ExpenseStatus expenseStatus);
+    Constants.ExpenseStatus changeExpenseStatus(long expenseId, Constants.ExpenseStatus expenseStatus, String remarks);
     List<ExpenseRes> getAllExpenseByTravelId(long travelId);
     void deleteExpense(long expenseId);
     ExpenseRes getExpenseByExpenseId(long expenseId);

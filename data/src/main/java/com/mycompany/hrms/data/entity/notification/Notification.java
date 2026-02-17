@@ -11,6 +11,10 @@ import java.util.List;
 @Entity
 public class Notification {
 
+    public Notification(){
+        time = ZonedDateTime.now();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long notificationId;

@@ -1,27 +1,24 @@
 package com.mycompany.hrms.service.travel;
 
 import com.mycompany.hrms.data.constant.Constants;
-import com.mycompany.hrms.data.entity.travel.Expenses;
-import com.mycompany.hrms.data.entity.travel.ExpensesSplits;
-import com.mycompany.hrms.data.entity.travel.TravelDetails;
-import com.mycompany.hrms.data.entity.travel.TravelingUser;
+import com.mycompany.hrms.data.entity.travel.*;
 import com.mycompany.hrms.data.entity.user.Users;
-import com.mycompany.hrms.data.repository.travel.ExpensesRepo;
-import com.mycompany.hrms.data.repository.travel.ExpensesSplitsRepo;
-import com.mycompany.hrms.data.repository.travel.TravelDetailsRepo;
-import com.mycompany.hrms.data.repository.travel.TravelingUserRepo;
+import com.mycompany.hrms.data.repository.travel.*;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
+import com.mycompany.hrms.service.dtos.DocResponse;
 import com.mycompany.hrms.service.dtos.travel.request.AddExpense;
 import com.mycompany.hrms.service.dtos.travel.request.AddExpenseSplit;
 import com.mycompany.hrms.service.dtos.travel.response.ExpenseRes;
 import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
+import com.mycompany.hrms.service.notification.NotificationService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,19 +30,26 @@ public class ExpenseService implements IExpenseService {
     private final ModelMapper modelMapper;
     private final ExpensesSplitsRepo expensesSplitsRepo;
     private final TravelingUserRepo travelingUserRepo;
+    private final ExpensesProofsRepo expensesProofsRepo;
+    private final NotificationService notificationService;
 
     @Autowired
-    public ExpenseService(ExpensesRepo expensesRepo, TravelDetailsRepo travelDetailsRepo,UsersRepo usersRepo,ModelMapper modelMapper,ExpensesSplitsRepo expensesSplitsRepo,TravelingUserRepo travelingUserRepo) {
+    public ExpenseService(ExpensesRepo expensesRepo, TravelDetailsRepo travelDetailsRepo, UsersRepo usersRepo, ModelMapper modelMapper, ExpensesSplitsRepo expensesSplitsRepo, TravelingUserRepo travelingUserRepo, ExpensesProofsRepo expensesProofsRepo, NotificationService notificationService) {
         this.expensesRepo = expensesRepo;
         this.travelDetailsRepo = travelDetailsRepo;
         this.usersRepo = usersRepo;
         this.modelMapper = modelMapper;
         this.expensesSplitsRepo = expensesSplitsRepo;
         this.travelingUserRepo = travelingUserRepo;
+        this.expensesProofsRepo = expensesProofsRepo;
+        this.notificationService = notificationService;
     }
 
     public List<ExpenseRes> getAllExpenseByTravelId(long travelId){
-        List<Expenses> expenses = expensesRepo.getExpensesByTravelDetails_TravelId(travelId);
+        List<Expenses> expenses = expensesRepo.findWithSplitsByTravelDetails_TravelId(travelId);
+        if(!expenses.isEmpty()){
+            expensesRepo.findWithProofsByTravelDetails_TravelId(travelId);
+        }
 
         return expenses.stream()
                 .map(expense -> modelMapper.map(expense, ExpenseRes.class))
@@ -96,6 +100,16 @@ public class ExpenseService implements IExpenseService {
 
             expensesSplitsRepo.save(splitEntity);
 
+            List<ExpensesProofs> proofs = new ArrayList<>();
+            for(DocResponse docRes : expense.getExpenseProof()){
+                ExpensesProofs proof = new ExpensesProofs();
+                proof.setPublicId(docRes.getPublicId());
+                proof.setProofFilePath(docRes.getPath());
+                proof.setExpenses(savedExpense);
+                proofs.add(proof);
+            }
+            expensesProofsRepo.saveAll(proofs);
+
             travelingUser.setUsedBalance(newUsedBalance);
             travelingUserRepo.save(travelingUser);
         }
@@ -105,11 +119,22 @@ public class ExpenseService implements IExpenseService {
 
         travelDetails.setTotalExpense(travelDetails.getTotalExpense() + expense.getAmount());
         travelDetailsRepo.save(travelDetails);
+
+        List<Long> splitWith = expense
+                .getExpensesSplits()
+                .stream().map(
+                        val -> travelingUserRepo
+                                .findById(val.getTravelingUserId())
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found for notification"))
+                                .getUser().getUserId())
+                .toList();
+
+        notificationService.addNotification(splitWith, "EXPENSE_SPLIT", "by " + uploadedBy.getName());
         return expenses.getExpenseId();
     }
 
     @Transactional
-    public Constants.ExpenseStatus changeExpenseStatus(long expenseId, Constants.ExpenseStatus expenseStatus){
+    public Constants.ExpenseStatus changeExpenseStatus(long expenseId, Constants.ExpenseStatus expenseStatus, String remarks){
         Expenses expenses = expensesRepo.findById(expenseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
 
@@ -118,17 +143,20 @@ public class ExpenseService implements IExpenseService {
                 if(expenses.getStatus().equals(Constants.ExpenseStatus.REJECTED.toString()))
                     redoTravelBalance(expenses);
                 expenses.setApprovedAt(ZonedDateTime.now());
+                expenses.setRemarks(remarks);
                 expenses.setStatus(Constants.ExpenseStatus.APPROVED);
                 break;
             case "PENDING":
                 if(expenses.getStatus().equals(Constants.ExpenseStatus.REJECTED.toString()))
                     redoTravelBalance(expenses);
                 expenses.setApprovedAt(ZonedDateTime.now());
+                expenses.setRemarks(remarks);
                 expenses.setStatus(Constants.ExpenseStatus.PENDING);
                 break;
             case "REJECTED":
                 undoTravelBalance(expenses);
                 expenses.setApprovedAt(ZonedDateTime.now());
+                expenses.setRemarks(remarks);
                 expenses.setStatus(Constants.ExpenseStatus.REJECTED);
                 break;
             default:
