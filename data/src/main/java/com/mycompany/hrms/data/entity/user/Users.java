@@ -3,16 +3,21 @@ package com.mycompany.hrms.data.entity.user;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.mycompany.hrms.data.constant.Constants;
+import com.mycompany.hrms.data.entity.game.SlotRequest;
+import com.mycompany.hrms.data.entity.game.UserGameStats;
 import com.mycompany.hrms.data.entity.job.JobShared;
 import com.mycompany.hrms.data.entity.job.Jobs;
 import com.mycompany.hrms.data.entity.job.Referrals;
 import com.mycompany.hrms.data.entity.notification.NotificationReceivers;
+import com.mycompany.hrms.data.entity.post.DeletedPost;
+import com.mycompany.hrms.data.entity.post.Post;
+import com.mycompany.hrms.data.entity.post.PostComments;
+import com.mycompany.hrms.data.entity.post.Warnings;
 import com.mycompany.hrms.data.entity.travel.*;
 import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
-import java.time.zone.ZoneRulesException;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -103,8 +108,29 @@ public class Users {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "referredBy")
     private List<Referrals> referrals;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "author")
+    private List<Post> posts;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "commentedBy")
+    private Set<PostComments> comments;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "deletedBy")
+    private Set<DeletedPost> deletedPosts;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "warnedBy")
+    private Set<Warnings> warnings;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<UserGameStats> userGameStats;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "requestBy")
+    private Set<SlotRequest> slotRequests;
+
     @ManyToMany(mappedBy = "cvReviewers")
     private Set<Jobs> jobsCvReviewer;
+
+    @ManyToMany(mappedBy = "likes")
+    private Set<Post> postLikes = new HashSet<>();
 
     public String getName() {
         return name;
@@ -296,5 +322,18 @@ public class Users {
 
     public void setBirthdate(ZonedDateTime birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public Set<Post> getPostLikes() {
+        return postLikes;
+    }
+
+    public void setPostLikes(Set<Post> postLikes) {
+        this.postLikes = postLikes;
+    }
+
+    public void addLike(Post post) {
+        this.postLikes.add(post);
+        post.getLikes().add(this);
     }
 }

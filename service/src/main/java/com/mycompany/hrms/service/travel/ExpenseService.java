@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +76,11 @@ public class ExpenseService implements IExpenseService {
 
         if (travelDetails.getTotalExpense() + expense.getAmount() > travelDetails.getAssignedBudget())
             throw new BadRequestException("New Expense Exceeds sum of assigned budget");
+
+        long days = ChronoUnit.DAYS.between(travelDetails.getEndDate(), ZonedDateTime.now());
+        if(days > 10){
+            throw new BadRequestException("Exceeded time duration of 10 days");
+        }
 
         Expenses expenses = modelMapper.map(expense, Expenses.class);
         expenses.setUploadedBy(uploadedBy);

@@ -36,4 +36,7 @@ public interface TravelingUserRepo extends JpaRepository<TravelingUser, Long> {
             "LEFT JOIN FETCH t.travelGallery g " +
             "WHERE u.user.userId = :id")
     List<TravelingUser> getTravelingUsersByUser_UserId(@Param("id") long id);
+
+    @Query(value = "select u.* from TravelingUser u left join users v on u.userId = v.userId where v.assignedUnder = :managerId and u.travelId = :travelId", nativeQuery = true)
+    List<TravelingUser> getTravelingUsersAssignUnder(@Param("managerId") long managerId, @Param("travelId") long travelId);
 }

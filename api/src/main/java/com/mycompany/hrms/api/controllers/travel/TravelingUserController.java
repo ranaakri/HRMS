@@ -56,6 +56,15 @@ public class TravelingUserController {
     }
 
     @Operation(
+            summary = "Get users under userId"
+    )
+    @GetMapping("/assign-under/user/{userId}/travel/{travelId}")
+    @PreAuthorize("hasAnyAuthority('Manager', 'Employee', 'HR')")
+    public ResponseEntity<List<TravelingUserRes>> assignUnderTravelingUsers(@PathVariable long userId, @PathVariable long travelId){
+        return ResponseEntity.ok(travelingUserService.getTravelingUsersUnderManager(travelId, userId));
+    }
+
+    @Operation(
             summary = "Assign users to travel with balance",
             description = "Assign users to travel with balance"
     )

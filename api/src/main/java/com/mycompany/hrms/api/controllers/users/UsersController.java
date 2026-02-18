@@ -64,6 +64,15 @@ public class UsersController {
     }
 
     @Operation(
+            summary = "Get organization chart"
+    )
+    @GetMapping("/org/{userId}")
+    @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
+    public ResponseEntity<OrgChartRes> getOrgChart(@PathVariable long userId){
+        return ResponseEntity.ok(usersService.getOrgChart(userId));
+    }
+
+    @Operation(
             summary = "Create new user profile",
             description = "Create new user profile"
     )

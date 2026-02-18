@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -67,6 +68,17 @@ public class UsersService implements IUserService {
         AuthResponse response = modelMapper.map(user, AuthResponse.class);
         response.setRole(user.getRole().getName());
         return response;
+    }
+
+    public OrgChartRes getOrgChart(long userId){
+        Users user = usersRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        OrgChartRes res = modelMapper.map(user, OrgChartRes.class);
+        if(user.getAssignedUnder()!=null)
+            res.setAssignedUnder(user.getAssignedUnder().getUserId());
+        else
+            res.setAssignedUnder(0);
+        return res;
     }
 
     public UserProfileDto getUserProfileByEmail(String email){

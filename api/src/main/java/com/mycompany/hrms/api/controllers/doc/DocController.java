@@ -38,6 +38,7 @@ public class DocController {
             case "Jd" -> "job/jd";
             case "Proof" -> "travel/proof";
             case "Gallery" -> "travel/gallery";
+            case "Post" -> "post";
             default -> throw new BadRequestException("Invalid reason");
         };
         return ResponseEntity.ok(documentService.uploadDoc(doc, s));

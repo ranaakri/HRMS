@@ -5,6 +5,7 @@ import com.mycompany.hrms.data.entity.travel.TravelDetails;
 import com.mycompany.hrms.data.entity.travel.TravelingUser;
 import com.mycompany.hrms.data.repository.travel.TravelDetailsRepo;
 import com.mycompany.hrms.data.repository.travel.TravelingUserRepo;
+import com.mycompany.hrms.data.repository.users.UsersRepo;
 import com.mycompany.hrms.service.dtos.travel.request.AddTravelingUserReq;
 import com.mycompany.hrms.service.dtos.travel.request.TravelingUserReq;
 import com.mycompany.hrms.service.dtos.travel.response.BudgetResponse;
@@ -12,6 +13,7 @@ import com.mycompany.hrms.service.dtos.travel.response.TravelDetailsRes;
 import com.mycompany.hrms.service.dtos.travel.response.TravelingUserRes;
 import com.mycompany.hrms.service.exception.BusinessException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
+import com.mycompany.hrms.service.notification.NotificationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,17 +26,28 @@ public class TravelingUserService implements ITravelingUserService{
     private final TravelingUserRepo travelingUserRepo;
     private final TravelDetailsRepo travelDetailsRepo;
     private final ModelMapper modelMapper;
+    private final UsersRepo usersRepo;
+    private final NotificationService notificationService;
 
     @Autowired
-    public TravelingUserService(TravelingUserRepo travelingUserRepo, TravelDetailsRepo travelDetailsRepo, ModelMapper modelMapper){
+    public TravelingUserService(TravelingUserRepo travelingUserRepo, TravelDetailsRepo travelDetailsRepo, ModelMapper modelMapper, UsersRepo usersRepo, NotificationService notificationService){
         this.travelingUserRepo = travelingUserRepo;
         this.travelDetailsRepo = travelDetailsRepo;
         this.modelMapper = modelMapper;
+        this.usersRepo = usersRepo;
+        this.notificationService = notificationService;
     }
 
     public List<TravelDetailsRes> getTravelPlansByForUser(long userId){
         List<TravelingUser> travelingUsers = travelingUserRepo.getTravelingUsersByUser_UserId(userId);
         return travelingUsers.stream().map(val -> modelMapper.map(val.getTravelDetails(), TravelDetailsRes.class)).toList();
+    }
+
+    public List<TravelingUserRes> getTravelingUsersUnderManager(long travelId, long managerId){
+        if(!usersRepo.existsById(managerId))
+            throw new ResourceNotFoundException("Manger does not exist");
+        List<TravelingUser> users = travelingUserRepo.getTravelingUsersAssignUnder(managerId, travelId);
+        return users.stream().map(val -> modelMapper.map(val, TravelingUserRes.class)).toList();
     }
 
     public List<TravelingUserRes> getTravelingUsers(long travelId){
@@ -65,6 +78,8 @@ public class TravelingUserService implements ITravelingUserService{
         } catch (Exception e) {
             throw new BusinessException("Insufficient budget: Assignment exceeds total travel budget.");
         }
+        List<Long> userIds = travelingUsers.getUsers().stream().map(val -> val.getUserId()).toList();
+        notificationService.addNotification(userIds, "ADDED_IN_TRAVEL", "");
     }
 
     public void updateAssignedBudget(long travelingUserId, float travelBalance){

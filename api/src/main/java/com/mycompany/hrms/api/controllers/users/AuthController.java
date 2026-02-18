@@ -38,7 +38,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(), loginRequest.getPassword()
@@ -71,7 +71,7 @@ public class AuthController {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, springCookie.toString());
 
-        return ResponseEntity.ok(ApiResponse.success( usersService.getUserRole(loginRequest.getEmail()),"login successful"));
+        return ResponseEntity.ok(usersService.getUserRole(loginRequest.getEmail()));
     }
 
     @PostMapping("/refresh")

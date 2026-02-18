@@ -85,7 +85,7 @@ public class TravelDocumentService implements ITravelDocumentService {
                 throw new InternalServerException("Could not store the file. Error: " + e.getMessage());
             }
         }
-        return travelDocumentsRepo.findAll().stream().map(val -> modelMapper.map(val, TravelDocRes.class)).toList();
+        return travelDocumentsRepo.findTravelDocumentsByTravelingUser_TravelingUserId(travelingUser).stream().map(val -> modelMapper.map(val, TravelDocRes.class)).toList();
     }
 
     public void deleteSavedFile(long docId) {

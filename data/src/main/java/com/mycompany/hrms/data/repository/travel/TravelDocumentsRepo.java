@@ -15,5 +15,6 @@ public interface TravelDocumentsRepo extends JpaRepository<TravelDocuments, Long
     List<TravelDocuments> getTravelDocsForUser(@Param("userId") long userId,
                                                @Param("travelId") long travelId);
 
+    List<TravelDocuments> findTravelDocumentsByTravelingUser_TravelingUserId(long travelingUserTravelingUserId);
     List<TravelDocuments> getTravelDocumentsByTravelingUser_TravelingUserId(long travelingUserId);
 }

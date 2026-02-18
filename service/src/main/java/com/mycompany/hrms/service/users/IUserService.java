@@ -18,4 +18,5 @@ public interface IUserService {
     List<UserListRes> getUsersListByName(String name);
 
     List<EventRes> getUsersWithBirthday();
+    OrgChartRes getOrgChart(long userId);
 }
