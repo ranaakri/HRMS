@@ -2,10 +2,9 @@ package com.mycompany.hrms.data.entity.game;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
-import java.time.ZonedDateTime;
+import java.time.LocalTime;
 import java.util.Set;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "gameId")
@@ -22,16 +21,16 @@ public class GameConfig {
     private int minPlayers = 1;
 
     @Column(nullable = false)
-    private int maxPlayers = 2;
+    private int maxPlayers = 4;
 
     @Column(nullable = false)
     private int slotDuration = 15;
 
     @Column(nullable = false)
-    private ZonedDateTime openTime;
+    private LocalTime openTime;
 
     @Column(nullable = false)
-    private ZonedDateTime closeTime;
+    private LocalTime closeTime;
 
     @Column(nullable = false)
     private boolean isActive = true;
@@ -41,4 +40,84 @@ public class GameConfig {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "gameConfig")
     private Set<GameSlots> gameSlots;
+
+    public long getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(long gameId) {
+        this.gameId = gameId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getMinPlayers() {
+        return minPlayers;
+    }
+
+    public void setMinPlayers(int minPlayers) {
+        this.minPlayers = minPlayers;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+    }
+
+    public int getSlotDuration() {
+        return slotDuration;
+    }
+
+    public void setSlotDuration(int slotDuration) {
+        this.slotDuration = slotDuration;
+    }
+
+    public LocalTime getOpenTime() {
+        return openTime;
+    }
+
+    public void setOpenTime(LocalTime openTime) {
+        this.openTime = openTime;
+    }
+
+    public LocalTime getCloseTime() {
+        return closeTime;
+    }
+
+    public void setCloseTime(LocalTime closeTime) {
+        this.closeTime = closeTime;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public Set<UserGameStats> getUserGameStats() {
+        return userGameStats;
+    }
+
+    public void setUserGameStats(Set<UserGameStats> userGameStats) {
+        this.userGameStats = userGameStats;
+    }
+
+    public Set<GameSlots> getGameSlots() {
+        return gameSlots;
+    }
+
+    public void setGameSlots(Set<GameSlots> gameSlots) {
+        this.gameSlots = gameSlots;
+    }
 }

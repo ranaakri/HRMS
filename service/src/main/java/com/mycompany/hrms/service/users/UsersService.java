@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -79,6 +80,22 @@ public class UsersService implements IUserService {
         else
             res.setAssignedUnder(0);
         return res;
+    }
+
+    public List<OrgChartRes> getOrgChartList(long userId){
+        List<OrgChartRes> res = new ArrayList<>();
+        OrgChartRes temp = getOrgChart(userId);
+        res.add(temp);
+        while (temp.getAssignedUnder() != 0){
+            temp = getOrgChart(temp.getAssignedUnder());
+            res.add(temp);
+        }
+        Collections.reverse(res);
+        return res;
+    }
+
+    public List<OrgChartRes> getAssignedUnder(long userId){
+        return usersRepo.findUsersByAssignedUnder_UserId(userId).stream().map(val -> modelMapper.map(val, OrgChartRes.class)).toList();
     }
 
     public UserProfileDto getUserProfileByEmail(String email){

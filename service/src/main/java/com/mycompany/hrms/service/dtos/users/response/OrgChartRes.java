@@ -1,7 +1,6 @@
 package com.mycompany.hrms.service.dtos.users.response;
 
 import com.mycompany.hrms.data.constant.Constants;
-import com.mycompany.hrms.service.dtos.travel.response.CreatedByUser;
 
 public class OrgChartRes {
     private long userId;

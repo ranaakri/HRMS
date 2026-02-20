@@ -21,4 +21,36 @@ public class FinalBookings {
     private SlotRequest confirmedRequest;
 
     private boolean isCompleted = false;
+
+    public long getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(long bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public GameSlots getGameSlot() {
+        return gameSlot;
+    }
+
+    public void setGameSlot(GameSlots gameSlot) {
+        this.gameSlot = gameSlot;
+    }
+
+    public SlotRequest getConfirmedRequest() {
+        return confirmedRequest;
+    }
+
+    public void setConfirmedRequest(SlotRequest confirmedRequest) {
+        this.confirmedRequest = confirmedRequest;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
+    }
 }

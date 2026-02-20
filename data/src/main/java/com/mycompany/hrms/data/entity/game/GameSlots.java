@@ -38,4 +38,52 @@ public class GameSlots {
         BOOKED,
         LOCKED
     }
+
+    public long getSlotId() {
+        return slotId;
+    }
+
+    public void setSlotId(long slotId) {
+        this.slotId = slotId;
+    }
+
+    public ZonedDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(ZonedDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public ZonedDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(ZonedDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public SlotStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(SlotStatus status) {
+        this.status = status;
+    }
+
+    public GameConfig getGameConfig() {
+        return gameConfig;
+    }
+
+    public void setGameConfig(GameConfig gameConfig) {
+        this.gameConfig = gameConfig;
+    }
+
+    public Set<SlotRequest> getSlotRequests() {
+        return slotRequests;
+    }
+
+    public void setSlotRequests(Set<SlotRequest> slotRequests) {
+        this.slotRequests = slotRequests;
+    }
 }

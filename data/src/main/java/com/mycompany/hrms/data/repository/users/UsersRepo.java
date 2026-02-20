@@ -4,7 +4,6 @@ import com.mycompany.hrms.data.entity.user.Users;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +16,10 @@ public interface UsersRepo extends JpaRepository<Users, Long> {
 
     @Query("FROM Users u WHERE DAY(u.birthdate) = DAY(CURRENT_DATE) AND MONTH(u.birthdate) = MONTH(CURRENT_DATE)")
     List<Users> findUsersWithBirthdayToday();
+
+    List<Users> findUsersByAssignedUnder_UserId(long assignedUnderUserId);
+
+    List<Users> findUsersByUserIdIn(List<Long> userId);
 
 //    @Query(value = "WITH UppersCTE AS ( SELECT   userId, profileUrl, designation, assignedUnder, 0 AS level FROM users WHERE userId = :userId" +
 //            "    UNION ALL SELECT u.userId, u.profileUrl, u.designation, u.assignedUnder, cte.level + 1 FROM users u" +

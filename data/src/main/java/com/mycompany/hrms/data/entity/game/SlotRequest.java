@@ -43,4 +43,59 @@ public class SlotRequest {
         REJECTED
     }
 
+    public long getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(long requestId) {
+        this.requestId = requestId;
+    }
+
+    public GameSlots getGameSlots() {
+        return gameSlots;
+    }
+
+    public void setGameSlots(GameSlots gameSlots) {
+        this.gameSlots = gameSlots;
+    }
+
+    public Users getRequestBy() {
+        return requestBy;
+    }
+
+    public void setRequestBy(Users requestBy) {
+        this.requestBy = requestBy;
+    }
+
+    public double getGroupAverageScore() {
+        return groupAverageScore;
+    }
+
+    public void setGroupAverageScore(double groupAverageScore) {
+        this.groupAverageScore = groupAverageScore;
+    }
+
+    public ZonedDateTime getRequestTimeStamp() {
+        return requestTimeStamp;
+    }
+
+    public void setRequestTimeStamp(ZonedDateTime requestTimeStamp) {
+        this.requestTimeStamp = requestTimeStamp;
+    }
+
+    public RequestStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(RequestStatus status) {
+        this.status = status;
+    }
+
+    public Set<RequestParticipants> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(Set<RequestParticipants> participants) {
+        this.participants = participants;
+    }
 }

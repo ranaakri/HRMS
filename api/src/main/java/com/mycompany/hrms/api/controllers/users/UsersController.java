@@ -68,8 +68,17 @@ public class UsersController {
     )
     @GetMapping("/org/{userId}")
     @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
-    public ResponseEntity<OrgChartRes> getOrgChart(@PathVariable long userId){
-        return ResponseEntity.ok(usersService.getOrgChart(userId));
+    public ResponseEntity<List<OrgChartRes>> getOrgChart(@PathVariable long userId){
+        return ResponseEntity.ok(usersService.getOrgChartList(userId));
+    }
+
+    @Operation(
+            summary = "Get assign under users"
+    )
+    @GetMapping("/org/under/{userId}")
+    @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
+    public ResponseEntity<List<OrgChartRes>> getAssignedUnder(@PathVariable long userId){
+        return ResponseEntity.ok(usersService.getAssignedUnder(userId));
     }
 
     @Operation(

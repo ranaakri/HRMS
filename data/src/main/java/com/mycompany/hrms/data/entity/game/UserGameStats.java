@@ -24,10 +24,59 @@ public class UserGameStats {
     private GameConfig gameConfig;
 
     @Column(nullable = false)
-    private boolean isInterested = false;
+    private boolean isInterested = true;
 
     @Column(nullable = false)
     private int priorityScore = 0;
 
     private ZonedDateTime lastPlayedAt;
+
+
+    public long getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(long stateId) {
+        this.stateId = stateId;
+    }
+
+    public Users getUser() {
+        return user;
+    }
+
+    public void setUser(Users user) {
+        this.user = user;
+    }
+
+    public GameConfig getGameConfig() {
+        return gameConfig;
+    }
+
+    public void setGameConfig(GameConfig gameConfig) {
+        this.gameConfig = gameConfig;
+    }
+
+    public boolean isInterested() {
+        return isInterested;
+    }
+
+    public void setInterested(boolean interested) {
+        isInterested = interested;
+    }
+
+    public int getPriorityScore() {
+        return priorityScore;
+    }
+
+    public void setPriorityScore(int priorityScore) {
+        this.priorityScore = priorityScore;
+    }
+
+    public ZonedDateTime getLastPlayedAt() {
+        return lastPlayedAt;
+    }
+
+    public void setLastPlayedAt(ZonedDateTime lastPlayedAt) {
+        this.lastPlayedAt = lastPlayedAt;
+    }
 }

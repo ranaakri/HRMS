@@ -39,4 +39,6 @@ public interface TravelingUserRepo extends JpaRepository<TravelingUser, Long> {
 
     @Query(value = "select u.* from TravelingUser u left join users v on u.userId = v.userId where v.assignedUnder = :managerId and u.travelId = :travelId", nativeQuery = true)
     List<TravelingUser> getTravelingUsersAssignUnder(@Param("managerId") long managerId, @Param("travelId") long travelId);
+
+    boolean existsByUser_UserIdAndTravelDetails_TravelId(long userUserId, long travelDetailsTravelId);
 }

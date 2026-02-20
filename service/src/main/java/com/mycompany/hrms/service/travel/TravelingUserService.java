@@ -11,6 +11,7 @@ import com.mycompany.hrms.service.dtos.travel.request.TravelingUserReq;
 import com.mycompany.hrms.service.dtos.travel.response.BudgetResponse;
 import com.mycompany.hrms.service.dtos.travel.response.TravelDetailsRes;
 import com.mycompany.hrms.service.dtos.travel.response.TravelingUserRes;
+import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.BusinessException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import com.mycompany.hrms.service.notification.NotificationService;
@@ -67,6 +68,9 @@ public class TravelingUserService implements ITravelingUserService{
                 .orElseThrow(() -> new ResourceNotFoundException("Travel details not found")).getAssignedBudget();
         for(TravelingUserReq t : travelingUsers.getUsers()){
             sum+=t.getTravelBalance();
+            if(travelingUserRepo.existsByUser_UserIdAndTravelDetails_TravelId(t.getUserId(), travelingUsers.getTravelId())){
+                throw new BadRequestException("One of the user is already assigned to travel");
+            }
         }
         if(sum > assignedBudget)
             throw new BusinessException("Invalid balance assigned");
