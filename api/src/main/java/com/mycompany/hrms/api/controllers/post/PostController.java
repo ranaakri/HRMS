@@ -43,7 +43,7 @@ public class PostController {
     )
     @PostMapping("")
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
-    public ResponseEntity<Void> createPost(@Valid @RequestBody CreatePost createPost){
+    public ResponseEntity<Void> createPost(@RequestBody CreatePost createPost){
         postService.createPost(createPost);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -101,7 +101,7 @@ public class PostController {
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     @PostMapping("/comment")
-    public ResponseEntity<CommentsRes> addCommentToPost(@Valid @RequestBody CommentReq commentReq){
+    public ResponseEntity<CommentsRes> addCommentToPost(@RequestBody CommentReq commentReq){
         return ResponseEntity.ok(postService.addComment(commentReq));
     }
 
@@ -120,7 +120,7 @@ public class PostController {
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     @PutMapping("/comment")
-    public ResponseEntity<Void> updateComment(@Valid @RequestBody EditCommentReq req){
+    public ResponseEntity<Void> updateComment(@RequestBody EditCommentReq req){
         postService.editComment(req);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -130,7 +130,7 @@ public class PostController {
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     @PutMapping("/updatedBy/{userId}/post/{postId}")
-    public ResponseEntity<GetPostData> updatePost(@PathVariable long userId, @PathVariable long postId, @Valid @RequestBody CreatePost updatePost){
+    public ResponseEntity<GetPostData> updatePost(@PathVariable long userId, @PathVariable long postId, @RequestBody CreatePost updatePost){
         return ResponseEntity.ok(postService.updatePost(postId, userId, updatePost));
     }
 
@@ -149,7 +149,7 @@ public class PostController {
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     @DeleteMapping("/comment")
-    public ResponseEntity<Void> deleteComment(@Valid @RequestBody DeleteCommentReq deleteReq){
+    public ResponseEntity<Void> deleteComment(@RequestBody DeleteCommentReq deleteReq){
         postService.deleteComment(deleteReq.getCommentedById(), deleteReq.getCommentId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -159,7 +159,7 @@ public class PostController {
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     @DeleteMapping("")
-    public ResponseEntity<Void> deletePost(@Valid @RequestBody DeletePost deleteReq){
+    public ResponseEntity<Void> deletePost(@RequestBody DeletePost deleteReq){
         postService.deletePost(deleteReq);
         return new ResponseEntity<>(HttpStatus.OK);
     }

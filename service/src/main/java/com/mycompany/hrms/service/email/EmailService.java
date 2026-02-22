@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 public class EmailService {
@@ -38,6 +39,25 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+    public void sendEmailMultiTos(List<String> toList, String subject, String body) throws MessagingException {
+
+        MimeMessage message = mailSender.createMimeMessage();
+
+        message.setFrom(new InternetAddress(sender));
+
+        InternetAddress[] addresses = new InternetAddress[toList.size()];
+        for (int i = 0; i < toList.size(); i++) {
+            addresses[i] = new InternetAddress(toList.get(i));
+        }
+
+        message.setRecipients(MimeMessage.RecipientType.TO, addresses);
+        message.setSubject(subject);
+        message.setContent(body, "text/html; charset=utf-8");
+
+        mailSender.send(message);
+    }
+
 
     public void shareJob(String shareTo, Jobs job) {
         String subject = "Job Opening";
@@ -142,6 +162,68 @@ public class EmailService {
             sendEmail(warnedUser.getEmail(), subject, body);
         } catch (Exception ex) {
             throw new InternalServerException("Error sending warning email");
+        }
+    }
+
+    public void sendGameSlotRejectedEmail(List<Users> users) {
+
+        String subject = "Game Slot Request Update";
+
+        String body = "<html>" +
+                "<body>" +
+                "<p>Hi ,</p>" +
+                "<p>Your requested game slot was not approved.</p>" +
+                "<p>You may try booking another available slot.</p>" +
+                "<br>" +
+                "<p>Thank you.</p>" +
+                "</body>" +
+                "</html>";
+
+        try {
+            sendEmailMultiTos(users.stream().map(Users::getEmail).toList(), subject, body);
+        } catch (Exception ex) {
+            throw new InternalServerException("Error sending rejection email");
+        }
+    }
+
+    public void sendGameSlotConfirmedEmail(List<Users> users) {
+
+        String subject = "Game Slot Confirmed";
+
+        String body = "<html>" +
+                "<body>" +
+                "<p>Hi ,</p>" +
+                "<p>Your game slot has been confirmed successfully.</p>" +
+                "<p>Please be available at the scheduled time.</p>" +
+                "<br>" +
+                "<p>Thank you.</p>" +
+                "</body>" +
+                "</html>";
+        try {
+            sendEmailMultiTos(users.stream().map(Users::getEmail).toList(), subject, body);
+        } catch (Exception ex) {
+            throw new InternalServerException("Error sending confirmation email");
+        }
+    }
+
+    public void sendGameSlotCancelledEmail(List<Users> users) {
+
+        String subject = "Game Slot Cancelled";
+
+        String body = "<html>" +
+                "<body>" +
+                "<p>Hi,</p>" +
+                "<p>Your game slot has been cancelled.</p>" +
+                "<p>Your request for game slot cancellation is completed.</p>" +
+                "<br>" +
+                "<p>Thank you.</p>" +
+                "</body>" +
+                "</html>";
+
+        try {
+            sendEmailMultiTos(users.stream().map(Users::getEmail).toList(), subject, body);
+        } catch (Exception ex) {
+            throw new InternalServerException("Error sending cancellation email");
         }
     }
 }

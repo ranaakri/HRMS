@@ -66,7 +66,7 @@ public class GameConfigController {
     )
     @PostMapping("")
     @PreAuthorize("hasAnyAuthority('HR')")
-    public ResponseEntity<GameResponse> createNewGame(@Valid @RequestBody CreateGameReq gameReq){
+    public ResponseEntity<GameResponse> createNewGame(@RequestBody CreateGameReq gameReq){
         return new ResponseEntity<>(gameConfigService.createGame(gameReq), HttpStatus.CREATED);
     }
 

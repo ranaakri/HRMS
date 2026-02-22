@@ -4,6 +4,7 @@ import com.mycompany.hrms.data.entity.game.*;
 import com.mycompany.hrms.data.entity.user.Users;
 import com.mycompany.hrms.data.repository.game.*;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
+import com.mycompany.hrms.service.email.EmailService;
 import com.mycompany.hrms.service.notification.NotificationService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class GameSchedulingService {
     private final NotificationService notificationService;
     private final UserGameStatesRepo userGameStatesRepo;
     private final UsersRepo usersRepo;
+    private final EmailService emailService;
 
     @Autowired
     public GameSchedulingService(GameConfigRepo gameConfigRepo,
@@ -35,7 +37,8 @@ public class GameSchedulingService {
                                  FinalBookingsRepo finalBookingsRepo,
                                  NotificationService notificationService,
                                  UserGameStatesRepo userGameStatesRepo,
-                                 UsersRepo usersRepo){
+                                 UsersRepo usersRepo,
+                                 EmailService emailService){
         this.gameConfigRepo = gameConfigRepo;
         this.gameSlotsRepo = gameSlotsRepo;
         this.slotRequestRepo = slotRequestRepo;
@@ -43,6 +46,7 @@ public class GameSchedulingService {
         this.notificationService = notificationService;
         this.userGameStatesRepo = userGameStatesRepo;
         this.usersRepo = usersRepo;
+        this.emailService = emailService;
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
@@ -98,6 +102,7 @@ public class GameSchedulingService {
 
                     List<Users> usersList = req.getParticipants().stream().map(RequestParticipants::getUser).toList();
                     notificationService.addNotification(usersList, "SLOT_REJECTED", "Your request for " + slot.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " was not selected");
+                    emailService.sendGameSlotRejectedEmail(usersList);
                 }
             }
 
@@ -125,6 +130,7 @@ public class GameSchedulingService {
             List<Users> usersList = usersRepo.findAllById(userIds);
             notificationService.addNotification(usersList, "GAME_SLOT_BOOKED",
                     slot.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            emailService.sendGameSlotConfirmedEmail(usersList);
         }
     }
 

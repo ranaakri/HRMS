@@ -69,7 +69,7 @@ public class GameBookingController {
     )
     @DeleteMapping("")
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
-    public ResponseEntity<Void> cancelSlot(@Valid @RequestBody DeleteSlotRequest deleteSlotRequest){
+    public ResponseEntity<Void> cancelSlot(@RequestBody DeleteSlotRequest deleteSlotRequest){
         bookingService.cancelSlotRequest(deleteSlotRequest.getSlotId(), deleteSlotRequest.getRequestedBy());
         return new ResponseEntity<>(HttpStatus.OK);
     }

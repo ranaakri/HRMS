@@ -7,6 +7,7 @@ import com.mycompany.hrms.data.repository.users.UsersRepo;
 import com.mycompany.hrms.service.dtos.game.response.RequestedByUser;
 import com.mycompany.hrms.service.dtos.game.response.UserPriorityRes;
 import com.mycompany.hrms.service.dtos.travel.response.CreatedByUser;
+import com.mycompany.hrms.service.email.EmailService;
 import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import com.mycompany.hrms.service.notification.NotificationService;
@@ -35,6 +36,7 @@ public class BookingService implements IBookingService {
     private final SlotRequestRepo slotRequestRepo;
     private final NotificationService notificationService;
     private final ModelMapper modelMapper;
+    private final EmailService emailService;
 
     @Autowired
     public BookingService(GameSlotsRepo gameSlotsRepo,
@@ -45,7 +47,8 @@ public class BookingService implements IBookingService {
                           RequestParticipantsRepo requestParticipantsRepo,
                           SlotRequestRepo slotRequestRepo,
                           NotificationService notificationService,
-                          ModelMapper modelMapper){
+                          ModelMapper modelMapper,
+                          EmailService emailService){
         this.priorityService = priorityService;
         this.finalBookingsRepo = finalBookingsRepo;
         this.gameSlotsRepo = gameSlotsRepo;
@@ -55,6 +58,7 @@ public class BookingService implements IBookingService {
         this.slotRequestRepo = slotRequestRepo;
         this.notificationService = notificationService;
         this.modelMapper = modelMapper;
+        this.emailService = emailService;
     }
 
     public void bookSlot(Long slotId, Long requestedBy, List<Long> userIds){
@@ -172,8 +176,9 @@ public class BookingService implements IBookingService {
         GameSlots slot = finalBookings.getGameSlot();
 
         List<Long> oldUserIds = slotRequestRepo.findAllParticipantsId(slot.getSlotId(), oldRequest.getRequestId());
-
-        notificationService.addNotification(usersRepo.findAllById(oldUserIds), "BOOKING_CANCELED", "Your booking for "+ slot.getStartTime() + " has been canceled");
+        List<Users> canceledUsers = usersRepo.findAllById(oldUserIds);
+        notificationService.addNotification(canceledUsers, "BOOKING_CANCELED", "Your booking for "+ slot.getStartTime() + " has been canceled");
+        emailService.sendGameSlotCancelledEmail(canceledUsers);
 
         oldRequest.setStatus(SlotRequest.RequestStatus.DELETED);
 
@@ -209,9 +214,11 @@ public class BookingService implements IBookingService {
                 userGameStatesRepo.save(stats);
             }
 
-            notificationService.addNotification(usersRepo.findAllById(userIds),
+            List<Users> confirmedUsers = usersRepo.findAllById(userIds);
+            notificationService.addNotification(confirmedUsers,
                     "GAME_SLOT_BOOKED", "You are bumped up the queue! Slot confirmed for "
                     + slot.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"))+" ");
+            emailService.sendGameSlotConfirmedEmail(confirmedUsers);
         }else{
             slot.setStatus(GameSlots.SlotStatus.OPEN);
             gameSlotsRepo.save(slot);
