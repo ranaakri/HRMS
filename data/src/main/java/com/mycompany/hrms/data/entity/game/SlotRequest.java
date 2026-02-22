@@ -40,7 +40,8 @@ public class SlotRequest {
     public enum RequestStatus {
         PENDING,
         APPROVED,
-        REJECTED
+        REJECTED,
+        DELETED
     }
 
     public long getRequestId() {

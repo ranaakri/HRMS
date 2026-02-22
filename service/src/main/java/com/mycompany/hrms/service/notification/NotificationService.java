@@ -34,9 +34,9 @@ public class NotificationService implements INotificationService{
         this.actionNotificationRepo = actionNotificationRepo;
     }
 
-    public void addNotification(List<Long> userIds, String action, String tail){
+    public void addNotification(List<Users> users, String action, String tail){
         ActionNotification notificationData = actionNotificationRepo.findActionNotificationsByAction(action);
-        List<Users> users = usersRepo.findAllById(userIds);
+
         Notification notification = new Notification();
         notification.setTitle(notificationData.getNotificationTitle());
         notification.setDescription(notificationData.getNotificationDescription()+" "+tail);

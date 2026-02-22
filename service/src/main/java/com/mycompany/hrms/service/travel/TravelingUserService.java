@@ -3,6 +3,7 @@ package com.mycompany.hrms.service.travel;
 import com.mycompany.hrms.data.entity.travel.Expenses;
 import com.mycompany.hrms.data.entity.travel.TravelDetails;
 import com.mycompany.hrms.data.entity.travel.TravelingUser;
+import com.mycompany.hrms.data.entity.user.Users;
 import com.mycompany.hrms.data.repository.travel.TravelDetailsRepo;
 import com.mycompany.hrms.data.repository.travel.TravelingUserRepo;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
@@ -83,7 +84,8 @@ public class TravelingUserService implements ITravelingUserService{
             throw new BusinessException("Insufficient budget: Assignment exceeds total travel budget.");
         }
         List<Long> userIds = travelingUsers.getUsers().stream().map(val -> val.getUserId()).toList();
-        notificationService.addNotification(userIds, "ADDED_IN_TRAVEL", "");
+        List<Users> usersList = usersRepo.findAllById(userIds);
+        notificationService.addNotification(usersList, "ADDED_IN_TRAVEL", "");
     }
 
     public void updateAssignedBudget(long travelingUserId, float travelBalance){

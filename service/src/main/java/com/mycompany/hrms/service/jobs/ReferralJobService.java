@@ -10,6 +10,7 @@ import com.mycompany.hrms.data.repository.users.UsersRepo;
 import com.mycompany.hrms.service.dtos.job.request.ReferralJobReq;
 import com.mycompany.hrms.service.dtos.job.response.ReferralJobRes;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,7 @@ public class ReferralJobService implements IReferralService {
         return referrals.stream().map(val -> modelMapper.map(val, ReferralJobRes.class)).toList();
     }
 
+    @Transactional
     public ReferralJobRes updateStatus(long referralId, Constants.JobStatus status){
         Referrals referrals = referralsRepo.findById(referralId)
                 .orElseThrow(() -> new ResourceNotFoundException("Referral not found"));

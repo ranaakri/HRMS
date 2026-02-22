@@ -1,14 +1,31 @@
 package com.mycompany.hrms.service.post;
 
+import com.mycompany.hrms.service.dtos.post.request.CommentReq;
 import com.mycompany.hrms.service.dtos.post.request.CreatePost;
+import com.mycompany.hrms.service.dtos.post.request.DeletePost;
+import com.mycompany.hrms.service.dtos.post.request.EditCommentReq;
+import com.mycompany.hrms.service.dtos.post.response.CommentsRes;
+import com.mycompany.hrms.service.dtos.post.response.GetPostData;
+import com.mycompany.hrms.service.dtos.post.response.PostLikeRes;
 import com.mycompany.hrms.service.dtos.post.response.PostResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface IPostService {
     void createPost(CreatePost createPost);
-    List<PostResponse> getAllPost(Pageable pageable);
+    List<PostResponse> getAllPost(Pageable pageable, long userId);
     void removeLike(long postId, long userId);
     void addLike(long postId, long userId);
+    List<PostLikeRes> getAllPostLikes(Long postId, int page, int size);
+    List<CommentsRes> getAllPostComments(Long postId, int page, int size);
+    CommentsRes addComment(CommentReq comment);
+    void deleteComment(long commentedBy, long commentId);
+    void editComment(EditCommentReq req);
+    List<PostResponse> getFilteredPost(Pageable pageable, long userId);
+    List<PostResponse> getAllMyPost(Pageable pageable, long userId);
+    void deletePost(DeletePost req);
+    GetPostData getPostData(long postId);
+    GetPostData updatePost(long postId, long userId, CreatePost update);
 }

@@ -4,7 +4,9 @@ import com.mycompany.hrms.data.entity.user.Users;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +22,17 @@ public interface UsersRepo extends JpaRepository<Users, Long> {
     List<Users> findUsersByAssignedUnder_UserId(long assignedUnderUserId);
 
     List<Users> findUsersByUserIdIn(List<Long> userId);
+
+    @Query(value = "SELECT * FROM Users " +
+            "WHERE DAY(SWITCHOFFSET(birthdate, '+05:30')) = DAY(SWITCHOFFSET(SYSDATETIMEOFFSET(), '+05:30')) \n" +
+            "  AND MONTH(SWITCHOFFSET(birthdate, '+05:30')) = MONTH(SWITCHOFFSET(SYSDATETIMEOFFSET(), '+05:30'))", nativeQuery = true)
+    List<Users> findUserWithBirthday();
+
+    @Query(value = """
+SELECT * FROM Users
+            WHERE DAY(SWITCHOFFSET(joiningDate, '+05:30')) = DAY(SWITCHOFFSET(SYSDATETIMEOFFSET(), '+05:30'))
+            AND MONTH(SWITCHOFFSET(joiningDate, '+05:30')) = MONTH(SWITCHOFFSET(SYSDATETIMEOFFSET(), '+05:30'))""", nativeQuery = true)
+    List<Users> findUserWithJoiningAnniversary();
 
 //    @Query(value = "WITH UppersCTE AS ( SELECT   userId, profileUrl, designation, assignedUnder, 0 AS level FROM users WHERE userId = :userId" +
 //            "    UNION ALL SELECT u.userId, u.profileUrl, u.designation, u.assignedUnder, cte.level + 1 FROM users u" +

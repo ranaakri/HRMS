@@ -26,23 +26,26 @@ public class GameInterestService implements IGameInterestService{
         this.gameConfigRepo = gameConfigRepo;
     }
 
+    @Transactional
     public void addGameInterest(long userId, long gameId){
-        if(userGameStatesRepo.existsByUser_UserIdAndGameConfig_GameId(userId, gameId))
-            throw new BadRequestException("Game already added as Interest");
         Users user = usersRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         GameConfig game = gameConfigRepo.findById(gameId)
                 .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
-        UserGameStats stats = new UserGameStats();
-        stats.setUser(user);
-        stats.setGameConfig(game);
-        userGameStatesRepo.save(stats);
+        UserGameStats gameStats = userGameStatesRepo.findByUser_UserIdAndGameConfig_GameId(userId, gameId)
+                .orElse(null);
+        if(gameStats == null){
+            UserGameStats stats = new UserGameStats();
+            stats.setUser(user);
+            stats.setGameConfig(game);
+            userGameStatesRepo.save(stats);
+        }else{
+            gameStats.setInterested(true);
+        }
     }
 
     @Transactional
     public void removeGameInterest(long userId, long gameId){
-        if(!userGameStatesRepo.existsByUser_UserIdAndGameConfig_GameId(userId, gameId))
-            throw new BadRequestException("Not a game interest");
         UserGameStats stats = userGameStatesRepo.findByUser_UserIdAndGameConfig_GameId(userId, gameId)
                         .orElseThrow(() -> new ResourceNotFoundException("Not a game interest"));
         stats.setInterested(false);

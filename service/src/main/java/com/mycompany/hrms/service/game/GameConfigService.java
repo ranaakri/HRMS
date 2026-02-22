@@ -42,7 +42,12 @@ public class GameConfigService implements IGameConfigService {
             throw new ResourceNotFoundException("User not found");
         return gameConfigRepo.findByIsActiveTrue().stream().map(val -> {
             GameResponse res =  modelMapper.map(val, GameResponse.class);
-            res.setInterested(userGameStatesRepo.existsByUser_UserIdAndGameConfig_GameId(userId, val.getGameId()));
+            UserGameStats gameStats = userGameStatesRepo.findByUser_UserIdAndGameConfig_GameId(userId, res.getGameId())
+                            .orElse(null);
+            if(gameStats == null)
+                res.setInterested(false);
+            else
+                res.setInterested(gameStats.isInterested());
             return res;
         }).toList();
     }
@@ -52,12 +57,15 @@ public class GameConfigService implements IGameConfigService {
             throw new ResourceNotFoundException("User not found");
         return gameConfigRepo.findAll().stream().map(val -> {
             GameResponse res =  modelMapper.map(val, GameResponse.class);
-            res.setInterested(userGameStatesRepo.existsByUser_UserIdAndGameConfig_GameId(userId, val.getGameId()));
+            UserGameStats gameStats = userGameStatesRepo.findByUser_UserIdAndGameConfig_GameId(userId, res.getGameId())
+                    .orElse(null);
+            if(gameStats == null)
+                res.setInterested(false);
+            else
+                res.setInterested(gameStats.isInterested());
             return res;
         }).toList();
     }
-
-
 
     public GameResponse createGame(CreateGameReq createGameReq){
         if(createGameReq.getMinPlayers() > createGameReq.getMaxPlayers()){

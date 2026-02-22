@@ -14,16 +14,16 @@ public class PostComments {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long commentId;
+    private long commentId;
 
     @Column(nullable = false)
-    public String commentText;
+    private String commentText;
 
     @Column(nullable = false)
-    public ZonedDateTime commentedAt;
+    private ZonedDateTime commentedAt;
 
     @Column(nullable = false)
-    public boolean isDeleted;
+    private boolean isDeleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postId")

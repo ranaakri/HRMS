@@ -36,6 +36,7 @@ public class GameSlots {
         OPEN,
         PROCESSING,
         BOOKED,
+        NO_BOOKING,
         LOCKED
     }
 

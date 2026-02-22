@@ -32,4 +32,13 @@ public class GameSlotsController {
     public ResponseEntity<List<GameSlotResponse>> getTodaySlots(@PathVariable long gameId){
         return ResponseEntity.ok(gameSlotsService.getTodaySlots(gameId));
     }
+
+    @Operation(
+            summary = "Fetch game slot information"
+    )
+    @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
+    @GetMapping("/info/{slotId}")
+    public ResponseEntity<GameSlotResponse> getGameSlotInfo(@PathVariable long slotId){
+        return ResponseEntity.ok(gameSlotsService.getSlotInfo(slotId));
+    }
 }

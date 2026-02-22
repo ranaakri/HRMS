@@ -1,33 +1,43 @@
-package com.mycompany.hrms.service.dtos.post.request;
+package com.mycompany.hrms.service.dtos.post.response;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 
-public class CreatePost {
+public class GetPostData {
 
-    @NotBlank
+    private long userId;
+
     private String title;
 
     private String description;
 
     private String tags;
 
-    private char postType;
-
-    @NotBlank
     private String imagePath;
 
-    @NotBlank
+    private char postType;
+
     private String publicId;
 
-    @NotNull
     private boolean isVisibleToEmp = true;
 
-    @NotNull
     private boolean isVisibleToManager = true;
 
     private long authorId;
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
+    public String getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
+    }
 
     public String getTitle() {
         return title;
@@ -67,14 +77,6 @@ public class CreatePost {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
-    }
-
-    public String getPublicId() {
-        return publicId;
-    }
-
-    public void setPublicId(String publicId) {
-        this.publicId = publicId;
     }
 
     public boolean isVisibleToEmp() {

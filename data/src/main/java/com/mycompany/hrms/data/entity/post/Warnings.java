@@ -19,13 +19,19 @@ public class Warnings {
 
     private ZonedDateTime warningDate;
 
-    private String entityType;
+    @Enumerated(EnumType.STRING)
+    private EntityType entityType;
 
     private long entityId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warnedBy")
     private Users warnedBy;
+
+    public enum EntityType{
+        POST,
+        COMMENT
+    }
 
     public long getWarningId() {
         return warningId;
@@ -51,11 +57,11 @@ public class Warnings {
         this.warningDate = warningDate;
     }
 
-    public String getEntityType() {
+    public EntityType getEntityType() {
         return entityType;
     }
 
-    public void setEntityType(String entityType) {
+    public void setEntityType(EntityType entityType) {
         this.entityType = entityType;
     }
 

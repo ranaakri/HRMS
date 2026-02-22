@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -35,7 +36,14 @@ public class ExpenseService implements IExpenseService {
     private final NotificationService notificationService;
 
     @Autowired
-    public ExpenseService(ExpensesRepo expensesRepo, TravelDetailsRepo travelDetailsRepo, UsersRepo usersRepo, ModelMapper modelMapper, ExpensesSplitsRepo expensesSplitsRepo, TravelingUserRepo travelingUserRepo, ExpensesProofsRepo expensesProofsRepo, NotificationService notificationService) {
+    public ExpenseService(ExpensesRepo expensesRepo,
+                          TravelDetailsRepo travelDetailsRepo,
+                          UsersRepo usersRepo,
+                          ModelMapper modelMapper,
+                          ExpensesSplitsRepo expensesSplitsRepo,
+                          TravelingUserRepo travelingUserRepo,
+                          ExpensesProofsRepo expensesProofsRepo,
+                          NotificationService notificationService) {
         this.expensesRepo = expensesRepo;
         this.travelDetailsRepo = travelDetailsRepo;
         this.usersRepo = usersRepo;
@@ -46,10 +54,13 @@ public class ExpenseService implements IExpenseService {
         this.notificationService = notificationService;
     }
 
-    public List<ExpenseRes> getAllExpenseByTravelId(long travelId){
-        List<Expenses> expenses = expensesRepo.findWithSplitsByTravelDetails_TravelId(travelId);
-        if(!expenses.isEmpty()){
-            expensesRepo.findWithProofsByTravelDetails_TravelId(travelId);
+    public List<ExpenseRes> getAllExpenseByTravelId(long travelId) {
+
+        List<Expenses> expenses =
+                expensesRepo.findWithSplitsByTravelDetails_TravelId(travelId);
+
+        if (expenses == null || expenses.isEmpty()) {
+            return Collections.emptyList();
         }
 
         return expenses.stream()
@@ -126,13 +137,13 @@ public class ExpenseService implements IExpenseService {
         travelDetails.setTotalExpense(travelDetails.getTotalExpense() + expense.getAmount());
         travelDetailsRepo.save(travelDetails);
 
-        List<Long> splitWith = expense
+        List<Users> splitWith = expense
                 .getExpensesSplits()
                 .stream().map(
                         val -> travelingUserRepo
                                 .findById(val.getTravelingUserId())
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found for notification"))
-                                .getUser().getUserId())
+                                .getUser())
                 .toList();
 
         notificationService.addNotification(splitWith, "EXPENSE_SPLIT", "by " + uploadedBy.getName());

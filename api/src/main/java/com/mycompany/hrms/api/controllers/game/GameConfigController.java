@@ -4,6 +4,7 @@ import com.mycompany.hrms.service.dtos.game.request.CreateGameReq;
 import com.mycompany.hrms.service.dtos.game.response.GameResponse;
 import com.mycompany.hrms.service.game.IGameConfigService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +46,7 @@ public class GameConfigController {
             summary = "List all games"
     )
     @GetMapping("/list-all/{userId}")
-    @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
+    @PreAuthorize("hasAnyAuthority('HR')")
     public ResponseEntity<List<GameResponse>> getAllGames(@PathVariable long userId){
         return ResponseEntity.ok(gameConfigService.getAllGames(userId));
     }
@@ -65,7 +66,7 @@ public class GameConfigController {
     )
     @PostMapping("")
     @PreAuthorize("hasAnyAuthority('HR')")
-    public ResponseEntity<GameResponse> createNewGame(@RequestBody CreateGameReq gameReq){
+    public ResponseEntity<GameResponse> createNewGame(@Valid @RequestBody CreateGameReq gameReq){
         return new ResponseEntity<>(gameConfigService.createGame(gameReq), HttpStatus.CREATED);
     }
 

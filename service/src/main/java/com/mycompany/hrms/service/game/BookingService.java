@@ -6,12 +6,18 @@ import com.mycompany.hrms.data.repository.game.*;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
 import com.mycompany.hrms.service.dtos.game.response.RequestedByUser;
 import com.mycompany.hrms.service.dtos.game.response.UserPriorityRes;
+import com.mycompany.hrms.service.dtos.travel.response.CreatedByUser;
 import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
+import com.mycompany.hrms.service.notification.NotificationService;
+import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,6 +33,8 @@ public class BookingService implements IBookingService {
     private final UsersRepo usersRepo;
     private final RequestParticipantsRepo requestParticipantsRepo;
     private final SlotRequestRepo slotRequestRepo;
+    private final NotificationService notificationService;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public BookingService(GameSlotsRepo gameSlotsRepo,
@@ -35,7 +43,9 @@ public class BookingService implements IBookingService {
                           PriorityService priorityService,
                           UsersRepo usersRepo,
                           RequestParticipantsRepo requestParticipantsRepo,
-                          SlotRequestRepo slotRequestRepo){
+                          SlotRequestRepo slotRequestRepo,
+                          NotificationService notificationService,
+                          ModelMapper modelMapper){
         this.priorityService = priorityService;
         this.finalBookingsRepo = finalBookingsRepo;
         this.gameSlotsRepo = gameSlotsRepo;
@@ -43,6 +53,8 @@ public class BookingService implements IBookingService {
         this.usersRepo = usersRepo;
         this.requestParticipantsRepo = requestParticipantsRepo;
         this.slotRequestRepo = slotRequestRepo;
+        this.notificationService = notificationService;
+        this.modelMapper = modelMapper;
     }
 
     public void bookSlot(Long slotId, Long requestedBy, List<Long> userIds){
@@ -70,11 +82,11 @@ public class BookingService implements IBookingService {
             }
         }
 
-        if(!userGameStatesRepo.existsByUser_UserIdInAndGameConfig_GameId(userIds, gameSlots.getGameConfig().getGameId())){
-            throw new BadRequestException("some one has not configured game as interested");
-        }
-
         List<UserGameStats> stats = userGameStatesRepo.findByUser_UserIdInAndGameConfig_GameId(userIds, gameSlots.getGameConfig().getGameId());
+
+        if(stats.size() != userIds.size()){
+            throw new BadRequestException("One or more participants has not configured this game");
+        }
 
         for(UserGameStats s : stats){
             if(!s.isInterested()){
@@ -133,5 +145,101 @@ public class BookingService implements IBookingService {
                 Comparator.comparing(UserPriorityRes::getPriority)
                 .reversed()
                 .thenComparing(UserPriorityRes::getRequestId, Comparator.nullsFirst(Comparator.naturalOrder()))).toList();
+    }
+
+    @Transactional
+    public void cancelSlotRequest(long slotId, long requestedBy){
+        SlotRequest slotRequest = slotRequestRepo.findByGameSlots_SlotIdAndRequestBy_UserId(slotId, requestedBy)
+                .orElseThrow(() -> new ResourceNotFoundException("Slot request not found"));
+
+        if(slotRequest.getStatus().equals(SlotRequest.RequestStatus.APPROVED)){
+            cancelConformedBooking(requestedBy, slotId);
+        }
+        slotRequestRepo.delete(slotRequest);
+
+    }
+
+    @Transactional
+    public void cancelConformedBooking(long userId, long slotId){
+        FinalBookings finalBookings = finalBookingsRepo.findByUser_UserIdAndGameSlots_SlotId(userId, slotId)
+                .orElseThrow(() -> new ResourceNotFoundException("Final booking not found"));
+
+        if(finalBookings.isCompleted()){
+            throw new BadRequestException("Can not cancel Completed Slot");
+        }
+
+        SlotRequest oldRequest = finalBookings.getConfirmedRequest();
+        GameSlots slot = finalBookings.getGameSlot();
+
+        List<Long> oldUserIds = slotRequestRepo.findAllParticipantsId(slot.getSlotId(), oldRequest.getRequestId());
+
+        notificationService.addNotification(usersRepo.findAllById(oldUserIds), "BOOKING_CANCELED", "Your booking for "+ slot.getStartTime() + " has been canceled");
+
+        oldRequest.setStatus(SlotRequest.RequestStatus.DELETED);
+
+        slotRequestRepo.save(oldRequest);
+
+        finalBookingsRepo.delete(finalBookings);
+
+        List<SlotRequest> pendingRequest = slotRequestRepo.findAllByGameSlots_SlotIdAndStatus(slot.getSlotId(), SlotRequest.RequestStatus.PENDING);
+
+        SlotRequest nextBestRequest = pendingRequest.stream()
+                .max(Comparator.comparing(SlotRequest::getGroupAverageScore)
+                        .thenComparing(Comparator.comparing(SlotRequest::getRequestId).reversed()))
+                .orElse(null);
+
+        if(nextBestRequest!=null){
+            nextBestRequest.setStatus(SlotRequest.RequestStatus.APPROVED);
+
+            slotRequestRepo.save(nextBestRequest);
+
+            FinalBookings newFinalBooking = new FinalBookings();
+            newFinalBooking.setGameSlot(slot);
+            newFinalBooking.setConfirmedRequest(nextBestRequest);
+            newFinalBooking.setCompleted(false);
+            finalBookingsRepo.save(newFinalBooking);
+
+            List<Long> userIds = slotRequestRepo.findAllParticipantsId(slot.getSlotId(), nextBestRequest.getRequestId());
+
+            for(Long id: userIds){
+                UserGameStats stats = userGameStatesRepo.findByUser_UserIdAndGameConfig_GameId(id,slot.getGameConfig().getGameId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Stats not found exception"));
+
+                stats.setLastPlayedAt(slot.getStartTime());
+                userGameStatesRepo.save(stats);
+            }
+
+            notificationService.addNotification(usersRepo.findAllById(userIds),
+                    "GAME_SLOT_BOOKED", "You are bumped up the queue! Slot confirmed for "
+                    + slot.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"))+" ");
+        }else{
+            slot.setStatus(GameSlots.SlotStatus.OPEN);
+            gameSlotsRepo.save(slot);
+        }
+    }
+
+    public boolean checkBooking(long slotId, long userId){
+        SlotRequest request = slotRequestRepo.findByGameSlots_SlotIdAndUser_SlotId(slotId, userId)
+                .orElse(null);
+        return request != null;
+    }
+
+    public SlotRequest.RequestStatus getBookingStatus(long slotId, long userId){
+        SlotRequest request = slotRequestRepo.findByGameSlots_SlotIdAndUser_SlotId(slotId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("No Status found"));
+            return request.getStatus();
+    }
+
+    public List<CreatedByUser> getBookingPartners(long userId, long slotId){
+        SlotRequest slotRequest = slotRequestRepo.findByGameSlots_SlotIdAndUser_SlotId(slotId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("No slot request found"));
+
+        List<Long> userIds = slotRequestRepo.findAllParticipantsId(slotId, slotRequest.getRequestId());
+        if(userIds.isEmpty())
+            throw new ResourceNotFoundException("No Game partners found");
+
+        List<Users> users = usersRepo.findAllById(userIds);
+
+        return users.stream().map(val -> modelMapper.map(val, CreatedByUser.class)).toList();
     }
 }

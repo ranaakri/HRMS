@@ -9,6 +9,7 @@ import com.mycompany.hrms.data.repository.jobs.JobSharedRepo;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
 import com.mycompany.hrms.service.dtos.job.request.JobShareReq;
 import com.mycompany.hrms.service.dtos.job.response.JobSharedRes;
+import com.mycompany.hrms.service.email.EmailService;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -24,13 +25,19 @@ public class JobSharedService implements IJobSharedService{
     private final ModelMapper modelMapper;
     private final UsersRepo usersRepo;
     private final JobRepo jobRepo;
+    private final EmailService emailService;
 
     @Autowired
-    public JobSharedService(JobSharedRepo jobSharedRepo, ModelMapper modelMapper, UsersRepo usersRepo, JobRepo jobRepo){
+    public JobSharedService(JobSharedRepo jobSharedRepo,
+                            ModelMapper modelMapper,
+                            UsersRepo usersRepo,
+                            JobRepo jobRepo,
+                            EmailService emailService){
         this.jobSharedRepo = jobSharedRepo;
         this.modelMapper = modelMapper;
         this.usersRepo = usersRepo;
         this.jobRepo = jobRepo;
+        this.emailService = emailService;
     }
 
     public JobSharedRes createShareJob(JobShareReq jobShareReq){
@@ -43,6 +50,8 @@ public class JobSharedService implements IJobSharedService{
         JobShared jobShared = modelMapper.map(jobShareReq, JobShared.class);
         jobShared.setSharedBy(user);
         jobShared.setJob(job);
+
+        emailService.shareJob(jobShareReq.getRecipientEmail(), job);
 
         return modelMapper.map(jobSharedRepo.save(jobShared), JobSharedRes.class);
     }

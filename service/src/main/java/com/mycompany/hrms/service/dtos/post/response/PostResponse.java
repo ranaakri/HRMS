@@ -32,6 +32,8 @@ public class PostResponse {
 
     private long commentCount;
 
+    boolean isLikedByMe;
+
     public long getPostId() {
         return postId;
     }
@@ -134,5 +136,13 @@ public class PostResponse {
 
     public void setCommentCount(long commentCount) {
         this.commentCount = commentCount;
+    }
+
+    public boolean isLikedByMe() {
+        return isLikedByMe;
+    }
+
+    public void setLikedByMe(boolean likedByMe) {
+        isLikedByMe = likedByMe;
     }
 }

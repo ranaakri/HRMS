@@ -12,7 +12,7 @@ import java.time.ZonedDateTime;
 public class DeletedPost {
 
     @Id
-    public long postId;
+    private long postId;
 
     @Column(nullable = false)
     private String reason;

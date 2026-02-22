@@ -1,5 +1,7 @@
 package com.mycompany.hrms.service.game;
 
+import com.mycompany.hrms.data.entity.game.GameSlots;
+import com.mycompany.hrms.data.entity.game.SlotRequest;
 import com.mycompany.hrms.data.repository.game.GameConfigRepo;
 import com.mycompany.hrms.data.repository.game.GameSlotsRepo;
 import com.mycompany.hrms.service.dtos.game.response.GameSlotResponse;
@@ -26,6 +28,12 @@ public class GameSlotsService implements IGameSlotsService{
         this.gameConfigRepo = gameConfigRepo;
         this.gameSlotsRepo = gameSlotsRepo;
         this.modelMapper = modelMapper;
+    }
+
+    public GameSlotResponse getSlotInfo(long slotId){
+        GameSlots gameSlot = gameSlotsRepo.findById(slotId)
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid slot id"));
+        return modelMapper.map(gameSlot, GameSlotResponse.class);
     }
 
     public List<GameSlotResponse> getTodaySlots(long gameId){

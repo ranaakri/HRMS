@@ -1,11 +1,17 @@
 package com.mycompany.hrms.service.dtos.game.request;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 public class BookGameSlot {
 
+    @NotNull
     private List<Long> userIds;
+
+    @NotNull
     private long requestedBy;
+    @NotNull
     private long slotId;
 
     public long getRequestedBy() {
