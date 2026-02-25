@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -59,13 +58,31 @@ public class ExpenseService implements IExpenseService {
         List<Expenses> expenses =
                 expensesRepo.findWithSplitsByTravelDetails_TravelId(travelId);
 
-        if (expenses == null || expenses.isEmpty()) {
-            return Collections.emptyList();
+        if(!expenses.isEmpty()) {
+            expensesRepo.findWithProofsByTravelDetails_TravelId(travelId);
         }
 
         return expenses.stream()
-                .map(expense -> modelMapper.map(expense, ExpenseRes.class))
+                .map(expense -> {
+                    ExpenseRes res = modelMapper.map(expense, ExpenseRes.class);
+                    if(res.getExpensesProofs().isEmpty())
+                        res.setExpensesProofs(List.of());
+                    return res;
+                })
                 .toList();
+    }
+
+    public List<ExpenseRes> getMyExpenses(long travelId, long userId){
+        List<Expenses> myExpenses = expensesRepo.getAllByTravelDetails_TravelIdAndExpensesSplits_TravelingUser_User_UserId(travelId, userId);
+        if(!myExpenses.isEmpty()) {
+            expensesRepo.findWithProofsByTravelDetails_TravelId(travelId);
+        }
+        return myExpenses.stream().map( val -> {
+            ExpenseRes res = modelMapper.map(val, ExpenseRes.class);
+            if(res.getExpensesProofs().isEmpty())
+                res.setExpensesProofs(List.of());
+            return res;
+        }).toList();
     }
 
     public ExpenseRes getExpenseByExpenseId(long expenseId){
@@ -91,6 +108,10 @@ public class ExpenseService implements IExpenseService {
         long days = ChronoUnit.DAYS.between(travelDetails.getEndDate(), ZonedDateTime.now());
         if(days > 10){
             throw new BadRequestException("Exceeded time duration of 10 days");
+        }
+
+        if(days < 0){
+            throw new BadRequestException("Can not add expense before trip starts");
         }
 
         Expenses expenses = modelMapper.map(expense, Expenses.class);
@@ -155,22 +176,22 @@ public class ExpenseService implements IExpenseService {
         Expenses expenses = expensesRepo.findById(expenseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
 
-        switch (expenseStatus.toString()){
-            case "APPROVED":
+        switch (expenseStatus){
+            case APPROVED:
                 if(expenses.getStatus().equals(Constants.ExpenseStatus.REJECTED.toString()))
                     redoTravelBalance(expenses);
                 expenses.setApprovedAt(ZonedDateTime.now());
                 expenses.setRemarks(remarks);
                 expenses.setStatus(Constants.ExpenseStatus.APPROVED);
                 break;
-            case "PENDING":
+            case PENDING:
                 if(expenses.getStatus().equals(Constants.ExpenseStatus.REJECTED.toString()))
                     redoTravelBalance(expenses);
                 expenses.setApprovedAt(ZonedDateTime.now());
                 expenses.setRemarks(remarks);
                 expenses.setStatus(Constants.ExpenseStatus.PENDING);
                 break;
-            case "REJECTED":
+            case REJECTED:
                 undoTravelBalance(expenses);
                 expenses.setApprovedAt(ZonedDateTime.now());
                 expenses.setRemarks(remarks);

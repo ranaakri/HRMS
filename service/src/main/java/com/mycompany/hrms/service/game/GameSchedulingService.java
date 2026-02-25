@@ -38,7 +38,7 @@ public class GameSchedulingService {
                                  NotificationService notificationService,
                                  UserGameStatesRepo userGameStatesRepo,
                                  UsersRepo usersRepo,
-                                 EmailService emailService){
+                                 EmailService emailService) {
         this.gameConfigRepo = gameConfigRepo;
         this.gameSlotsRepo = gameSlotsRepo;
         this.slotRequestRepo = slotRequestRepo;
@@ -51,14 +51,14 @@ public class GameSchedulingService {
 
     @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
-    public void generateSlotsForToday(){
+    public void generateSlotsForToday() {
         List<GameConfig> games = gameConfigRepo.findByIsActiveTrue();
-        for(GameConfig game: games){
+        for (GameConfig game : games) {
             LocalDate today = LocalDate.now();
             ZonedDateTime start = ZonedDateTime.of(today, game.getOpenTime(), ZoneId.systemDefault());
             ZonedDateTime close = ZonedDateTime.of(today, game.getCloseTime(), ZoneId.systemDefault());
 
-            while(!start.plusMinutes(game.getSlotDuration()).isAfter(close)){
+            while (!start.plusMinutes(game.getSlotDuration()).isAfter(close)) {
                 GameSlots slot = new GameSlots();
                 slot.setStartTime(start);
                 slot.setEndTime(start.plusMinutes(game.getSlotDuration()));
@@ -75,7 +75,7 @@ public class GameSchedulingService {
     public void confirmUpComingSlots() {
         List<GameSlots> slots = slotRequestRepo.findSlotsStartingSoon();
 
-        for(GameSlots slot : slots) {
+        for (GameSlots slot : slots) {
             if (slot.getStatus() == GameSlots.SlotStatus.BOOKED) {
                 continue;
             }
@@ -90,12 +90,12 @@ public class GameSchedulingService {
                             .thenComparing(Comparator.comparing(SlotRequest::getRequestId).reversed()))
                     .orElse(null);
 
-            if(selectedRequest == null){
+            if (selectedRequest == null) {
                 continue;
             }
 
-            for(SlotRequest req : slotRequests){
-                if(req.getRequestId() == selectedRequest.getRequestId()) {
+            for (SlotRequest req : slotRequests) {
+                if (req.getRequestId() == selectedRequest.getRequestId()) {
                     req.setStatus(SlotRequest.RequestStatus.APPROVED);
                 } else {
                     req.setStatus(SlotRequest.RequestStatus.REJECTED);
@@ -119,7 +119,7 @@ public class GameSchedulingService {
 
             List<Long> userIds = slotRequestRepo.findAllParticipantsId(slot.getSlotId(), selectedRequest.getRequestId());
 
-            for(Long userId : userIds){
+            for (Long userId : userIds) {
                 userGameStatesRepo.findByUser_UserIdAndGameConfig_GameId(userId, slot.getGameConfig().getGameId())
                         .ifPresent(stats -> {
                             stats.setLastPlayedAt(slot.getStartTime());
@@ -136,14 +136,14 @@ public class GameSchedulingService {
 
     @Scheduled(fixedRate = 60000)
     @Transactional
-    public void makePastGamesCompleted(){
+    public void makePastGamesCompleted() {
         ZonedDateTime time = ZonedDateTime.now(ZoneId.systemDefault());
 
         List<FinalBookings> completed = finalBookingsRepo.findPastIncompleteBookings(time);
-        if(completed.isEmpty()) {
+        if (completed.isEmpty()) {
             return;
         }
-        for(FinalBookings bookings : completed){
+        for (FinalBookings bookings : completed) {
             bookings.setCompleted(true);
             bookings.getGameSlot().setStatus(GameSlots.SlotStatus.LOCKED);
         }

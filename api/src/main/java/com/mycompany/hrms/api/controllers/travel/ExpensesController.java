@@ -6,7 +6,7 @@ import com.mycompany.hrms.service.dtos.travel.request.AddExpense;
 import com.mycompany.hrms.service.dtos.travel.request.UpdateExpenseStatus;
 import com.mycompany.hrms.service.dtos.travel.response.ExpenseRes;
 import com.mycompany.hrms.service.travel.IExpenseService;
-import org.apache.coyote.Response;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +29,15 @@ public class ExpensesController {
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     public ResponseEntity<List<ExpenseRes>> getListOfExpenseByTravelId(@PathVariable long travelId){
         return ResponseEntity.ok(expenseService.getAllExpenseByTravelId(travelId));
+    }
+
+    @Operation(
+            summary = "Get my expenses"
+    )
+    @GetMapping("/user/{userId}/travel/{travelId}")
+    @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
+    public ResponseEntity<List<ExpenseRes>> getMyExpenses(@PathVariable long userId, @PathVariable long travelId){
+        return ResponseEntity.ok(expenseService.getMyExpenses(travelId, userId));
     }
 
     @GetMapping("/expenseId/{expenseId}")

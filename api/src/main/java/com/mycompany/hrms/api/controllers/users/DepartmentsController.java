@@ -3,7 +3,6 @@ package com.mycompany.hrms.api.controllers.users;
 import com.mycompany.hrms.service.dtos.users.DepartmentDto;
 import com.mycompany.hrms.service.users.DepartmentsService;
 import io.swagger.v3.oas.annotations.Operation;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

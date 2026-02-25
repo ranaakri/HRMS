@@ -9,15 +9,15 @@ import java.time.temporal.ChronoUnit;
 @Service
 public class PriorityService {
 
-    public int calculatePriority(UserGameStats stats){
+    public int calculatePriority(UserGameStats stats) {
         int priority = stats.getPriorityScore();
 
-        if(stats.getLastPlayedAt() == null){
+        if (stats.getLastPlayedAt() == null) {
             priority += 100;
         }
 
         long days = 0;
-        if(stats.getLastPlayedAt() != null) {
+        if (stats.getLastPlayedAt() != null) {
             days = ChronoUnit.DAYS.between(stats.getLastPlayedAt(), ZonedDateTime.now());
 
             priority += (10 * (int) days);

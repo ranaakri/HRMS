@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.mycompany.hrms.data.constant.Constants;
 import com.mycompany.hrms.data.entity.user.Users;
 import jakarta.persistence.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.ZonedDateTime;
 import java.util.Date;

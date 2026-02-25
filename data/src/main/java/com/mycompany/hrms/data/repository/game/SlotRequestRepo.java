@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,4 +32,6 @@ public interface SlotRequestRepo extends JpaRepository<SlotRequest, Long> {
 
     @Query(value = "select s.* from SlotRequest s join RequestParticipants rp on rp.requestId = s.requestId where rp.userId = :userId and s.slotId = :slotId", nativeQuery = true)
     Optional<SlotRequest> findByGameSlots_SlotIdAndUser_SlotId(@Param("slotId") long slotId, @Param("userId") long userId);
+
+    boolean existsByParticipants_User_UserIdInAndStatusAndRequestTimeStampBefore(List<Long> userIds, SlotRequest.RequestStatus status, ZonedDateTime time);
 }

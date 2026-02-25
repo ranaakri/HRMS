@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     AuthenticationManager authenticationManager;
@@ -49,23 +49,23 @@ public class AuthController {
         String refreshToken  = jwtUtil.generateRefreshToken(auth);
         ResponseCookie cookie = ResponseCookie.from("JWT_TOKEN", token)
                 .httpOnly(true)
-                .secure(true)
                 .path("/")
-                .sameSite("Strict")
+                .secure(false)
                 .maxAge(60 * 60)
+                .sameSite("Lax")
                 .build();
 
         ResponseCookie springCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
-                .maxAge(60 * 60 * 24)
-                .sameSite("Strict")
+                .maxAge(60 * 60 * (long) 24)
+                .sameSite("Lax")
                 .build();
 
         Cookie cookie1 = new Cookie("LoggedIn", "login");
         cookie1.setPath("/");
-        cookie1.setMaxAge(60 * 60);
+        cookie1.setMaxAge(60 * 60 * 24);
 
         response.addCookie(cookie1);
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -87,10 +87,10 @@ public class AuthController {
 
         ResponseCookie token = ResponseCookie.from("JWT_TOKEN", newAccessToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
-                .maxAge(60 * 60)
-                .sameSite("Strict")
+                .maxAge(60 * (long)60)
+                .sameSite("Lax")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, token.toString());

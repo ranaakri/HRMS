@@ -18,17 +18,21 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
     private final CustomCorsConfiguration customCorsConfiguration;
+    private final CustomAuthEntryPoint customAuthEntryPoint;
 
-    public SecurityConfig(JwtFilter jwtFilter, CustomCorsConfiguration customCorsConfiguration){
+    public SecurityConfig(JwtFilter jwtFilter,
+                          CustomCorsConfiguration customCorsConfiguration,
+                          CustomAuthEntryPoint customAuthEntryPoint){
         this.jwtFilter = jwtFilter;
         this.customCorsConfiguration = customCorsConfiguration;
+        this.customAuthEntryPoint = customAuthEntryPoint;
     }
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http){
         http.csrf(csrf -> csrf.disable()
                         .authorizeHttpRequests( auth ->
-                                        auth.requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/error", "/auth/refresh").permitAll()
+                                        auth.requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/error").permitAll()
 //                                .requestMatchers("/api/users/**").hasAnyAuthority("Employee", "HR", "Manager")
 //                                .requestMatchers("/api/travel/gallery/upload-multiple").hasAnyAuthority("HR", "Employee") //Remove Employee form here just for testing
                                                 .anyRequest()
@@ -36,6 +40,7 @@ public class SecurityConfig {
                         )
                         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                         .cors(c -> c.configurationSource(customCorsConfiguration))
+                        .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthEntryPoint))
         );
         return http.build();
     }

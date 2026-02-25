@@ -7,9 +7,14 @@ import java.util.List;
 
 public interface IGameConfigService {
     List<GameResponse> getAllGames(long userId);
+
     GameResponse createGame(CreateGameReq createGameReq);
+
     void makeGameInactive(long gameId);
+
     GameResponse updateGame(long gameId, CreateGameReq updateGame);
+
     List<GameResponse> getAllActiveGames(long userId);
+
     GameResponse getGame(long gameId);
 }

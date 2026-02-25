@@ -6,7 +6,6 @@ import com.mycompany.hrms.service.dtos.DocResponse;
 import com.mycompany.hrms.service.exception.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +38,7 @@ public class DocController {
             case "Proof" -> "travel/proof";
             case "Gallery" -> "travel/gallery";
             case "Post" -> "post";
+            case "Profile" -> "Profile";
             default -> throw new BadRequestException("Invalid reason");
         };
         return ResponseEntity.ok(documentService.uploadDoc(doc, s));
@@ -55,6 +55,7 @@ public class DocController {
             case "Jd" -> "job/jd";
             case "Proof" -> "travel/proof";
             case "Gallery" -> "travel/gallery";
+            case "Profile" -> "Profile";
             default -> throw new BadRequestException("Invalid reason");
         };
         return ResponseEntity.ok(documentService.uploadMultipleFiles(files, s));

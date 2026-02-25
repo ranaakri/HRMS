@@ -2,15 +2,10 @@ package com.mycompany.hrms.api.controllers.post;
 
 import com.mycompany.hrms.service.dtos.post.request.CommentWarningReq;
 import com.mycompany.hrms.service.dtos.post.request.PostWarningReq;
-import com.mycompany.hrms.service.dtos.post.response.GetPostData;
 import com.mycompany.hrms.service.dtos.post.response.PostResponse;
 import com.mycompany.hrms.service.post.IWarningService;
-import com.mycompany.hrms.service.post.WarningService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

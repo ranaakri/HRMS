@@ -23,7 +23,7 @@ public class GameBookingController {
     private final IBookingService bookingService;
 
     @Autowired
-    public GameBookingController(IBookingService bookingService){
+    public GameBookingController(IBookingService bookingService) {
         this.bookingService = bookingService;
     }
 
@@ -32,8 +32,8 @@ public class GameBookingController {
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     @GetMapping("/get/user/{userId}/slot/{slotId}")
-    public ResponseEntity<SlotRequest.RequestStatus> getBookingStatus(@PathVariable long userId, @PathVariable long slotId){
-        return ResponseEntity.ok(bookingService.getBookingStatus(slotId,userId));
+    public ResponseEntity<SlotRequest.RequestStatus> getBookingStatus(@PathVariable long userId, @PathVariable long slotId) {
+        return ResponseEntity.ok(bookingService.getBookingStatus(slotId, userId));
     }
 
     @Operation(
@@ -41,8 +41,8 @@ public class GameBookingController {
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     @GetMapping("/check-booking/user/{userId}/slot/{slotId}")
-    public ResponseEntity<Boolean> checkBooking(@PathVariable long userId, @PathVariable long slotId){
-        return ResponseEntity.ok(bookingService.checkBooking(slotId,userId));
+    public ResponseEntity<Boolean> checkBooking(@PathVariable long userId, @PathVariable long slotId) {
+        return ResponseEntity.ok(bookingService.checkBooking(slotId, userId));
     }
 
     @Operation(
@@ -50,8 +50,8 @@ public class GameBookingController {
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     @GetMapping("/partners/user/{userId}/slot/{slotId}")
-    public ResponseEntity<List<CreatedByUser>> getBookingPartners(@PathVariable long userId, @PathVariable long slotId){
-        return ResponseEntity.ok(bookingService.getBookingPartners(userId,slotId));
+    public ResponseEntity<List<CreatedByUser>> getBookingPartners(@PathVariable long userId, @PathVariable long slotId) {
+        return ResponseEntity.ok(bookingService.getBookingPartners(userId, slotId));
     }
 
     @Operation(
@@ -59,7 +59,7 @@ public class GameBookingController {
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     @PostMapping("")
-    public ResponseEntity<Void> bookSlot(@Valid @RequestBody BookGameSlot bookGameSlot){
+    public ResponseEntity<Void> bookSlot(@Valid @RequestBody BookGameSlot bookGameSlot) {
         bookingService.bookSlot(bookGameSlot.getSlotId(), bookGameSlot.getRequestedBy(), bookGameSlot.getUserIds());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -69,7 +69,7 @@ public class GameBookingController {
     )
     @DeleteMapping("")
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
-    public ResponseEntity<Void> cancelSlot(@RequestBody DeleteSlotRequest deleteSlotRequest){
+    public ResponseEntity<Void> cancelSlot(@RequestBody DeleteSlotRequest deleteSlotRequest) {
         bookingService.cancelSlotRequest(deleteSlotRequest.getSlotId(), deleteSlotRequest.getRequestedBy());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -79,7 +79,7 @@ public class GameBookingController {
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
     @GetMapping("/{slotId}")
-    public ResponseEntity<List<UserPriorityRes>> getBookingList(@PathVariable long slotId){
+    public ResponseEntity<List<UserPriorityRes>> getBookingList(@PathVariable long slotId) {
         return ResponseEntity.ok(bookingService.getPriorityList(slotId));
     }
 }

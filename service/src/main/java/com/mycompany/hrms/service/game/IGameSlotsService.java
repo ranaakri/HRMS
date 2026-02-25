@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface IGameSlotsService {
     List<GameSlotResponse> getTodaySlots(long gameId);
+
     GameSlotResponse getSlotInfo(long slotId);
 }

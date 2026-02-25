@@ -32,7 +32,7 @@ public interface TravelingUserRepo extends JpaRepository<TravelingUser, Long> {
 
     @Query("SELECT u FROM TravelingUser u " +
             "LEFT JOIN FETCH u.travelDetails t " +
-            "LEFT JOIN FETCH t.createdBy c" +
+            "LEFT JOIN FETCH t.createdBy c " +
             "LEFT JOIN FETCH t.travelGallery g " +
             "WHERE u.user.userId = :id")
     List<TravelingUser> getTravelingUsersByUser_UserId(@Param("id") long id);

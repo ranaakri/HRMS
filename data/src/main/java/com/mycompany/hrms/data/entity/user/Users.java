@@ -47,7 +47,7 @@ public class Users {
     private ZonedDateTime joiningDate;
 
     @Column(nullable = true)
-    private String profileUrl;
+    private String profileUrl = "https://betterwaterquality.com/wp-content/uploads/2020/09/dummy-profile-pic-300x300-1-1.png";
 
     @Column(nullable = false)
     private boolean isActive;
@@ -57,6 +57,8 @@ public class Users {
 
     @Column(nullable = false)
     private ZonedDateTime updatedAt;
+
+    private String publicId;
 
     public Users(){
         updatedAt = ZonedDateTime.now();
@@ -335,5 +337,61 @@ public class Users {
     public void addLike(Post post) {
         this.postLikes.add(post);
         post.getLikes().add(this);
+    }
+
+    public String getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
+    }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
+    public Set<PostComments> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<PostComments> comments) {
+        this.comments = comments;
+    }
+
+    public Set<DeletedPost> getDeletedPosts() {
+        return deletedPosts;
+    }
+
+    public void setDeletedPosts(Set<DeletedPost> deletedPosts) {
+        this.deletedPosts = deletedPosts;
+    }
+
+    public Set<Warnings> getWarnings() {
+        return warnings;
+    }
+
+    public void setWarnings(Set<Warnings> warnings) {
+        this.warnings = warnings;
+    }
+
+    public Set<UserGameStats> getUserGameStats() {
+        return userGameStats;
+    }
+
+    public void setUserGameStats(Set<UserGameStats> userGameStats) {
+        this.userGameStats = userGameStats;
+    }
+
+    public Set<SlotRequest> getSlotRequests() {
+        return slotRequests;
+    }
+
+    public void setSlotRequests(Set<SlotRequest> slotRequests) {
+        this.slotRequests = slotRequests;
     }
 }

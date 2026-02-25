@@ -2,7 +2,6 @@ package com.mycompany.hrms.service.post;
 
 import com.mycompany.hrms.data.entity.post.Post;
 import com.mycompany.hrms.data.entity.post.PostComments;
-import com.mycompany.hrms.data.entity.user.Roles;
 import com.mycompany.hrms.data.entity.user.Users;
 import com.mycompany.hrms.data.repository.post.PostCommentsRepo;
 import com.mycompany.hrms.data.repository.post.PostRepo;
@@ -26,7 +25,6 @@ import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class PostService implements IPostService{

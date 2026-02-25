@@ -3,6 +3,8 @@ package com.mycompany.hrms.service.dtos.users.request;
 import com.mycompany.hrms.data.constant.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class UpdateUserProfileDto {
 
@@ -13,8 +15,10 @@ public class UpdateUserProfileDto {
     @Schema(example = "krish@gmail.com")
     private String email;
 
-    @Schema(example = "CEO")
-    private Constants.Designation designation;
+    @NotBlank
+    private String profileUrl;
+
+    private String publicId;
 
     public String getName() {
         return name;
@@ -32,11 +36,19 @@ public class UpdateUserProfileDto {
         this.email = email;
     }
 
-    public Constants.Designation getDesignation() {
-        return designation;
+    public String getProfileUrl() {
+        return profileUrl;
     }
 
-    public void setDesignation(Constants.Designation designation) {
-        this.designation = designation;
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
+    }
+
+    public String getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
     }
 }

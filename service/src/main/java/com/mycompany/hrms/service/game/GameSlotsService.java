@@ -17,27 +17,27 @@ import java.time.ZoneId;
 import java.util.List;
 
 @Service
-public class GameSlotsService implements IGameSlotsService{
+public class GameSlotsService implements IGameSlotsService {
 
     private final GameConfigRepo gameConfigRepo;
     private final GameSlotsRepo gameSlotsRepo;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public GameSlotsService(GameConfigRepo gameConfigRepo, GameSlotsRepo gameSlotsRepo, ModelMapper modelMapper){
+    public GameSlotsService(GameConfigRepo gameConfigRepo, GameSlotsRepo gameSlotsRepo, ModelMapper modelMapper) {
         this.gameConfigRepo = gameConfigRepo;
         this.gameSlotsRepo = gameSlotsRepo;
         this.modelMapper = modelMapper;
     }
 
-    public GameSlotResponse getSlotInfo(long slotId){
+    public GameSlotResponse getSlotInfo(long slotId) {
         GameSlots gameSlot = gameSlotsRepo.findById(slotId)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid slot id"));
         return modelMapper.map(gameSlot, GameSlotResponse.class);
     }
 
-    public List<GameSlotResponse> getTodaySlots(long gameId){
-        if(!gameConfigRepo.existsById(gameId))
+    public List<GameSlotResponse> getTodaySlots(long gameId) {
+        if (!gameConfigRepo.existsById(gameId))
             throw new ResourceNotFoundException("Game does not exist");
         ZoneId zoneId = ZoneId.of("Asia/Kolkata");
         LocalDate today = LocalDate.now(zoneId);

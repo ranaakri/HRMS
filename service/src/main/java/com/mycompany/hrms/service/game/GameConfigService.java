@@ -31,35 +31,20 @@ public class GameConfigService implements IGameConfigService {
         this.userGameStatesRepo = userGameStatesRepo;
     }
 
-    public GameResponse getGame(long gameId){
+    public GameResponse getGame(long gameId) {
         GameConfig game = gameConfigRepo.findById(gameId)
                 .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
         return modelMapper.map(game, GameResponse.class);
     }
 
-    public List<GameResponse> getAllActiveGames(long userId){
-        if(!usersRepo.existsById(userId))
+    public List<GameResponse> getAllActiveGames(long userId) {
+        if (!usersRepo.existsById(userId))
             throw new ResourceNotFoundException("User not found");
         return gameConfigRepo.findByIsActiveTrue().stream().map(val -> {
-            GameResponse res =  modelMapper.map(val, GameResponse.class);
-            UserGameStats gameStats = userGameStatesRepo.findByUser_UserIdAndGameConfig_GameId(userId, res.getGameId())
-                            .orElse(null);
-            if(gameStats == null)
-                res.setInterested(false);
-            else
-                res.setInterested(gameStats.isInterested());
-            return res;
-        }).toList();
-    }
-
-    public List<GameResponse> getAllGames(long userId){
-        if(!usersRepo.existsById(userId))
-            throw new ResourceNotFoundException("User not found");
-        return gameConfigRepo.findAll().stream().map(val -> {
-            GameResponse res =  modelMapper.map(val, GameResponse.class);
+            GameResponse res = modelMapper.map(val, GameResponse.class);
             UserGameStats gameStats = userGameStatesRepo.findByUser_UserIdAndGameConfig_GameId(userId, res.getGameId())
                     .orElse(null);
-            if(gameStats == null)
+            if (gameStats == null)
                 res.setInterested(false);
             else
                 res.setInterested(gameStats.isInterested());
@@ -67,11 +52,26 @@ public class GameConfigService implements IGameConfigService {
         }).toList();
     }
 
-    public GameResponse createGame(CreateGameReq createGameReq){
-        if(createGameReq.getMinPlayers() > createGameReq.getMaxPlayers()){
+    public List<GameResponse> getAllGames(long userId) {
+        if (!usersRepo.existsById(userId))
+            throw new ResourceNotFoundException("User not found");
+        return gameConfigRepo.findAll().stream().map(val -> {
+            GameResponse res = modelMapper.map(val, GameResponse.class);
+            UserGameStats gameStats = userGameStatesRepo.findByUser_UserIdAndGameConfig_GameId(userId, res.getGameId())
+                    .orElse(null);
+            if (gameStats == null)
+                res.setInterested(false);
+            else
+                res.setInterested(gameStats.isInterested());
+            return res;
+        }).toList();
+    }
+
+    public GameResponse createGame(CreateGameReq createGameReq) {
+        if (createGameReq.getMinPlayers() > createGameReq.getMaxPlayers()) {
             throw new BadRequestException("Minimum players can not be grater then maximum players");
         }
-        if(createGameReq.getOpenTime().compareTo(createGameReq.getCloseTime()) >= 10 ){
+        if (createGameReq.getOpenTime().compareTo(createGameReq.getCloseTime()) >= 10) {
             throw new BadRequestException("Minimum slot should be at least of 10 minutes");
         }
         GameConfig game = modelMapper.map(createGameReq, GameConfig.class);
@@ -79,13 +79,13 @@ public class GameConfigService implements IGameConfigService {
     }
 
     @Transactional
-    public GameResponse updateGame(long gameId, CreateGameReq updateGame){
+    public GameResponse updateGame(long gameId, CreateGameReq updateGame) {
         GameConfig game = gameConfigRepo.findById(gameId)
                 .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
-        if(updateGame.getMinPlayers() > updateGame.getMaxPlayers()){
+        if (updateGame.getMinPlayers() > updateGame.getMaxPlayers()) {
             throw new BadRequestException("Minimum players can not be grater then maximum players");
         }
-        if(updateGame.getOpenTime().compareTo(updateGame.getCloseTime()) >= 10 ){
+        if (updateGame.getOpenTime().compareTo(updateGame.getCloseTime()) >= 10) {
             throw new BadRequestException("Minimum slot should be at least of 10 minutes");
         }
         modelMapper.map(updateGame, game);
@@ -93,7 +93,7 @@ public class GameConfigService implements IGameConfigService {
     }
 
     @Transactional
-    public void makeGameInactive(long gameId){
+    public void makeGameInactive(long gameId) {
         GameConfig gameConfig = gameConfigRepo.findById(gameId)
                 .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
         gameConfig.setActive(false);

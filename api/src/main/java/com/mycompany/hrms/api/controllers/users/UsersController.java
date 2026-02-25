@@ -96,6 +96,7 @@ public class UsersController {
             description = "Update user profile"
     )
     @PatchMapping("/{userId}")
+    @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     public ResponseEntity<UpdatedUserProfileDto> updateUserProfile(@PathVariable long userId,@Valid @RequestBody UpdateUserProfileDto updateUserProfile) {
         return new ResponseEntity<>(usersService.updateUserProfile(userId, updateUserProfile), HttpStatus.OK);
     }

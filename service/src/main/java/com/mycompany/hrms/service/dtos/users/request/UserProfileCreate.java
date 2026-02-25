@@ -1,20 +1,37 @@
 package com.mycompany.hrms.service.dtos.users.request;
 
 import com.mycompany.hrms.data.constant.Constants;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 //import jakarta.validation.constraints.Email;
 //import jakarta.validation.constraints.NotEmpty;
 //import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class UserProfileCreate {
+
+    @NotBlank
     private String name;
+
+    @Email
+    @NotBlank
     private String email;
+
+    @NotBlank
     private String password;
     private Constants.Designation designation;
-    private Date joiningDate;
+    private ZonedDateTime joiningDate;
+
+    @NotNull
     private long departmentId;
+
+    @NotNull
     private long roleId;
+
+    private ZonedDateTime birthDate;
 
     public String getName() {
         return name;
@@ -48,12 +65,8 @@ public class UserProfileCreate {
         this.designation = designation;
     }
 
-    public Date getJoiningDate() {
+    public ZonedDateTime getJoiningDate() {
         return joiningDate;
-    }
-
-    public void setJoiningDate(Date joiningDate) {
-        this.joiningDate = joiningDate;
     }
 
     public long getDepartmentId() {
@@ -70,5 +83,17 @@ public class UserProfileCreate {
 
     public void setRoleId(long roleId) {
         this.roleId = roleId;
+    }
+
+    public void setJoiningDate(ZonedDateTime joiningDate) {
+        this.joiningDate = joiningDate;
+    }
+
+    public ZonedDateTime getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(ZonedDateTime birthDate) {
+        this.birthDate = birthDate;
     }
 }

@@ -4,7 +4,6 @@ import com.mycompany.hrms.service.dtos.job.request.CreateJobReq;
 import com.mycompany.hrms.service.dtos.job.request.UpdateJobReq;
 import com.mycompany.hrms.service.dtos.job.response.JobRes;
 import com.mycompany.hrms.service.jobs.IJobService;
-import com.mycompany.hrms.service.jobs.JobService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
 
@@ -69,7 +69,7 @@ public class JobController {
     @PreAuthorize("hasAuthority('HR')")
     @PostMapping(path = "/jd/{jobId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadJd(@RequestParam MultipartFile jdFile, @PathVariable long jobId){
-        return ResponseEntity.ok(jobService.uploadJd(jobId, jdFile));
+        return ResponseEntity.ok(HtmlUtils.htmlEscape(jobService.uploadJd(jobId, jdFile)));
     }
 
     @Operation(

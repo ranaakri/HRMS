@@ -7,8 +7,6 @@ import com.mycompany.hrms.service.dtos.post.response.PostLikeRes;
 import com.mycompany.hrms.service.dtos.post.response.PostResponse;
 import com.mycompany.hrms.service.post.IPostService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

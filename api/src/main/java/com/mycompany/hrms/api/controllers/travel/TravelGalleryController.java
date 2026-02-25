@@ -4,8 +4,6 @@ import com.mycompany.hrms.api.response.ApiResponse;
 import com.mycompany.hrms.service.dtos.travel.response.TravelGalleryRes;
 import com.mycompany.hrms.service.travel.ITravelGalleryService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.models.annotations.OpenAPI30;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -102,6 +102,9 @@ public class WarningService implements IWarningService{
         warning.setEntityType(Warnings.EntityType.COMMENT);
         warning.setEntityId(commentId);
 
+        Post post = deletedComment.getPost();
+        post.setCommentCount(post.getCommentCount()-1);
+
         warningsRepo.save(warning);
 
         deletedComment.setDeleted(true);

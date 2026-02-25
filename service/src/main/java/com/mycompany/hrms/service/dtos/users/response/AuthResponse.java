@@ -5,6 +5,7 @@ public class AuthResponse {
     private String email;
     private String role;
     private String name;
+    private String profileUrl;
 
     public String getName() {
         return name;
@@ -36,5 +37,13 @@ public class AuthResponse {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getProfileUrl() {
+        return profileUrl;
+    }
+
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
     }
 }
