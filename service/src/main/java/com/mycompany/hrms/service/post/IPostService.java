@@ -11,6 +11,7 @@ import com.mycompany.hrms.service.dtos.post.response.PostResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public interface IPostService {
@@ -28,4 +29,7 @@ public interface IPostService {
     void deletePost(DeletePost req);
     GetPostData getPostData(long postId);
     GetPostData updatePost(long postId, long userId, CreatePost update);
+    List<PostResponse> getPostByStartDateAndEndDate(long userId, ZonedDateTime startDate, ZonedDateTime endDate, Pageable pageable);
+    List<PostResponse> getPostByStartDateAndEndDateFiltered(long userId, ZonedDateTime startDate, ZonedDateTime endDate, Pageable pageable);
+    List<PostResponse> getAllMyPostDateFiltered(long userId, Pageable pageable , ZonedDateTime startDate, ZonedDateTime endDate);
 }

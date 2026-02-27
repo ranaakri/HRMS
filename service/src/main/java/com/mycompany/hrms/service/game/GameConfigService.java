@@ -38,8 +38,9 @@ public class GameConfigService implements IGameConfigService {
     }
 
     public List<GameResponse> getAllActiveGames(long userId) {
-        if (!usersRepo.existsById(userId))
-            throw new ResourceNotFoundException("User not found");
+        Users user = usersRepo.findById(userId)
+                .orElseThrow(() ->  new ResourceNotFoundException("User not found"));
+
         return gameConfigRepo.findByIsActiveTrue().stream().map(val -> {
             GameResponse res = modelMapper.map(val, GameResponse.class);
             UserGameStats gameStats = userGameStatesRepo.findByUser_UserIdAndGameConfig_GameId(userId, res.getGameId())
@@ -48,13 +49,18 @@ public class GameConfigService implements IGameConfigService {
                 res.setInterested(false);
             else
                 res.setInterested(gameStats.isInterested());
+            if (val.getLikedBy().contains(user))
+                res.setFavourite(true);
             return res;
         }).toList();
     }
 
+
+
     public List<GameResponse> getAllGames(long userId) {
-        if (!usersRepo.existsById(userId))
-            throw new ResourceNotFoundException("User not found");
+        Users user = usersRepo.findById(userId)
+                .orElseThrow(() ->  new ResourceNotFoundException("User not found"));
+
         return gameConfigRepo.findAll().stream().map(val -> {
             GameResponse res = modelMapper.map(val, GameResponse.class);
             UserGameStats gameStats = userGameStatesRepo.findByUser_UserIdAndGameConfig_GameId(userId, res.getGameId())
@@ -63,6 +69,8 @@ public class GameConfigService implements IGameConfigService {
                 res.setInterested(false);
             else
                 res.setInterested(gameStats.isInterested());
+            if (val.getLikedBy().contains(user))
+                res.setFavourite(true);
             return res;
         }).toList();
     }

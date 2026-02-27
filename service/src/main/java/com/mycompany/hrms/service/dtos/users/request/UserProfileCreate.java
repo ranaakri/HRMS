@@ -4,6 +4,7 @@ import com.mycompany.hrms.data.constant.Constants;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.aspectj.lang.annotation.Before;
 //import jakarta.validation.constraints.Email;
 //import jakarta.validation.constraints.NotEmpty;
 //import org.springframework.format.annotation.DateTimeFormat;
@@ -17,7 +18,6 @@ public class UserProfileCreate {
     private String name;
 
     @Email
-    @NotBlank
     private String email;
 
     @NotBlank
@@ -25,13 +25,13 @@ public class UserProfileCreate {
     private Constants.Designation designation;
     private ZonedDateTime joiningDate;
 
+    private ZonedDateTime birthdate;
+
     @NotNull
     private long departmentId;
 
     @NotNull
     private long roleId;
-
-    private ZonedDateTime birthDate;
 
     public String getName() {
         return name;
@@ -89,11 +89,11 @@ public class UserProfileCreate {
         this.joiningDate = joiningDate;
     }
 
-    public ZonedDateTime getBirthDate() {
-        return birthDate;
+    public ZonedDateTime getBirthdate() {
+        return birthdate;
     }
 
-    public void setBirthDate(ZonedDateTime birthDate) {
-        this.birthDate = birthDate;
+    public void setBirthdate(ZonedDateTime birthdate) {
+        this.birthdate = birthdate;
     }
 }

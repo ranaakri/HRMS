@@ -172,9 +172,6 @@ public class BookingService implements IBookingService {
         int max = Collections.max(priorities);
         int min = Collections.min(priorities);
 
-        if (average < 30) {
-            throw new BadRequestException("Priority is too low");
-        }
         if ((max - min) > 40) {
             throw new BadRequestException("Unfair grouping");
         }

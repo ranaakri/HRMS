@@ -149,4 +149,10 @@ public class GameSchedulingService {
         }
         finalBookingsRepo.saveAll(completed);
     }
+
+    public void generateSlots(){
+        if(gameSlotsRepo.existsSlotsForToday() == 0){
+            generateSlotsForToday();
+        }
+    }
 }

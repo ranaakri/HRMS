@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @RestController
@@ -51,8 +52,10 @@ public class PostController {
     )
     @GetMapping("/{userId}")
     @PreAuthorize("hasAnyAuthority('HR')")
-    public ResponseEntity<List<PostResponse>> getAllPost(@PathVariable long userId, @RequestParam int page){
+    public ResponseEntity<List<PostResponse>> getAllPost(@PathVariable long userId, @RequestParam int page, @RequestParam(required = false) ZonedDateTime startDate, @RequestParam(required = false) ZonedDateTime endDate){
         Pageable pageable = PageRequest.of(page, 5, Sort.by("createdAt").descending());
+        if(startDate != null && endDate != null)
+            return ResponseEntity.ok(postService.getPostByStartDateAndEndDate(userId, startDate, endDate, pageable));
         return ResponseEntity.ok(postService.getAllPost(pageable, userId));
     }
 
@@ -61,8 +64,10 @@ public class PostController {
     )
     @GetMapping("/filtered/{userId}")
     @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
-    public ResponseEntity<List<PostResponse>> getFilteredPost(@PathVariable long userId, @RequestParam int page){
+    public ResponseEntity<List<PostResponse>> getFilteredPost(@PathVariable long userId, @RequestParam int page, @RequestParam(required = false) ZonedDateTime startDate, @RequestParam(required = false) ZonedDateTime endDate){
         Pageable pageable = PageRequest.of(page, 5, Sort.by("createdAt").descending());
+        if(startDate != null && endDate != null)
+            return ResponseEntity.ok(postService.getPostByStartDateAndEndDateFiltered(userId, startDate, endDate, pageable));
         return ResponseEntity.ok(postService.getFilteredPost(pageable, userId));
     }
 
@@ -71,8 +76,10 @@ public class PostController {
     )
     @GetMapping("/my/{userId}")
     @PreAuthorize("hasAnyAuthority('HR', 'Employee','Manager')")
-    public ResponseEntity<List<PostResponse>> getAllPostPostedByMe(@PathVariable long userId, @RequestParam int page){
+    public ResponseEntity<List<PostResponse>> getAllPostPostedByMe(@PathVariable long userId, @RequestParam int page, @RequestParam(required = false) ZonedDateTime startDate, @RequestParam(required = false) ZonedDateTime endDate){
         Pageable pageable = PageRequest.of(page, 5, Sort.by("createdAt").descending());
+        if(startDate != null && endDate != null)
+            return ResponseEntity.ok(postService.getAllMyPostDateFiltered(userId, pageable, startDate, endDate));
         return ResponseEntity.ok(postService.getAllMyPost(pageable, userId));
     }
 

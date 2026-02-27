@@ -1,6 +1,7 @@
 package com.mycompany.hrms.api.controllers.users;
 
 import com.mycompany.hrms.service.dtos.users.DepartmentDto;
+import com.mycompany.hrms.service.dtos.users.request.AddDepartmentDto;
 import com.mycompany.hrms.service.users.DepartmentsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
@@ -41,8 +42,8 @@ public class DepartmentsController {
             summary = "Add new Department",
             description = "Add new department into the database"
     )
-    @PostMapping("/")
-    public ResponseEntity<DepartmentDto> addDepartment(@RequestBody DepartmentDto department){
+    @PostMapping("")
+    public ResponseEntity<DepartmentDto> addDepartment(@RequestBody AddDepartmentDto department){
         return new ResponseEntity<>(departmentsService.addDepartment(department), HttpStatus.CREATED);
     }
 

@@ -34,6 +34,8 @@ SELECT * FROM Users
             AND MONTH(SWITCHOFFSET(joiningDate, '+05:30')) = MONTH(SWITCHOFFSET(SYSDATETIMEOFFSET(), '+05:30'))""", nativeQuery = true)
     List<Users> findUserWithJoiningAnniversary();
 
+    boolean existsByDepartment_DepartmentId(Long departmentId);
+
 //    @Query(value = "WITH UppersCTE AS ( SELECT   userId, profileUrl, designation, assignedUnder, 0 AS level FROM users WHERE userId = :userId" +
 //            "    UNION ALL SELECT u.userId, u.profileUrl, u.designation, u.assignedUnder, cte.level + 1 FROM users u" +
 //            "    INNER JOIN UppersCTE cte ON u.userId = cte.assignedUnder" +

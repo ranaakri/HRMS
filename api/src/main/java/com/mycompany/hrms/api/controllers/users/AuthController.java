@@ -1,15 +1,13 @@
 package com.mycompany.hrms.api.controllers.users;
-
-import com.mycompany.hrms.api.response.ApiResponse;
 import com.mycompany.hrms.api.utils.JwtUtil;
 import com.mycompany.hrms.service.dtos.users.request.LoginRequest;
 import com.mycompany.hrms.service.dtos.users.response.AuthResponse;
 import com.mycompany.hrms.service.exception.BadRequestException;
+import com.mycompany.hrms.service.exception.UnAuthorizedException;
 import com.mycompany.hrms.service.users.UsersService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -20,8 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -29,6 +25,7 @@ public class AuthController {
     AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final UsersService usersService;
+    private final String JWT = "JWT_TOKEN";
 
     @Autowired
     public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UsersService usersService){
@@ -39,6 +36,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
+        if(usersService.isBlocked(loginRequest.getEmail()))
+            throw new UnAuthorizedException("User is blocked");
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(), loginRequest.getPassword()
@@ -47,11 +46,11 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) auth.getPrincipal();
         String token = jwtUtil.generateToken(userDetails.getUsername(), userDetails.getAuthorities().iterator().next().getAuthority());
         String refreshToken  = jwtUtil.generateRefreshToken(auth);
-        ResponseCookie cookie = ResponseCookie.from("JWT_TOKEN", token)
+        ResponseCookie cookie = ResponseCookie.from(JWT, token)
                 .httpOnly(true)
                 .path("/")
                 .secure(false)
-                .maxAge(60 * 60)
+                .maxAge(60 * (long)60)
                 .sameSite("Lax")
                 .build();
 
@@ -85,7 +84,7 @@ public class AuthController {
         String role = claims.get("role", String.class);
         String newAccessToken = jwtUtil.generateToken(userName, role);
 
-        ResponseCookie token = ResponseCookie.from("JWT_TOKEN", newAccessToken)
+        ResponseCookie token = ResponseCookie.from(JWT, newAccessToken)
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
@@ -99,7 +98,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletResponse response){
-        Cookie cookie = new Cookie("JWT_TOKEN", null);
+        Cookie cookie = new Cookie(JWT, null);
         cookie.setSecure(false);
         cookie.setHttpOnly(true);
         cookie.setPath("/");

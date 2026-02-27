@@ -1,28 +1,39 @@
 package com.mycompany.hrms.service.users;
 
+import com.mycompany.hrms.data.constant.Constants;
+import com.mycompany.hrms.data.entity.game.GameConfig;
+import com.mycompany.hrms.data.entity.game.GameSlots;
+import com.mycompany.hrms.data.entity.user.Departments;
+import com.mycompany.hrms.data.entity.user.Roles;
 import com.mycompany.hrms.data.entity.user.Users;
+import com.mycompany.hrms.data.repository.game.GameConfigRepo;
+import com.mycompany.hrms.data.repository.game.GameSlotsRepo;
 import com.mycompany.hrms.data.repository.users.DepartmentsRepo;
 import com.mycompany.hrms.data.repository.users.RolesRepo;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
-import com.mycompany.hrms.service.dtos.users.request.LoginRequest;
+import com.mycompany.hrms.service.dtos.game.response.GameSlotResponse;
 import com.mycompany.hrms.service.dtos.users.request.UpdateUserProfileDto;
+import com.mycompany.hrms.service.dtos.users.request.UpdateUserProfileHr;
 import com.mycompany.hrms.service.dtos.users.request.UserProfileCreate;
 import com.mycompany.hrms.service.dtos.users.response.*;
+import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.IErrorMessages;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UsersService implements IUserService {
@@ -32,6 +43,8 @@ public class UsersService implements IUserService {
     private final RolesRepo rolesRepo;
     private final DepartmentsRepo departmentsRepo;
     private final PasswordEncoder passwordEncoder;
+    private final GameSlotsRepo gameSlotsRepo;
+    private final GameConfigRepo gameConfigRepo;
 
     @Autowired
     public UsersService(
@@ -39,13 +52,32 @@ public class UsersService implements IUserService {
             ModelMapper modelMapper,
             RolesRepo rolesRepo,
             DepartmentsRepo departmentsRepo,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            GameSlotsRepo gameSlotsRepo,
+            GameConfigRepo gameConfigRepo
     ){
         this.usersRepo = usersRepo;
         this.modelMapper = modelMapper;
         this.rolesRepo = rolesRepo;
         this.departmentsRepo = departmentsRepo;
         this.passwordEncoder = passwordEncoder;
+        this.gameSlotsRepo = gameSlotsRepo;
+        this.gameConfigRepo = gameConfigRepo;
+    }
+
+    public List<UserProfileDto> getAllUserProfiles(Pageable pageable, Long department){
+        Page<Users> users = usersRepo.findAll(pageable);
+        if(department!=null){
+            return users.stream().filter(val -> val.getDepartment().getDepartmentId() == department).map(val -> modelMapper.map(val,UserProfileDto.class)).toList();
+        }else{
+            return users.stream().map(val -> modelMapper.map(val,UserProfileDto.class)).toList();
+        }
+    }
+
+    public UserProfileDto getUserProfileByUserId(long userId){
+        Users user = usersRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return modelMapper.map(user, UserProfileDto.class);
     }
 
     public UserProfileDto getUserProfileById(long userId){
@@ -61,6 +93,10 @@ public class UsersService implements IUserService {
     public List<UserListRes> getUsersListByName(String name){
         List<Users> users =usersRepo.findUsersByNameLike(name + "%");
         return users.stream().map(val -> modelMapper.map(val, UserListRes.class)).toList();
+    }
+
+    public List<String> getAllDesignations(){
+        return Arrays.stream(Constants.Designation.values()).map(Constants.Designation::name).collect(Collectors.toList());
     }
 
     public AuthResponse getUserRole(String email){
@@ -94,6 +130,62 @@ public class UsersService implements IUserService {
         return res;
     }
 
+    @Transactional
+    public void makeGameFavourite(long userId, long gameId){
+        Users user = usersRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        GameConfig game = gameConfigRepo.findById(gameId)
+                .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
+
+        if(user.getFavoriteGame() != null)
+            throw new BadRequestException("Favourite game already configured");
+        if(user.getFavoriteGame()!=null&&user.getFavoriteGame().getGameId() == gameId)
+            throw new BadRequestException("Already set as favourite game");
+        user.setFavoriteGame(game);
+        game.getLikedBy().add(user);
+    }
+    @Transactional
+    public void updateUserProfile(long userId, UpdateUserProfileHr updatedProfile){
+        Users user = usersRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Roles roles = rolesRepo.findById(updatedProfile.getRoleId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Invalid role type"));
+        Departments departments = departmentsRepo.findById(updatedProfile.getDepartmentId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Invalid department"));
+        user.setRole(roles);
+        user.setDepartment(departments);
+        user.setUpdatedAt(ZonedDateTime.now());
+        modelMapper.map(updatedProfile, user);
+    }
+
+    @Transactional
+    public void removeGameFromFavourite(long userId, long gameId){
+        Users user = usersRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        GameConfig game = gameConfigRepo.findById(gameId)
+                .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
+        if(user.getFavoriteGame().getGameId() != gameId)
+            throw new BadRequestException("Already set as favourite game");
+        if(user.getFavoriteGame() == null)
+            throw new BadRequestException("No favourite games");
+        user.setFavoriteGame(null);
+        if(game.getLikedBy().contains(user))
+            game.getLikedBy().remove(user);
+    }
+
+    public FavouriteGameResponse getSlotsOfFavouriteGame(long userId){
+        Users user = usersRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if(user.getFavoriteGame() == null)
+            throw new BadRequestException("Favourite game not configured yet");
+        List<GameSlots> upComingSlots = gameSlotsRepo.getTop5LatestSlots(user.getFavoriteGame().getGameId());
+        FavouriteGameResponse response = new FavouriteGameResponse();
+        response.setName(user.getFavoriteGame().getName());
+        response.setGameId(user.getFavoriteGame().getGameId());
+        response.setUpComingSlots(upComingSlots.stream().map(val -> modelMapper.map(val, GameSlotResponse.class)).toList());
+        return response;
+    }
+
     public List<OrgChartRes> getAssignedUnder(long userId){
         return usersRepo.findUsersByAssignedUnder_UserId(userId).stream().map(val -> modelMapper.map(val, OrgChartRes.class)).toList();
     }
@@ -110,8 +202,24 @@ public class UsersService implements IUserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found in database")));
         users.setDepartment(departmentsRepo.findById(userProfileCreate.getDepartmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found in database")));
+
+        long years = ChronoUnit.YEARS.between(userProfileCreate.getBirthdate(), ZonedDateTime.now());
+        if(years<18)
+            throw new BadRequestException("Invalid birthdate");
         users.setPassword(passwordEncoder.encode(userProfileCreate.getPassword()));
         return modelMapper.map(usersRepo.save(users), UserProfileCreated.class);
+    }
+
+    @Transactional
+    public void updateActiveStatus(long userId, boolean status){
+        Users users = usersRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        users.setActive(status);
+    }
+
+    public boolean isBlocked(String email){
+        return !usersRepo.findUsersByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found")).isActive();
     }
 
     @Transactional

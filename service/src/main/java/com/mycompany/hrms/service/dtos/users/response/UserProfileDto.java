@@ -2,6 +2,7 @@ package com.mycompany.hrms.service.dtos.users.response;
 
 import com.mycompany.hrms.data.constant.Constants;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class UserProfileDto {
@@ -12,15 +13,19 @@ public class UserProfileDto {
 
     private String email;
 
-    private String password;
-
     private Constants.Designation designation;
 
-    private Date joiningDate;
+    private ZonedDateTime birthdate;
+
+    private ZonedDateTime joiningDate;
 
     private String profileUrl;
 
     private boolean isActive;
+
+    private RoleResponse role;
+
+    private DepartmentResponse department;
 
     public long getUserId() {
         return userId;
@@ -46,14 +51,6 @@ public class UserProfileDto {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Constants.Designation getDesignation() {
         return designation;
     }
@@ -62,12 +59,12 @@ public class UserProfileDto {
         this.designation = designation;
     }
 
-    public Date getJoiningDate() {
-        return joiningDate;
+    public ZonedDateTime getBirthdate() {
+        return birthdate;
     }
 
-    public void setJoiningDate(Date joiningDate) {
-        this.joiningDate = joiningDate;
+    public ZonedDateTime getJoiningDate() {
+        return joiningDate;
     }
 
     public String getProfileUrl() {
@@ -84,5 +81,29 @@ public class UserProfileDto {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public void setBirthdate(ZonedDateTime birthdate) {
+        this.birthdate = birthdate;
+    }
+
+    public void setJoiningDate(ZonedDateTime joiningDate) {
+        this.joiningDate = joiningDate;
+    }
+
+    public RoleResponse getRole() {
+        return role;
+    }
+
+    public void setRole(RoleResponse role) {
+        this.role = role;
+    }
+
+    public DepartmentResponse getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(DepartmentResponse department) {
+        this.department = department;
     }
 }
