@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.ZonedDateTime;
+
 public interface PostRepo extends JpaRepository<Post, Long> {
 
     @Query(value = "SELECT CASE WHEN EXISTS ( " +
@@ -27,4 +29,7 @@ public interface PostRepo extends JpaRepository<Post, Long> {
     Page<Post> findAllByIsDeletedFalse(Pageable pageable);
 
     Page<Post> findAllByAuthor_UserIdAndIsDeletedFalse(long userId, Pageable pageable);
+
+    @Query(value = "select * from post where createdAt between :startDate and :endDate and isDeleted = 0", nativeQuery = true)
+    Page<Post> findAllBetweenStartDateAndEndDate(@Param("startDate")ZonedDateTime startDate, @Param("endDate")ZonedDateTime endDate, Pageable pageable);
 }

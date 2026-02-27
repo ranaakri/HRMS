@@ -226,4 +226,25 @@ public class EmailService {
             throw new InternalServerException("Error sending cancellation email");
         }
     }
+
+    public void sendAddedInTravelPlanEmail(List<Users> users) {
+
+        String subject = "Added in Travel Plan";
+
+        String body = "<html>" +
+                "<body>" +
+                "<p>Hi,</p>" +
+                "<p>You are added in new travel plan.</p>" +
+                "<p>You can check the details of plan in portal</p>" +
+                "<br>" +
+                "<p>Thank you.</p>" +
+                "</body>" +
+                "</html>";
+
+        try {
+            sendEmailMultiTos(users.stream().map(Users::getEmail).toList(), subject, body);
+        } catch (Exception ex) {
+            throw new InternalServerException("Error sending cancellation email");
+        }
+    }
 }

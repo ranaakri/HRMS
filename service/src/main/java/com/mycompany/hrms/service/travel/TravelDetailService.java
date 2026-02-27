@@ -9,6 +9,7 @@ import com.mycompany.hrms.service.dtos.travel.request.UpdateTravelDetailsReq;
 import com.mycompany.hrms.service.dtos.travel.response.CreatedByUser;
 import com.mycompany.hrms.service.dtos.travel.response.TravelDetailsRes;
 import com.mycompany.hrms.service.dtos.travel.response.TravelGalleryRes;
+import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.ForbiddenException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -65,6 +67,8 @@ public class TravelDetailService implements ITravelDetailsService{
         Users user = usersRepo.findById(travelDetails.getCreatedById())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found for created by"));
         details.setCreatedBy(user);
+        if(travelDetails.getStartDate().isBefore(ZonedDateTime.now()))
+            throw new BadRequestException("Invalid starting date");
         return travelDetailsMapper(travelDetailsRepo.save(details));
     }
 

@@ -22,6 +22,8 @@ public class GameResponse {
 
     private boolean isInterested;
 
+    private boolean isFavourite = false;
+
     public boolean isInterested() {
         return isInterested;
     }
@@ -92,5 +94,13 @@ public class GameResponse {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public boolean isFavourite() {
+        return isFavourite;
+    }
+
+    public void setFavourite(boolean favourite) {
+        isFavourite = favourite;
     }
 }

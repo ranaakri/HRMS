@@ -1,5 +1,6 @@
 package com.mycompany.hrms.data.repository.game;
 
+import com.mycompany.hrms.data.constant.SlotEventRes;
 import com.mycompany.hrms.data.entity.game.GameSlots;
 import com.mycompany.hrms.data.entity.game.SlotRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +19,15 @@ public interface SlotRequestRepo extends JpaRepository<SlotRequest, Long> {
                 DATEADD(MINUTE, 14, SYSDATETIMEOFFSET()) AND
                 DATEADD(MINUTE, 16, SYSDATETIMEOFFSET())""", nativeQuery = true)
     List<GameSlots> findSlotsStartingSoon();
+
+    @Query("SELECT new com.mycompany.hrms.data.constant.SlotEventRes(" +
+            "sl.requestId, gs.gameConfig.gameId, gs.startTime, gs.endTime, sl.status, gs.gameConfig.name) " +
+            "FROM RequestParticipants rp " +
+            "JOIN rp.request sl " +
+            "JOIN sl.gameSlots gs " +
+            "WHERE rp.user.userId = :userId")
+    List<SlotEventRes> findAllSlotRequest(@Param("userId") long userId);
+
 
     List<SlotRequest> findAllByGameSlots_SlotId(Long slotId);
 

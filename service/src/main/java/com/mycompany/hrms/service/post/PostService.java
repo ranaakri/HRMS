@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -61,11 +62,24 @@ public class PostService implements IPostService{
     }
 
     public List<PostResponse> getAllMyPost(Pageable pageable, long userId){
-        return postRepo.findAllByAuthor_UserIdAndIsDeletedFalse(userId, pageable).stream().map(val -> {
+        return postRepo.findAllByAuthor_UserIdAndIsDeletedFalse(userId, pageable)
+                .stream()
+                .map(val -> {
             PostResponse res = modelMapper.map(val, PostResponse.class);
             res.setLikedByMe(postRepo.likeExistsOnPostByUserIdAndPostId(userId, val.getPostId()));
             return res;
         }).toList();
+    }
+
+    public List<PostResponse> getAllMyPostDateFiltered(long userId, Pageable pageable , ZonedDateTime startDate, ZonedDateTime endDate){
+        return postRepo.findAllByAuthor_UserIdAndIsDeletedFalse(userId, pageable)
+                .stream()
+                .filter(val -> val.getCreatedAt().isAfter(startDate) && val.getCreatedAt().isBefore(endDate))
+                .map(val -> {
+                    PostResponse res = modelMapper.map(val, PostResponse.class);
+                    res.setLikedByMe(postRepo.likeExistsOnPostByUserIdAndPostId(userId, val.getPostId()));
+                    return res;
+                }).toList();
     }
 
     public List<PostResponse> getFilteredPost(Pageable pageable, long userId) {
@@ -75,9 +89,15 @@ public class PostService implements IPostService{
                 .getRole()
                 .getName().equals("Employee");
 
+        boolean isManager = usersRepo.findById(userId)
+                .orElseThrow(() -> new RequestRejectedException("User not found"))
+                .getRole()
+                .getName().equals("Manager");
+
         return postRepo.findAllByIsDeletedFalse(pageable)
                 .stream()
                 .filter(val -> !isEmp || val.isVisibleToEmp())
+                .filter(val -> !isManager || val.isVisibleToManager())
                 .map(val -> {
                     PostResponse res = modelMapper.map(val, PostResponse.class);
                     res.setLikedByMe(
@@ -86,6 +106,36 @@ public class PostService implements IPostService{
                     return res;
                 })
                 .toList();
+    }
+
+    public List<PostResponse> getPostByStartDateAndEndDateFiltered(long userId, ZonedDateTime startDate, ZonedDateTime endDate, Pageable pageable){
+        boolean isEmp = usersRepo.findById(userId)
+                .orElseThrow(() -> new RequestRejectedException("User not found"))
+                .getRole()
+                .getName().equals("Employee");
+
+        boolean isManager = usersRepo.findById(userId)
+                .orElseThrow(() -> new RequestRejectedException("User not found"))
+                .getRole()
+                .getName().equals("Manager");
+
+        return postRepo.findAllBetweenStartDateAndEndDate(startDate, endDate, pageable)
+                .stream()
+                .filter(val -> !isEmp || val.isVisibleToEmp())
+                .filter(val -> !isManager || val.isVisibleToManager())
+                .map(val -> {
+            PostResponse res = modelMapper.map(val, PostResponse.class);
+            res.setLikedByMe(postRepo.likeExistsOnPostByUserIdAndPostId(userId, val.getPostId()));
+            return res;
+        }).toList();
+    }
+
+    public List<PostResponse> getPostByStartDateAndEndDate(long userId, ZonedDateTime startDate, ZonedDateTime endDate, Pageable pageable){
+        return postRepo.findAllBetweenStartDateAndEndDate(startDate, endDate, pageable).stream().map(val -> {
+            PostResponse res = modelMapper.map(val, PostResponse.class);
+            res.setLikedByMe(postRepo.likeExistsOnPostByUserIdAndPostId(userId, val.getPostId()));
+            return res;
+        }).toList();
     }
 
     public List<PostLikeRes> getAllPostLikes(Long postId, int page, int size) {

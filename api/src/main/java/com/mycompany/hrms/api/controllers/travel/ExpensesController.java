@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @RestController
@@ -27,7 +28,9 @@ public class ExpensesController {
 
     @GetMapping("/{travelId}")
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
-    public ResponseEntity<List<ExpenseRes>> getListOfExpenseByTravelId(@PathVariable long travelId){
+    public ResponseEntity<List<ExpenseRes>> getListOfExpenseByTravelId(@PathVariable long travelId, @RequestParam(required = false) ZonedDateTime startDate, @RequestParam(required = false) ZonedDateTime endDate){
+        if(startDate!=null&&endDate!=null)
+            return ResponseEntity.ok(expenseService.getAllExpenseByTravelIdFiltered(travelId, startDate, endDate));
         return ResponseEntity.ok(expenseService.getAllExpenseByTravelId(travelId));
     }
 

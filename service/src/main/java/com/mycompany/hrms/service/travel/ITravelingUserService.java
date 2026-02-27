@@ -15,4 +15,5 @@ public interface ITravelingUserService {
     BudgetResponse getBudgetAndBalance(long userId, long travelId);
     List<TravelDetailsRes> getTravelPlansByForUser(long userId);
     List<TravelingUserRes> getTravelingUsersUnderManager(long travelId, long managerId);
+    TravelDetailsRes getNearestTravelPlan(long userId);
 }

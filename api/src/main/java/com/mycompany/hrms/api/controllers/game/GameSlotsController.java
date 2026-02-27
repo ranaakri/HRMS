@@ -1,5 +1,6 @@
 package com.mycompany.hrms.api.controllers.game;
 
+import com.mycompany.hrms.service.dtos.game.response.GameEventResponse;
 import com.mycompany.hrms.service.dtos.game.response.GameSlotResponse;
 import com.mycompany.hrms.service.game.IGameSlotsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +32,15 @@ public class GameSlotsController {
     @GetMapping("/{gameId}")
     public ResponseEntity<List<GameSlotResponse>> getTodaySlots(@PathVariable long gameId){
         return ResponseEntity.ok(gameSlotsService.getTodaySlots(gameId));
+    }
+
+    @Operation(
+            summary = "Get all event data"
+    )
+    @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
+    @GetMapping("/event-data/{userId}")
+    public ResponseEntity<GameEventResponse> getGameEventData(@PathVariable long userId){
+        return ResponseEntity.ok(gameSlotsService.getEventData(userId));
     }
 
     @Operation(

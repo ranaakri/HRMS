@@ -2,7 +2,10 @@ package com.mycompany.hrms.service.users;
 
 import com.mycompany.hrms.data.entity.user.Departments;
 import com.mycompany.hrms.data.repository.users.DepartmentsRepo;
+import com.mycompany.hrms.data.repository.users.UsersRepo;
 import com.mycompany.hrms.service.dtos.users.DepartmentDto;
+import com.mycompany.hrms.service.dtos.users.request.AddDepartmentDto;
+import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +18,16 @@ public class DepartmentsService implements IDepartmentService{
 
     private final DepartmentsRepo departmentsRepo;
     private final ModelMapper modelMapper;
+    private final UsersRepo usersRepo;
 
     @Autowired
-    public DepartmentsService(ModelMapper modelMapper, DepartmentsRepo departmentsRepo){
+    public DepartmentsService(ModelMapper modelMapper, DepartmentsRepo departmentsRepo, UsersRepo usersRepo){
         this.departmentsRepo = departmentsRepo;
         this.modelMapper = modelMapper;
+        this.usersRepo = usersRepo;
     }
 
-    public DepartmentDto addDepartment(DepartmentDto department){
+    public DepartmentDto addDepartment(AddDepartmentDto department){
         Departments data = modelMapper.map(department, Departments.class);
         return modelMapper.map(departmentsRepo.save(data), DepartmentDto.class);
     }
@@ -48,8 +53,11 @@ public class DepartmentsService implements IDepartmentService{
     }
 
     public void deleteDepartment(long departmentId){
-        if(departmentsRepo.existsById(departmentId)){
+        if(!departmentsRepo.existsById(departmentId)){
             throw new ResourceNotFoundException("Department not found");
+        }
+        if(usersRepo.existsByDepartment_DepartmentId(departmentId)){
+            throw new BadRequestException("Some user currently have this department, please remove them first");
         }
         departmentsRepo.deleteById(departmentId);
     }

@@ -72,6 +72,26 @@ public class ExpenseService implements IExpenseService {
                 .toList();
     }
 
+    public List<ExpenseRes> getAllExpenseByTravelIdFiltered(long travelId, ZonedDateTime startDate, ZonedDateTime endDate) {
+
+        List<Expenses> expenses =
+                expensesRepo.findWithSplitsByTravelDetails_TravelId(travelId);
+
+        if(!expenses.isEmpty()) {
+            expensesRepo.findWithProofsByTravelDetails_TravelId(travelId);
+        }
+
+        return expenses.stream()
+                .filter(val -> val.getExpenseDate().isAfter(startDate) && val.getExpenseDate().isBefore(endDate))
+                .map(expense -> {
+                    ExpenseRes res = modelMapper.map(expense, ExpenseRes.class);
+                    if(res.getExpensesProofs().isEmpty())
+                        res.setExpensesProofs(List.of());
+                    return res;
+                })
+                .toList();
+    }
+
     public List<ExpenseRes> getMyExpenses(long travelId, long userId){
         List<Expenses> myExpenses = expensesRepo.getAllByTravelDetails_TravelIdAndExpensesSplits_TravelingUser_User_UserId(travelId, userId);
         if(!myExpenses.isEmpty()) {

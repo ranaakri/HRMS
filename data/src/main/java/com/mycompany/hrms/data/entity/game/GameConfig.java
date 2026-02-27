@@ -2,6 +2,7 @@ package com.mycompany.hrms.data.entity.game;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.mycompany.hrms.data.entity.user.Users;
 import jakarta.persistence.*;
 
 import java.time.LocalTime;
@@ -40,6 +41,9 @@ public class GameConfig {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "gameConfig")
     private Set<GameSlots> gameSlots;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "favoriteGame")
+    private Set<Users> likedBy;
 
     public long getGameId() {
         return gameId;
@@ -119,5 +123,13 @@ public class GameConfig {
 
     public void setGameSlots(Set<GameSlots> gameSlots) {
         this.gameSlots = gameSlots;
+    }
+
+    public Set<Users> getLikedBy() {
+        return likedBy;
+    }
+
+    public void setLikedBy(Set<Users> likedBy) {
+        this.likedBy = likedBy;
     }
 }

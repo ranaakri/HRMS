@@ -1,5 +1,6 @@
 package com.mycompany.hrms.data.repository.travel;
 
+import com.mycompany.hrms.data.entity.travel.TravelDetails;
 import com.mycompany.hrms.data.entity.travel.TravelGallery;
 import com.mycompany.hrms.data.entity.travel.TravelingUser;
 import com.mycompany.hrms.data.entity.user.Users;

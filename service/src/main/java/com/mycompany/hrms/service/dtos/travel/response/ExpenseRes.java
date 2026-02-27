@@ -15,7 +15,7 @@ public class ExpenseRes {
 
     private Constants.Category category;
 
-    private Date expenseDate;
+    private ZonedDateTime expenseDate;
 
     private long uploadedByUserId;
 
@@ -73,11 +73,11 @@ public class ExpenseRes {
         this.category = category;
     }
 
-    public Date getExpenseDate() {
+    public ZonedDateTime getExpenseDate() {
         return expenseDate;
     }
 
-    public void setExpenseDate(Date expenseDate) {
+    public void setExpenseDate(ZonedDateTime expenseDate) {
         this.expenseDate = expenseDate;
     }
 

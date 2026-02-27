@@ -3,6 +3,7 @@ package com.mycompany.hrms.data.entity.user;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.mycompany.hrms.data.constant.Constants;
+import com.mycompany.hrms.data.entity.game.GameConfig;
 import com.mycompany.hrms.data.entity.game.SlotRequest;
 import com.mycompany.hrms.data.entity.game.UserGameStats;
 import com.mycompany.hrms.data.entity.job.JobShared;
@@ -50,7 +51,7 @@ public class Users {
     private String profileUrl = "https://betterwaterquality.com/wp-content/uploads/2020/09/dummy-profile-pic-300x300-1-1.png";
 
     @Column(nullable = false)
-    private boolean isActive;
+    private boolean isActive = true;
 
     @Column(nullable = false)
     private ZonedDateTime createdAt;
@@ -59,6 +60,10 @@ public class Users {
     private ZonedDateTime updatedAt;
 
     private String publicId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gameId")
+    private GameConfig favoriteGame;
 
     public Users(){
         updatedAt = ZonedDateTime.now();
@@ -393,5 +398,13 @@ public class Users {
 
     public void setSlotRequests(Set<SlotRequest> slotRequests) {
         this.slotRequests = slotRequests;
+    }
+
+    public GameConfig getFavoriteGame() {
+        return favoriteGame;
+    }
+
+    public void setFavoriteGame(GameConfig favoriteGame) {
+        this.favoriteGame = favoriteGame;
     }
 }

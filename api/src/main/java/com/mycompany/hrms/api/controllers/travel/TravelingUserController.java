@@ -55,6 +55,15 @@ public class TravelingUserController {
     }
 
     @Operation(
+            summary = "Get nearest Travel plan"
+    )
+    @GetMapping("/nearest/{userId}")
+    @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
+    public ResponseEntity<TravelDetailsRes> getNearestTravelPlan(@PathVariable long userId){
+        return ResponseEntity.ok(travelingUserService.getNearestTravelPlan(userId));
+    }
+
+    @Operation(
             summary = "Get users under userId"
     )
     @GetMapping("/assign-under/user/{userId}/travel/{travelId}")

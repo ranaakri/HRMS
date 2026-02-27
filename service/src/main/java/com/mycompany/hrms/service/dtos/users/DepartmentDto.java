@@ -2,8 +2,17 @@ package com.mycompany.hrms.service.dtos.users;
 
 public class DepartmentDto {
 
+    private long departmentId;
     private String name;
     private String description;
+
+    public long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(long departmentId) {
+        this.departmentId = departmentId;
+    }
 
     public String getName() {
         return name;
