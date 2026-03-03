@@ -23,6 +23,7 @@ import java.util.List;
 public class PostController {
 
     private final IPostService postService;
+    private static final String SORT_BY = "createdAt";
 
     public PostController(IPostService postService) {
         this.postService = postService;
@@ -53,10 +54,21 @@ public class PostController {
     @GetMapping("/{userId}")
     @PreAuthorize("hasAnyAuthority('HR')")
     public ResponseEntity<List<PostResponse>> getAllPost(@PathVariable long userId, @RequestParam int page, @RequestParam(required = false) ZonedDateTime startDate, @RequestParam(required = false) ZonedDateTime endDate){
-        Pageable pageable = PageRequest.of(page, 5, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(SORT_BY).descending());
         if(startDate != null && endDate != null)
             return ResponseEntity.ok(postService.getPostByStartDateAndEndDate(userId, startDate, endDate, pageable));
         return ResponseEntity.ok(postService.getAllPost(pageable, userId));
+    }
+
+    @Operation(
+            summary = "Get all by Tags"
+    )
+    @GetMapping("/tags/{userId}")
+    @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
+    public ResponseEntity<List<PostResponse>> getAllPostByTags(@PathVariable long userId, @RequestParam int page, @RequestParam(required = false) String tag){
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(SORT_BY).descending());
+
+        return ResponseEntity.ok(postService.getPostByTags(pageable, tag, userId));
     }
 
     @Operation(
@@ -65,7 +77,7 @@ public class PostController {
     @GetMapping("/filtered/{userId}")
     @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
     public ResponseEntity<List<PostResponse>> getFilteredPost(@PathVariable long userId, @RequestParam int page, @RequestParam(required = false) ZonedDateTime startDate, @RequestParam(required = false) ZonedDateTime endDate){
-        Pageable pageable = PageRequest.of(page, 5, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(SORT_BY).descending());
         if(startDate != null && endDate != null)
             return ResponseEntity.ok(postService.getPostByStartDateAndEndDateFiltered(userId, startDate, endDate, pageable));
         return ResponseEntity.ok(postService.getFilteredPost(pageable, userId));
@@ -77,7 +89,7 @@ public class PostController {
     @GetMapping("/my/{userId}")
     @PreAuthorize("hasAnyAuthority('HR', 'Employee','Manager')")
     public ResponseEntity<List<PostResponse>> getAllPostPostedByMe(@PathVariable long userId, @RequestParam int page, @RequestParam(required = false) ZonedDateTime startDate, @RequestParam(required = false) ZonedDateTime endDate){
-        Pageable pageable = PageRequest.of(page, 5, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(SORT_BY).descending());
         if(startDate != null && endDate != null)
             return ResponseEntity.ok(postService.getAllMyPostDateFiltered(userId, pageable, startDate, endDate));
         return ResponseEntity.ok(postService.getAllMyPost(pageable, userId));

@@ -1,6 +1,7 @@
 package com.mycompany.hrms.service.dtos.users.response;
 
 import com.mycompany.hrms.data.constant.Constants;
+import com.mycompany.hrms.service.dtos.travel.response.CreatedByUser;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -26,6 +27,8 @@ public class UserProfileDto {
     private RoleResponse role;
 
     private DepartmentResponse department;
+
+    private CreatedByUser assignedUnder;
 
     public long getUserId() {
         return userId;
@@ -105,5 +108,13 @@ public class UserProfileDto {
 
     public void setDepartment(DepartmentResponse department) {
         this.department = department;
+    }
+
+    public CreatedByUser getAssignedUnder() {
+        return assignedUnder;
+    }
+
+    public void setAssignedUnder(CreatedByUser assignedUnder) {
+        this.assignedUnder = assignedUnder;
     }
 }

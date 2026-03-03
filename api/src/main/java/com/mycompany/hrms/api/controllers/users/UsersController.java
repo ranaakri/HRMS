@@ -7,7 +7,6 @@ import com.mycompany.hrms.service.dtos.users.response.*;
 import com.mycompany.hrms.service.users.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -153,6 +152,16 @@ public class UsersController {
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     public ResponseEntity<Void> deleteFavGame(@PathVariable long userId, @PathVariable long gameId){
         usersService.removeGameFromFavourite(userId, gameId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Remove user"
+    )
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("hasAnyAuthority('HR')")
+    public ResponseEntity<Void> deleteUser(@PathVariable long userId){
+        usersService.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

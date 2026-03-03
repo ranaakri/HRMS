@@ -24,7 +24,8 @@ public class RoleController {
     }
 
     @Operation(
-            summary = "Get list of roles"
+            summary = "Get list of roles",
+            description = "Returns list of roles"
     )
     @PreAuthorize("hasAnyAuthority('HR')")
     @GetMapping("/list")

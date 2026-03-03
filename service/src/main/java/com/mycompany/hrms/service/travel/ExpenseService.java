@@ -25,6 +25,8 @@ import java.util.List;
 @Service
 public class ExpenseService implements IExpenseService {
 
+    private static final String EXPENSE_NOT_FOUND = "Expense not found";
+
     private final ExpensesRepo expensesRepo;
     private final TravelDetailsRepo travelDetailsRepo;
     private final UsersRepo usersRepo;
@@ -107,7 +109,7 @@ public class ExpenseService implements IExpenseService {
 
     public ExpenseRes getExpenseByExpenseId(long expenseId){
         Expenses expenses = expensesRepo.getExpensesByExpenseId(expenseId)
-                .orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(EXPENSE_NOT_FOUND));
         return modelMapper.map(expenses, ExpenseRes.class);
     }
 
@@ -194,7 +196,7 @@ public class ExpenseService implements IExpenseService {
     @Transactional
     public Constants.ExpenseStatus changeExpenseStatus(long expenseId, Constants.ExpenseStatus expenseStatus, String remarks){
         Expenses expenses = expensesRepo.findById(expenseId)
-                .orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(EXPENSE_NOT_FOUND));
 
         switch (expenseStatus){
             case APPROVED:
@@ -250,7 +252,7 @@ public class ExpenseService implements IExpenseService {
     @Transactional
     public void deleteExpense(long expenseId){
         Expenses expenses = expensesRepo.findById(expenseId)
-                .orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(EXPENSE_NOT_FOUND));
 
         if(expenses.getStatus().equals(Constants.ExpenseStatus.APPROVED.toString()))
             throw new BadRequestException("Can not delete Approved Expense");

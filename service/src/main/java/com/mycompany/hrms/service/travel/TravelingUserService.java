@@ -1,6 +1,5 @@
 package com.mycompany.hrms.service.travel;
 
-import com.mycompany.hrms.data.entity.travel.Expenses;
 import com.mycompany.hrms.data.entity.travel.TravelDetails;
 import com.mycompany.hrms.data.entity.travel.TravelingUser;
 import com.mycompany.hrms.data.entity.user.Users;
@@ -17,11 +16,9 @@ import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.BusinessException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import com.mycompany.hrms.service.notification.NotificationService;
-import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -105,7 +102,7 @@ public class TravelingUserService implements ITravelingUserService{
         } catch (Exception e) {
             throw new BusinessException("Insufficient budget: Assignment exceeds total travel budget.");
         }
-        List<Long> userIds = travelingUsers.getUsers().stream().map(val -> val.getUserId()).toList();
+        List<Long> userIds = travelingUsers.getUsers().stream().map(TravelingUserReq::getUserId).toList();
         List<Users> usersList = usersRepo.findAllById(userIds);
         notificationService.addNotification(usersList, "ADDED_IN_TRAVEL", "");
         emailService.sendAddedInTravelPlanEmail(usersList);

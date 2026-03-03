@@ -26,6 +26,9 @@ public class ExpensesController {
         this.expenseService = expenseService;
     }
 
+    @Operation(
+            summary = "Get list of expenses by travel id"
+    )
     @GetMapping("/{travelId}")
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     public ResponseEntity<List<ExpenseRes>> getListOfExpenseByTravelId(@PathVariable long travelId, @RequestParam(required = false) ZonedDateTime startDate, @RequestParam(required = false) ZonedDateTime endDate){

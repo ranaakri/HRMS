@@ -31,7 +31,7 @@ public class JobController {
             summary = "Get job by id"
     )
     @GetMapping("/{jobId}")
-    @PreAuthorize("hasAnyAuthority('HR', 'Eployee', 'Manager')")
+    @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     public ResponseEntity<JobRes> getJobById(@PathVariable long jobId){
         return ResponseEntity.ok(jobService.findJobById(jobId));
     }
@@ -52,6 +52,15 @@ public class JobController {
     @GetMapping("")
     public ResponseEntity<List<JobRes>> getJobs(){
         return ResponseEntity.ok(jobService.listAllJobs());
+    }
+
+    @Operation(
+            summary = "Get Latest"
+    )
+    @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
+    @GetMapping("/latest")
+    public ResponseEntity<List<JobRes>> getLatestJobs(){
+        return ResponseEntity.ok(jobService.listLatestJobOpenings());
     }
 
     @Operation(

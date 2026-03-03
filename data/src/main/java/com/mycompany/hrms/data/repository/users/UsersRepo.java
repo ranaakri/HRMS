@@ -36,6 +36,9 @@ SELECT * FROM Users
 
     boolean existsByDepartment_DepartmentId(Long departmentId);
 
+    @Query(value = "EXEC dbo.CheckUserAssignment @UserId = :userId, @AssignedUnderId = :assignedUnder", nativeQuery = true)
+    boolean checkUserAssign(@Param("userId") long userId, @Param("assignedUnder") long assignedUnder);
+
 //    @Query(value = "WITH UppersCTE AS ( SELECT   userId, profileUrl, designation, assignedUnder, 0 AS level FROM users WHERE userId = :userId" +
 //            "    UNION ALL SELECT u.userId, u.profileUrl, u.designation, u.assignedUnder, cte.level + 1 FROM users u" +
 //            "    INNER JOIN UppersCTE cte ON u.userId = cte.assignedUnder" +

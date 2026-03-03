@@ -30,6 +30,8 @@ public interface PostRepo extends JpaRepository<Post, Long> {
 
     Page<Post> findAllByAuthor_UserIdAndIsDeletedFalse(long userId, Pageable pageable);
 
+    Page<Post> findAllByTagsContainingAndIsDeletedFalse(String tag, Pageable pageable);
+
     @Query(value = "select * from post where createdAt between :startDate and :endDate and isDeleted = 0", nativeQuery = true)
     Page<Post> findAllBetweenStartDateAndEndDate(@Param("startDate")ZonedDateTime startDate, @Param("endDate")ZonedDateTime endDate, Pageable pageable);
 }

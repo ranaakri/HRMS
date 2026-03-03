@@ -15,11 +15,12 @@ import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,8 +48,8 @@ public class TravelDetailService implements ITravelDetailsService{
         return travelDetails.stream().map(this::travelDetailsMapper).toList();
     }
 
-    public List<TravelDetailsRes> getTravels(){
-        List<TravelDetails> travelDetails = travelDetailsRepo.findAll(Sort.by("startDate").descending());
+    public List<TravelDetailsRes> getTravels(Pageable pageable){
+        Page<TravelDetails> travelDetails = travelDetailsRepo.findAll(pageable);
         return travelDetails.stream().map(this::travelDetailsMapper).toList();
     }
 
@@ -69,6 +70,8 @@ public class TravelDetailService implements ITravelDetailsService{
         details.setCreatedBy(user);
         if(travelDetails.getStartDate().isBefore(ZonedDateTime.now()))
             throw new BadRequestException("Invalid starting date");
+        if(travelDetails.getTotalExpense() > travelDetails.getAssignedBudget())
+            throw new BadRequestException("Total expense should not be grater then assigned budget");
         return travelDetailsMapper(travelDetailsRepo.save(details));
     }
 
@@ -78,6 +81,12 @@ public class TravelDetailService implements ITravelDetailsService{
                 .orElseThrow(() -> new ResourceNotFoundException("Travel details not found"));
         if(details.getCreatedBy().getUserId() != travelDetailsReq.getUpdatedBy())
             throw new ForbiddenException("Unauthorized Action, Can not update travel details");
+        if(travelDetailsReq.getStartDate().isBefore(ZonedDateTime.now()))
+            throw new BadRequestException("Can not set start date before current time");
+        if(travelDetailsReq.getEndDate().isBefore(ZonedDateTime.now()))
+            throw new BadRequestException("Can not set end date before current time");
+        if(travelDetailsReq.getTotalExpense() > travelDetailsReq.getAssignedBudget())
+            throw new BadRequestException("Total expense should not be grater then assigned budget");
         modelMapper.map(travelDetailsReq, details);
         return modelMapper.map(travelDetailsRepo.save(details), TravelDetailsRes.class);
     }

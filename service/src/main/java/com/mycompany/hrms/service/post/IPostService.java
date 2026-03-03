@@ -8,7 +8,6 @@ import com.mycompany.hrms.service.dtos.post.response.CommentsRes;
 import com.mycompany.hrms.service.dtos.post.response.GetPostData;
 import com.mycompany.hrms.service.dtos.post.response.PostLikeRes;
 import com.mycompany.hrms.service.dtos.post.response.PostResponse;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.ZonedDateTime;
@@ -32,4 +31,5 @@ public interface IPostService {
     List<PostResponse> getPostByStartDateAndEndDate(long userId, ZonedDateTime startDate, ZonedDateTime endDate, Pageable pageable);
     List<PostResponse> getPostByStartDateAndEndDateFiltered(long userId, ZonedDateTime startDate, ZonedDateTime endDate, Pageable pageable);
     List<PostResponse> getAllMyPostDateFiltered(long userId, Pageable pageable , ZonedDateTime startDate, ZonedDateTime endDate);
+    List<PostResponse> getPostByTags(Pageable pageable, String tags, long userId);
 }

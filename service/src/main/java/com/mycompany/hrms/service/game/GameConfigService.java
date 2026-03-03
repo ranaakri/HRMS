@@ -24,6 +24,8 @@ public class GameConfigService implements IGameConfigService {
     private final UsersRepo usersRepo;
     private final UserGameStatesRepo userGameStatesRepo;
 
+    private static final String GAME_NOT_FOUND = "Game not found";
+
     public GameConfigService(ModelMapper modelMapper, GameConfigRepo gameConfigRepo, UsersRepo usersRepo, UserGameStatesRepo userGameStatesRepo) {
         this.modelMapper = modelMapper;
         this.gameConfigRepo = gameConfigRepo;
@@ -33,7 +35,7 @@ public class GameConfigService implements IGameConfigService {
 
     public GameResponse getGame(long gameId) {
         GameConfig game = gameConfigRepo.findById(gameId)
-                .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(GAME_NOT_FOUND));
         return modelMapper.map(game, GameResponse.class);
     }
 
@@ -89,7 +91,7 @@ public class GameConfigService implements IGameConfigService {
     @Transactional
     public GameResponse updateGame(long gameId, CreateGameReq updateGame) {
         GameConfig game = gameConfigRepo.findById(gameId)
-                .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(GAME_NOT_FOUND));
         if (updateGame.getMinPlayers() > updateGame.getMaxPlayers()) {
             throw new BadRequestException("Minimum players can not be grater then maximum players");
         }
@@ -103,7 +105,7 @@ public class GameConfigService implements IGameConfigService {
     @Transactional
     public void makeGameInactive(long gameId) {
         GameConfig gameConfig = gameConfigRepo.findById(gameId)
-                .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(GAME_NOT_FOUND));
         gameConfig.setActive(false);
     }
 }

@@ -1,6 +1,7 @@
 package com.mycompany.hrms.service.game;
 
 import com.mycompany.hrms.data.entity.game.SlotRequest;
+import com.mycompany.hrms.service.dtos.game.response.GameStatusResponse;
 import com.mycompany.hrms.service.dtos.game.response.UserPriorityRes;
 import com.mycompany.hrms.service.dtos.travel.response.CreatedByUser;
 
@@ -16,7 +17,7 @@ public interface IBookingService {
 
     boolean checkBooking(long slotId, long userId);
 
-    SlotRequest.RequestStatus getBookingStatus(long slotId, long userId);
+    GameStatusResponse getBookingStatus(long slotId, long userId);
 
     List<CreatedByUser> getBookingPartners(long userId, long slotId);
 }

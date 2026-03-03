@@ -11,7 +11,6 @@ import com.mycompany.hrms.data.repository.users.UsersRepo;
 import com.mycompany.hrms.service.dtos.notification.response.NotificationRes;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +51,8 @@ public class NotificationService implements INotificationService{
     }
 
     public List<NotificationRes> getUnreadNotifications(long userId){
+        if(!usersRepo.existsById(userId))
+            throw new ResourceNotFoundException("User not found");
         List<NotificationReceivers> received = receiversRepo.findNotificationReceiversByUser_UserIdAndIsRead(userId, false);
         List<NotificationRes> response = new ArrayList<>();
         for(NotificationReceivers r : received){

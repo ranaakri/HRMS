@@ -407,4 +407,5 @@ public class Users {
     public void setFavoriteGame(GameConfig favoriteGame) {
         this.favoriteGame = favoriteGame;
     }
+
 }

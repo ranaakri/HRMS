@@ -14,4 +14,6 @@ public interface JobRepo extends JpaRepository<Jobs, Long> {
     List<Jobs> findAllByStatus(Constants.JobDataStatus status);
     @Query("SELECT j FROM Jobs j LEFT JOIN FETCH j.cvReviewers WHERE j.id = :id")
     Optional<Jobs> findByIdWithReviewers(@Param("id") Long id);
+
+    List<Jobs> findAllByCvReviewers_UserIdAndStatus(long userId, Constants.JobDataStatus status);
 }

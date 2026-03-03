@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UsersService implements IUserService {
@@ -76,12 +75,6 @@ public class UsersService implements IUserService {
 
     public UserProfileDto getUserProfileByUserId(long userId){
         Users user = usersRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return modelMapper.map(user, UserProfileDto.class);
-    }
-
-    public UserProfileDto getUserProfileById(long userId){
-        Users user = usersRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND));
         return modelMapper.map(user, UserProfileDto.class);
     }
@@ -96,12 +89,12 @@ public class UsersService implements IUserService {
     }
 
     public List<String> getAllDesignations(){
-        return Arrays.stream(Constants.Designation.values()).map(Constants.Designation::name).collect(Collectors.toList());
+        return Arrays.stream(Constants.Designation.values()).map(Constants.Designation::name).toList();
     }
 
     public AuthResponse getUserRole(String email){
         Users user = usersRepo.findUsersByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND));
         AuthResponse response = modelMapper.map(user, AuthResponse.class);
         response.setRole(user.getRole().getName());
         return response;
@@ -109,7 +102,7 @@ public class UsersService implements IUserService {
 
     public OrgChartRes getOrgChart(long userId){
         Users user = usersRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND));
         OrgChartRes res = modelMapper.map(user, OrgChartRes.class);
         if(user.getAssignedUnder()!=null)
             res.setAssignedUnder(user.getAssignedUnder().getUserId());
@@ -133,7 +126,7 @@ public class UsersService implements IUserService {
     @Transactional
     public void makeGameFavourite(long userId, long gameId){
         Users user = usersRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND));
         GameConfig game = gameConfigRepo.findById(gameId)
                 .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
 
@@ -147,21 +140,27 @@ public class UsersService implements IUserService {
     @Transactional
     public void updateUserProfile(long userId, UpdateUserProfileHr updatedProfile){
         Users user = usersRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND));
         Roles roles = rolesRepo.findById(updatedProfile.getRoleId())
                         .orElseThrow(() -> new ResourceNotFoundException("Invalid role type"));
         Departments departments = departmentsRepo.findById(updatedProfile.getDepartmentId())
                         .orElseThrow(() -> new ResourceNotFoundException("Invalid department"));
+        Users assignedUnder = usersRepo.findById(updatedProfile.getAssignedUnderId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Assigned user not found"));
+        if(usersRepo.checkUserAssign(assignedUnder.getUserId(), user.getUserId())){
+            throw new BadRequestException("Can not assign under provided user");
+        }
         user.setRole(roles);
         user.setDepartment(departments);
         user.setUpdatedAt(ZonedDateTime.now());
+        user.setAssignedUnder(assignedUnder);
         modelMapper.map(updatedProfile, user);
     }
 
     @Transactional
     public void removeGameFromFavourite(long userId, long gameId){
         Users user = usersRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND));
         GameConfig game = gameConfigRepo.findById(gameId)
                 .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
         if(user.getFavoriteGame().getGameId() != gameId)
@@ -169,13 +168,12 @@ public class UsersService implements IUserService {
         if(user.getFavoriteGame() == null)
             throw new BadRequestException("No favourite games");
         user.setFavoriteGame(null);
-        if(game.getLikedBy().contains(user))
-            game.getLikedBy().remove(user);
+        game.getLikedBy().remove(user);
     }
 
     public FavouriteGameResponse getSlotsOfFavouriteGame(long userId){
         Users user = usersRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND));
         if(user.getFavoriteGame() == null)
             throw new BadRequestException("Favourite game not configured yet");
         List<GameSlots> upComingSlots = gameSlotsRepo.getTop5LatestSlots(user.getFavoriteGame().getGameId());
@@ -202,12 +200,15 @@ public class UsersService implements IUserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found in database")));
         users.setDepartment(departmentsRepo.findById(userProfileCreate.getDepartmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found in database")));
-
+        Users assignedUnder = usersRepo.findById(userProfileCreate.getAssignUnderId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found for assign under"));
         long years = ChronoUnit.YEARS.between(userProfileCreate.getBirthdate(), ZonedDateTime.now());
         if(years<18)
             throw new BadRequestException("Invalid birthdate");
         users.setPassword(passwordEncoder.encode(userProfileCreate.getPassword()));
-        return modelMapper.map(usersRepo.save(users), UserProfileCreated.class);
+        Users newProfile = usersRepo.save(users);
+        newProfile.setAssignedUnder(assignedUnder);
+        return modelMapper.map(newProfile, UserProfileCreated.class);
     }
 
     @Transactional
@@ -229,5 +230,11 @@ public class UsersService implements IUserService {
         modelMapper.map(updatedProfile, profile);
         profile.setUpdatedAt(ZonedDateTime.now());
         return  modelMapper.map(profile, UpdatedUserProfileDto.class);
+    }
+
+    public void deleteUser(long userId){
+        if(!usersRepo.existsById(userId))
+            throw new ResourceNotFoundException("User does not exist");
+        usersRepo.deleteById(userId);
     }
 }

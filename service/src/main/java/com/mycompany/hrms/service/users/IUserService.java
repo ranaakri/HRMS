@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface IUserService {
-    UserProfileDto getUserProfileById(long userId);
 
     UserProfileDto getUserProfileByEmail(String email);
 
@@ -44,5 +43,7 @@ public interface IUserService {
     UserProfileDto getUserProfileByUserId(long userId);
 
     List<String> getAllDesignations();
+
+    void deleteUser(long userId);
 
 }

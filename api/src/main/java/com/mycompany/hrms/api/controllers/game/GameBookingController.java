@@ -1,8 +1,8 @@
 package com.mycompany.hrms.api.controllers.game;
 
-import com.mycompany.hrms.data.entity.game.SlotRequest;
 import com.mycompany.hrms.service.dtos.game.request.BookGameSlot;
 import com.mycompany.hrms.service.dtos.game.request.DeleteSlotRequest;
+import com.mycompany.hrms.service.dtos.game.response.GameStatusResponse;
 import com.mycompany.hrms.service.dtos.game.response.UserPriorityRes;
 import com.mycompany.hrms.service.dtos.travel.response.CreatedByUser;
 import com.mycompany.hrms.service.game.IBookingService;
@@ -32,7 +32,7 @@ public class GameBookingController {
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     @GetMapping("/get/user/{userId}/slot/{slotId}")
-    public ResponseEntity<SlotRequest.RequestStatus> getBookingStatus(@PathVariable long userId, @PathVariable long slotId) {
+    public ResponseEntity<GameStatusResponse> getBookingStatus(@PathVariable long userId, @PathVariable long slotId) {
         return ResponseEntity.ok(bookingService.getBookingStatus(slotId, userId));
     }
 

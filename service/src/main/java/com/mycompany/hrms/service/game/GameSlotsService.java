@@ -1,7 +1,6 @@
 package com.mycompany.hrms.service.game;
 
 import com.mycompany.hrms.data.entity.game.GameSlots;
-import com.mycompany.hrms.data.entity.game.SlotRequest;
 import com.mycompany.hrms.data.repository.game.GameConfigRepo;
 import com.mycompany.hrms.data.repository.game.GameSlotsRepo;
 import com.mycompany.hrms.data.repository.game.SlotRequestRepo;

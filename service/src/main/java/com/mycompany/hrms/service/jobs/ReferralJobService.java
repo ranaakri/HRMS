@@ -8,6 +8,7 @@ import com.mycompany.hrms.data.repository.jobs.JobRepo;
 import com.mycompany.hrms.data.repository.jobs.ReferralsRepo;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
 import com.mycompany.hrms.service.dtos.job.request.ReferralJobReq;
+import com.mycompany.hrms.service.dtos.job.response.JobRes;
 import com.mycompany.hrms.service.dtos.job.response.ReferralJobRes;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
@@ -41,6 +42,16 @@ public class ReferralJobService implements IReferralService {
         referrals.setJob(jobs);
         referrals.setReferredBy(users);
         return modelMapper.map(referralsRepo.save(referrals), ReferralJobRes.class);
+    }
+
+    public List<JobRes> getJobsForCvReviews(long userId){
+        List<Jobs> jobs = jobRepo.findAllByCvReviewers_UserIdAndStatus(userId, Constants.JobDataStatus.OPEN);
+        return jobs.stream().map(val -> modelMapper.map(val, JobRes.class)).toList();
+    }
+
+    public List<ReferralJobRes> getReferralsForCvReview(long jobId, long userId){
+        List<Referrals> referrals = referralsRepo.findAllByJob_JobIdAndJob_CvReviewers_UserIdAndJob_Status(jobId, userId, Constants.JobDataStatus.OPEN);
+        return referrals.stream().map(val -> modelMapper.map(val, ReferralJobRes.class)).toList();
     }
 
     public List<ReferralJobRes> getListOfReferralsByJoId(long jobId){

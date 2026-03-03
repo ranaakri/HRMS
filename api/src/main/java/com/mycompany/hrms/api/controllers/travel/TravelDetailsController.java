@@ -8,6 +8,9 @@ import com.mycompany.hrms.service.travel.ITravelDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,10 +38,14 @@ public class TravelDetailsController {
         return new ResponseEntity<>(ApiResponse.success(travelDetailsService.getTravelDetailsId(travelId), "Travel details fetched successfully"), HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Get all travel plans"
+    )
     @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
     @GetMapping("")
-    public ResponseEntity<ApiResponse<List<TravelDetailsRes>>> getTravelDetails(){
-        return ResponseEntity.ok(ApiResponse.success(travelDetailsService.getTravels(), "Travel List fetched successfully"));
+    public ResponseEntity<ApiResponse<List<TravelDetailsRes>>> getTravelDetails(@RequestParam(defaultValue = "0", required = false) int page){
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("startDate").descending());
+        return ResponseEntity.ok(ApiResponse.success(travelDetailsService.getTravels(pageable), "Travel List fetched successfully"));
     }
 
     @Operation(

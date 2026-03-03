@@ -13,6 +13,7 @@ public class UpdateUserProfileHr {
     private ZonedDateTime updatedAt;
     private long roleId;
     private long departmentId;
+    private long assignedUnderId;
 
     public String getName() {
         return name;
@@ -68,6 +69,14 @@ public class UpdateUserProfileHr {
 
     public void setRoleId(long roleId) {
         this.roleId = roleId;
+    }
+
+    public long getAssignedUnderId() {
+        return assignedUnderId;
+    }
+
+    public void setAssignedUnderId(long assignedUnderId) {
+        this.assignedUnderId = assignedUnderId;
     }
 
     public long getDepartmentId() {

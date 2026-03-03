@@ -68,6 +68,14 @@
         </dependency>
 
 
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.0.0-jre</version>
+        </dependency>
+
+
+
     </dependencies>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

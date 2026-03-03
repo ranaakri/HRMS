@@ -27,6 +27,8 @@ public class UserProfileCreate {
 
     private ZonedDateTime birthdate;
 
+    private long assignUnderId;
+
     @NotNull
     private long departmentId;
 
@@ -95,5 +97,13 @@ public class UserProfileCreate {
 
     public void setBirthdate(ZonedDateTime birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public long getAssignUnderId() {
+        return assignUnderId;
+    }
+
+    public void setAssignUnderId(long assignUnderId) {
+        this.assignUnderId = assignUnderId;
     }
 }

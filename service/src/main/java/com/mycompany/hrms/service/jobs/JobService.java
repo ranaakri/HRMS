@@ -19,12 +19,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class JobService implements IJobService {
+
+    private static final String JOB_NOT_FOUND = "Job not found";
 
     private final JobRepo jobRepo;
     private final ModelMapper modelMapper;
@@ -42,7 +45,7 @@ public class JobService implements IJobService {
     @Transactional
     public String uploadJd(long jobId, MultipartFile file){
         Jobs job = jobRepo.findById(jobId)
-                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(JOB_NOT_FOUND));
         try{
             Map uploadedDoc = cloudinary.uploader().upload(
                     file.getBytes(),
@@ -86,9 +89,17 @@ public class JobService implements IJobService {
         return openJobs.stream().map(val-> modelMapper.map(val, JobRes.class)).toList();
     }
 
+    public List<JobRes> listLatestJobOpenings(){
+        return jobRepo.findAllByStatus(Constants.JobDataStatus.OPEN)
+                .stream()
+                .filter(val -> val.getLastApplicationDate().isAfter(ZonedDateTime.now()))
+                .map(val -> modelMapper.map(val, JobRes.class))
+                .toList();
+    }
+
     public JobRes findJobById(long jobId){
         Jobs job = jobRepo.findByIdWithReviewers(jobId)
-                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(JOB_NOT_FOUND));
         return modelMapper.map(job, JobRes.class);
     }
 
@@ -99,7 +110,7 @@ public class JobService implements IJobService {
     @Transactional
     public JobRes updateJob(long jobId, UpdateJobReq jobReq){
         Jobs job = jobRepo.findById(jobId)
-                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(JOB_NOT_FOUND));
         modelMapper.map(jobReq, job);
         job.getCvReviewers().clear();
         List<Users> users = usersRepo.findAllById(jobReq.getCvReviewersList());
@@ -109,7 +120,7 @@ public class JobService implements IJobService {
 
     public void deleteJob(long jobId) {
         Jobs job = jobRepo.findById(jobId)
-                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(JOB_NOT_FOUND));
         jobRepo.delete(job);
     }
 

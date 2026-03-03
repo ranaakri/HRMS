@@ -3,16 +3,15 @@ package com.mycompany.hrms.service.email;
 import com.mycompany.hrms.data.entity.job.Jobs;
 import com.mycompany.hrms.data.entity.user.Users;
 import com.mycompany.hrms.service.exception.InternalServerException;
+import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -29,11 +28,11 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String sender;
 
-    private void sendEmail(String to, String subject, String body) throws MessagingException {
+    public void sendEmail(String to, String subject, String body) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
 
         message.setFrom(new InternetAddress(sender));
-        message.setRecipients(MimeMessage.RecipientType.TO, to);
+        message.setRecipients(Message.RecipientType.TO, to);
         message.setSubject(subject);
         message.setContent(body, "text/html; charset=utf-8");
 
@@ -51,7 +50,7 @@ public class EmailService {
             addresses[i] = new InternetAddress(toList.get(i));
         }
 
-        message.setRecipients(MimeMessage.RecipientType.TO, addresses);
+        message.setRecipients(Message.RecipientType.TO, addresses);
         message.setSubject(subject);
         message.setContent(body, "text/html; charset=utf-8");
 
@@ -95,11 +94,11 @@ public class EmailService {
                 "            </div>\n" +
                 "            <div class=\"field\">\n" +
                 "                <span class=\"label\">Created Date</span>\n" +
-                "                <div class=\"value\">"+ job.getCreatedAt().format(DateTimeFormatter.ofPattern("DD-MM-YYYY")) +"</div>\n" +
+                "                <div class=\"value\">"+ job.getCreatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) +"</div>\n" +
                 "            </div>\n" +
                 "            <div class=\"field\">\n" +
                 "                <span class=\"label\">Deadline</span>\n" +
-                "                <div class=\"value\">"+ job.getLastApplicationDate().format(DateTimeFormatter.ofPattern("DD-MM-YYYY"))+"</div>\n" +
+                "                <div class=\"value\">"+ job.getLastApplicationDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))+"</div>\n" +
                 "            </div>\n" +
                 "            \n" +
                 "            <div class=\"image-box\">\n" +

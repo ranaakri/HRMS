@@ -32,7 +32,7 @@ public class NotificationController {
     }
 
     @Operation(
-            summary = "Change status of notification to read by recever id"
+            summary = "Change status of notification to read by receiver id"
     )
     @PatchMapping("/{receiverId}")
     @PreAuthorize("hasAnyAuthority('Employee', 'HR', 'Manager')")

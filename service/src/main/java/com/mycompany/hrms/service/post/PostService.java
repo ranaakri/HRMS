@@ -30,6 +30,9 @@ import java.util.List;
 @Service
 public class PostService implements IPostService{
 
+    private static final String USER_NOT_FOUND = "User not found";
+    private static final String POST_NOT_FOUND = "Post not found";
+
     private final UsersRepo usersRepo;
     private final PostRepo postRepo;
     private final ModelMapper modelMapper;
@@ -61,6 +64,14 @@ public class PostService implements IPostService{
         }).toList();
     }
 
+    public List<PostResponse> getPostByTags(Pageable pageable, String tags, long userId){
+        return postRepo.findAllByTagsContainingAndIsDeletedFalse(tags, pageable).stream().map(val -> {
+            PostResponse res = modelMapper.map(val, PostResponse.class);
+            res.setLikedByMe(postRepo.likeExistsOnPostByUserIdAndPostId(userId, val.getPostId()));
+            return res;
+        }).toList();
+    }
+
     public List<PostResponse> getAllMyPost(Pageable pageable, long userId){
         return postRepo.findAllByAuthor_UserIdAndIsDeletedFalse(userId, pageable)
                 .stream()
@@ -85,12 +96,12 @@ public class PostService implements IPostService{
     public List<PostResponse> getFilteredPost(Pageable pageable, long userId) {
 
         boolean isEmp = usersRepo.findById(userId)
-                .orElseThrow(() -> new RequestRejectedException("User not found"))
+                .orElseThrow(() -> new RequestRejectedException(USER_NOT_FOUND))
                 .getRole()
                 .getName().equals("Employee");
 
         boolean isManager = usersRepo.findById(userId)
-                .orElseThrow(() -> new RequestRejectedException("User not found"))
+                .orElseThrow(() -> new RequestRejectedException(USER_NOT_FOUND))
                 .getRole()
                 .getName().equals("Manager");
 
@@ -110,12 +121,12 @@ public class PostService implements IPostService{
 
     public List<PostResponse> getPostByStartDateAndEndDateFiltered(long userId, ZonedDateTime startDate, ZonedDateTime endDate, Pageable pageable){
         boolean isEmp = usersRepo.findById(userId)
-                .orElseThrow(() -> new RequestRejectedException("User not found"))
+                .orElseThrow(() -> new RequestRejectedException(USER_NOT_FOUND))
                 .getRole()
                 .getName().equals("Employee");
 
         boolean isManager = usersRepo.findById(userId)
-                .orElseThrow(() -> new RequestRejectedException("User not found"))
+                .orElseThrow(() -> new RequestRejectedException(USER_NOT_FOUND))
                 .getRole()
                 .getName().equals("Manager");
 
@@ -162,7 +173,7 @@ public class PostService implements IPostService{
     @Transactional
     public GetPostData updatePost(long postId, long userId, CreatePost update){
         Post post = postRepo.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(POST_NOT_FOUND));
         if(post.getAuthor().getUserId() != userId)
             throw new BadRequestException("Post is not created by you");
         modelMapper.map(update, post);
@@ -172,7 +183,7 @@ public class PostService implements IPostService{
     @Transactional
     public CommentsRes addComment(CommentReq comment){
         Post post = postRepo.findById(comment.getPostId())
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(POST_NOT_FOUND));
 
         Users commentedBy = usersRepo.findById(comment.getCommentedById())
                 .orElseThrow(() -> new ResourceNotFoundException("Commented by user not found"));
@@ -189,9 +200,9 @@ public class PostService implements IPostService{
     @Transactional
     public void addLike(long postId, long userId){
         Users user = usersRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
         Post post = postRepo.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(POST_NOT_FOUND));
         user.addLike(post);
         post.addLike(user);
         post.setLikeCount(post.getLikeCount()+1);
@@ -200,9 +211,9 @@ public class PostService implements IPostService{
     @Transactional
     public void removeLike(long postId, long userId){
         Users user = usersRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
         Post post = postRepo.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(POST_NOT_FOUND));
         user.getPostLikes().remove(post);
         post.getLikes().remove(user);
         post.setLikeCount(post.getLikeCount()-1);
@@ -232,7 +243,7 @@ public class PostService implements IPostService{
     @Transactional
     public void deletePost(DeletePost req){
         Post post = postRepo.findById(req.getPostId())
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(POST_NOT_FOUND));
         if(post.getAuthor().getUserId() != req.getDeletedById())
             throw new BadRequestException("Post is not shared by you");
         post.setDeleted(true);

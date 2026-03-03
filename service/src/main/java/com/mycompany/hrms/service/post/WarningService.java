@@ -16,9 +16,7 @@ import com.mycompany.hrms.service.notification.NotificationService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;

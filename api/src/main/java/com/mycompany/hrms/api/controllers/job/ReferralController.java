@@ -2,6 +2,7 @@ package com.mycompany.hrms.api.controllers.job;
 
 import com.mycompany.hrms.data.constant.Constants;
 import com.mycompany.hrms.service.dtos.job.request.ReferralJobReq;
+import com.mycompany.hrms.service.dtos.job.response.JobRes;
 import com.mycompany.hrms.service.dtos.job.response.ReferralJobRes;
 import com.mycompany.hrms.service.jobs.IReferralService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +35,24 @@ public class ReferralController {
     }
 
     @Operation(
+            summary = "Get list jobs for cv review by user id"
+    )
+    @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
+    @GetMapping("/cv-review/user/{userId}")
+    public ResponseEntity<List<JobRes>> getListOfJobsForCvReview(@PathVariable long userId){
+        return ResponseEntity.ok(referralService.getJobsForCvReviews(userId));
+    }
+
+    @Operation(
+            summary = "Get list jobs for cv review by user id"
+    )
+    @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
+    @GetMapping("/cv-review/referrals/job/{jobId}/user/{userId}")
+    public ResponseEntity<List<ReferralJobRes>> getListOfReferralsForCvReview(@PathVariable long jobId, @PathVariable long userId){
+        return ResponseEntity.ok(referralService.getReferralsForCvReview(jobId, userId));
+    }
+
+    @Operation(
             summary = "Get referrals by job id"
     )
     @PreAuthorize("hasAnyAuthority('HR')")
@@ -54,7 +73,7 @@ public class ReferralController {
     @Operation(
             summary = "Change status"
     )
-    @PreAuthorize("hasAnyAuthority('HR')")
+    @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee' )")
     @PatchMapping("/{referralId}")
     public ResponseEntity<ReferralJobRes> updateStatus(@PathVariable long referralId, @RequestParam Constants.JobStatus status){
         return ResponseEntity.ok(referralService.updateStatus(referralId, status));

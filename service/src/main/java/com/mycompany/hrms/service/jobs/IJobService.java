@@ -15,4 +15,5 @@ public interface IJobService {
     JobRes updateJob(long jobId, UpdateJobReq jobReq);
     void deleteJob(long jobId);
     List<JobRes> listOpenJobs();
+    List<JobRes> listLatestJobOpenings();
 }

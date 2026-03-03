@@ -4,6 +4,7 @@ import com.mycompany.hrms.data.entity.game.*;
 import com.mycompany.hrms.data.entity.user.Users;
 import com.mycompany.hrms.data.repository.game.*;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
+import com.mycompany.hrms.service.dtos.game.response.GameStatusResponse;
 import com.mycompany.hrms.service.dtos.game.response.RequestedByUser;
 import com.mycompany.hrms.service.dtos.game.response.UserPriorityRes;
 import com.mycompany.hrms.service.dtos.travel.response.CreatedByUser;
@@ -279,10 +280,10 @@ public class BookingService implements IBookingService {
         return request != null;
     }
 
-    public SlotRequest.RequestStatus getBookingStatus(long slotId, long userId) {
+    public GameStatusResponse getBookingStatus(long slotId, long userId) {
         SlotRequest request = slotRequestRepo.findByGameSlots_SlotIdAndUser_SlotId(slotId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("No Status found"));
-        return request.getStatus();
+        return modelMapper.map(request, GameStatusResponse.class);
     }
 
     public List<CreatedByUser> getBookingPartners(long userId, long slotId) {
