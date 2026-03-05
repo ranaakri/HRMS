@@ -16,6 +16,7 @@ import com.mycompany.hrms.data.dtos.post.response.PostLikeRes;
 import com.mycompany.hrms.data.dtos.post.response.PostResponse;
 import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
+import com.mycompany.hrms.service.notification.NotificationService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,15 +39,18 @@ public class PostService implements IPostService{
     private final PostRepo postRepo;
     private final ModelMapper modelMapper;
     private final PostCommentsRepo postCommentsRepo;
+    private final NotificationService notificationService;
 
     public PostService(UsersRepo usersRepo,
                        PostRepo postRepo,
                        ModelMapper modelMapper,
-                       PostCommentsRepo postCommentsRepo) {
+                       PostCommentsRepo postCommentsRepo,
+                       NotificationService notificationService) {
         this.usersRepo = usersRepo;
         this.postRepo = postRepo;
         this.modelMapper = modelMapper;
         this.postCommentsRepo = postCommentsRepo;
+        this.notificationService = notificationService;
     }
 
     public void createPost(CreatePost createPost){
@@ -53,6 +58,17 @@ public class PostService implements IPostService{
                 .orElseThrow(() -> new ResourceNotFoundException("Author of the post does not exist"));
         Post post = modelMapper.map(createPost, Post.class);
         post.setAuthor(user);
+
+        if(!createPost.getMentions().isEmpty()){
+            List<Users> mentionedUsers = new ArrayList<>(usersRepo.findAllById(createPost.getMentions()));
+            mentionedUsers.remove(user);
+            for(Users mentioned : mentionedUsers){
+                post.addMention(mentioned);
+            }
+
+            notificationService.addNotification(mentionedUsers, "MENTION", user.getName());
+        }
+
         postRepo.save(post);
     }
 
@@ -80,6 +96,18 @@ public class PostService implements IPostService{
             res.setLikedByMe(postRepo.likeExistsOnPostByUserIdAndPostId(userId, val.getPostId()));
             return res;
         }).toList();
+    }
+
+    public List<PostResponse> getMentionedPost(Pageable pageable, long userId){
+        Users user = usersRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+        return postRepo.findAllByMentionsContainsAndIsDeletedFalse(user, pageable)
+                .stream()
+                .map(val -> {
+                    PostResponse res = modelMapper.map(val, PostResponse.class);
+                    res.setLikedByMe(postRepo.likeExistsOnPostByUserIdAndPostId(userId, val.getPostId()));
+                    return res;
+                }).toList();
     }
 
     public List<PostResponse> getAllMyPostDateFiltered(long userId, Pageable pageable , ZonedDateTime startDate, ZonedDateTime endDate){
@@ -166,7 +194,6 @@ public class PostService implements IPostService{
                 .orElseThrow(() -> new ResourceNotFoundException("Post was not found"));
         if(post.isDeleted())
             throw new BadRequestException("Post is deleted");
-
         return modelMapper.map(post, GetPostData.class);
     }
 
@@ -176,7 +203,17 @@ public class PostService implements IPostService{
                 .orElseThrow(() -> new ResourceNotFoundException(POST_NOT_FOUND));
         if(post.getAuthor().getUserId() != userId)
             throw new BadRequestException("Post is not created by you");
+        Users user = usersRepo.findById(userId)
+                        .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
         modelMapper.map(update, post);
+        if(!update.getMentions().isEmpty()){
+            post.getMentions().clear();
+            List<Users> mentioned = new ArrayList<>(usersRepo.findAllById(update.getMentions()));
+            mentioned.remove(user);
+            for(Users u : mentioned){
+                post.addMention(u);
+            }
+        }
         return modelMapper.map(post, GetPostData.class);
     }
 

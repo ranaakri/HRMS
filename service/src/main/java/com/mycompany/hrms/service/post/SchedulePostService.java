@@ -4,6 +4,7 @@ import com.mycompany.hrms.data.entity.post.Post;
 import com.mycompany.hrms.data.entity.user.Users;
 import com.mycompany.hrms.data.repository.post.PostRepo;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
+import com.mycompany.hrms.service.notification.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,15 @@ public class SchedulePostService {
 
     private final PostRepo postRepo;
     private final UsersRepo usersRepo;
+    private final NotificationService notificationService;
 
     @Autowired
     public SchedulePostService(PostRepo postRepo,
-                               UsersRepo usersRepo){
+                               UsersRepo usersRepo,
+                               NotificationService notificationService){
         this.postRepo = postRepo;
         this.usersRepo = usersRepo;
+        this.notificationService = notificationService;
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
@@ -39,9 +43,11 @@ public class SchedulePostService {
             post.setImagePath(u.getProfileUrl());
             post.setPublicId(null);
             post.setAuthor(null);
-
+            post.addMention(u);
             postRepo.save(post);
         }
+
+        notificationService.addNotification(birthday, "SYS_MENTION_BIR", "");
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
@@ -62,8 +68,10 @@ public class SchedulePostService {
             post.setImagePath(u.getProfileUrl());
             post.setPublicId(null);
             post.setAuthor(null);
-
+            post.addMention(u);
             postRepo.save(post);
         }
+
+        notificationService.addNotification(anniversaryUsers, "SYS_MENTION_ANI", "");
     }
 }

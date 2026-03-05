@@ -4,11 +4,13 @@ import com.mycompany.hrms.data.entity.post.Post;
 import com.mycompany.hrms.data.entity.user.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 public interface PostRepo extends JpaRepository<Post, Long> {
 
@@ -26,12 +28,22 @@ public interface PostRepo extends JpaRepository<Post, Long> {
 """)
     Page<Users> findPostLikes(@Param("postId") Long postId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"mentions"})
+    Optional<Post> findById(long postId);
+
+    @EntityGraph(attributePaths = {"mentions"})
     Page<Post> findAllByIsDeletedFalse(Pageable pageable);
 
+    @EntityGraph(attributePaths = {"mentions"})
+    Page<Post> findAllByMentionsContainsAndIsDeletedFalse(Users user, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"mentions"})
     Page<Post> findAllByAuthor_UserIdAndIsDeletedFalse(long userId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"mentions"})
     Page<Post> findAllByTagsContainingAndIsDeletedFalse(String tag, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"mentions"})
     @Query(value = "select * from post where createdAt between :startDate and :endDate and isDeleted = 0", nativeQuery = true)
     Page<Post> findAllBetweenStartDateAndEndDate(@Param("startDate")ZonedDateTime startDate, @Param("endDate")ZonedDateTime endDate, Pageable pageable);
 }

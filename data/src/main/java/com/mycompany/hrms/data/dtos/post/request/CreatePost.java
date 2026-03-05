@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 public class CreatePost {
 
     @NotBlank
@@ -20,6 +22,8 @@ public class CreatePost {
 
     @NotBlank
     private String publicId;
+
+    private List<Long> mentions;
 
     @NotNull
     private boolean isVisibleToEmp = true;
@@ -99,5 +103,13 @@ public class CreatePost {
 
     public void setAuthorId(long authorId) {
         this.authorId = authorId;
+    }
+
+    public List<Long> getMentions() {
+        return mentions;
+    }
+
+    public void setMentions(List<Long> mentions) {
+        this.mentions = mentions;
     }
 }

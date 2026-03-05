@@ -1,6 +1,8 @@
 package com.mycompany.hrms.data.dtos.post.response;
 
 
+import java.util.Set;
+
 public class GetPostData {
 
     private long userId;
@@ -14,6 +16,8 @@ public class GetPostData {
     private String imagePath;
 
     private char postType;
+
+    private Set<MentionedUser> mentions;
 
     private String publicId;
 
@@ -101,5 +105,13 @@ public class GetPostData {
 
     public void setAuthorId(long authorId) {
         this.authorId = authorId;
+    }
+
+    public Set<MentionedUser> getMentions() {
+        return mentions;
+    }
+
+    public void setMentions(Set<MentionedUser> mentions) {
+        this.mentions = mentions;
     }
 }

@@ -68,9 +68,22 @@ public class Post {
     )
     private Set<Users> likes = new HashSet<>();
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "PostMentions",
+            joinColumns = {@JoinColumn(name = "postId")},
+            inverseJoinColumns = {@JoinColumn(name = "userId")}
+    )
+    private Set<Users> mentions = new HashSet<>();
+
     public void addLike(Users users) {
         this.likes.add(users);
         users.getPostLikes().add(this);
+    }
+
+    public void addMention(Users users){
+        this.mentions.add(users);
+        users.getPostMentions().add(this);
     }
 
     public Set<Users> getLikes() {
@@ -199,5 +212,13 @@ public class Post {
 
     public void setCommentCount(int commentCount) {
         this.commentCount = commentCount;
+    }
+
+    public Set<Users> getMentions() {
+        return mentions;
+    }
+
+    public void setMentions(Set<Users> mentions) {
+        this.mentions = mentions;
     }
 }

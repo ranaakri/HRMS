@@ -96,6 +96,16 @@ public class PostController {
     }
 
     @Operation(
+            summary = "Get all post in which user has been mentioned"
+    )
+    @PreAuthorize("hasAnyAuthority('HR', 'Employee','Manager')")
+    @GetMapping("/mentions/{userId}")
+    public ResponseEntity<List<PostResponse>> getAllPostWhereMentioned(@PathVariable long userId, @RequestParam(defaultValue = "0") int page){
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(SORT_BY).descending());
+        return ResponseEntity.ok(postService.getMentionedPost(pageable, userId));
+    }
+
+    @Operation(
             summary = "Get all Users who liked the post"
     )
     @GetMapping("/likes/{postId}")

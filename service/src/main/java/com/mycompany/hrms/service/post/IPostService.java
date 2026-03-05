@@ -32,4 +32,5 @@ public interface IPostService {
     List<PostResponse> getPostByStartDateAndEndDateFiltered(long userId, ZonedDateTime startDate, ZonedDateTime endDate, Pageable pageable);
     List<PostResponse> getAllMyPostDateFiltered(long userId, Pageable pageable , ZonedDateTime startDate, ZonedDateTime endDate);
     List<PostResponse> getPostByTags(Pageable pageable, String tags, long userId);
+    List<PostResponse> getMentionedPost(Pageable pageable, long userId);
 }

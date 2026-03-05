@@ -1,6 +1,7 @@
 package com.mycompany.hrms.data.dtos.post.response;
 
 import java.time.ZonedDateTime;
+import java.util.Set;
 
 public class PostResponse {
 
@@ -19,6 +20,8 @@ public class PostResponse {
     private ZonedDateTime createdAt;
 
     private String imagePath;
+
+    private Set<MentionedUser> mentions;
 
     private boolean isDeleted = false;
 
@@ -142,5 +145,13 @@ public class PostResponse {
 
     public void setLikedByMe(boolean likedByMe) {
         isLikedByMe = likedByMe;
+    }
+
+    public Set<MentionedUser> getMentions() {
+        return mentions;
+    }
+
+    public void setMentions(Set<MentionedUser> mentions) {
+        this.mentions = mentions;
     }
 }

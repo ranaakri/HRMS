@@ -139,6 +139,9 @@ public class Users {
     @ManyToMany(mappedBy = "likes")
     private Set<Post> postLikes = new HashSet<>();
 
+    @ManyToMany(mappedBy = "mentions")
+    private Set<Post> postMentions = new HashSet<>();
+
     public String getName() {
         return name;
     }
@@ -344,6 +347,11 @@ public class Users {
         post.getLikes().add(this);
     }
 
+    public void addMention(Post post){
+        this.postMentions.add(post);
+        post.getMentions().add(this);
+    }
+
     public String getPublicId() {
         return publicId;
     }
@@ -408,4 +416,11 @@ public class Users {
         this.favoriteGame = favoriteGame;
     }
 
+    public Set<Post> getPostMentions() {
+        return postMentions;
+    }
+
+    public void setPostMentions(Set<Post> postMentions) {
+        this.postMentions = postMentions;
+    }
 }
