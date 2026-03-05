@@ -1,8 +1,8 @@
 package com.mycompany.hrms.api.controllers.post;
 
-import com.mycompany.hrms.service.dtos.post.request.CommentWarningReq;
-import com.mycompany.hrms.service.dtos.post.request.PostWarningReq;
-import com.mycompany.hrms.service.dtos.post.response.PostResponse;
+import com.mycompany.hrms.data.dtos.post.request.CommentWarningReq;
+import com.mycompany.hrms.data.dtos.post.request.PostWarningReq;
+import com.mycompany.hrms.data.dtos.post.response.PostResponse;
 import com.mycompany.hrms.service.post.IWarningService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;

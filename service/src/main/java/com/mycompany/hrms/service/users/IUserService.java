@@ -1,20 +1,22 @@
 package com.mycompany.hrms.service.users;
 
-import com.mycompany.hrms.service.dtos.users.request.UpdateUserProfileDto;
-import com.mycompany.hrms.service.dtos.users.request.UpdateUserProfileHr;
-import com.mycompany.hrms.service.dtos.users.request.UserProfileCreate;
-import com.mycompany.hrms.service.dtos.users.response.*;
+import com.mycompany.hrms.data.dtos.users.request.UpdateUserProfileDto;
+import com.mycompany.hrms.data.dtos.users.request.UpdateUserProfileHr;
+import com.mycompany.hrms.data.dtos.users.request.UserProfileCreate;
+import com.mycompany.hrms.data.dtos.users.response.EventRes;
+import com.mycompany.hrms.data.dtos.users.response.OrgChartRes;
+import com.mycompany.hrms.data.dtos.users.response.UserListRes;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface IUserService {
 
-    UserProfileDto getUserProfileByEmail(String email);
+    com.mycompany.hrms.data.dtos.users.response.UserProfileDto getUserProfileByEmail(String email);
 
-    UserProfileCreated createUserProfile(UserProfileCreate userProfileCreate);
+    com.mycompany.hrms.data.dtos.users.response.UserProfileCreated createUserProfile(UserProfileCreate userProfileCreate);
 
-    UpdatedUserProfileDto updateUserProfile(long userId, UpdateUserProfileDto updatedProfile);
+    com.mycompany.hrms.data.dtos.users.response.UpdatedUserProfileDto updateUserProfile(long userId, UpdateUserProfileDto updatedProfile);
 
     List<UserListRes> getUsersListByName(String name);
 
@@ -26,9 +28,9 @@ public interface IUserService {
 
     List<OrgChartRes> getAssignedUnder(long userId);
 
-    FavouriteGameResponse getSlotsOfFavouriteGame(long userId);
+    com.mycompany.hrms.data.dtos.users.response.FavouriteGameResponse getSlotsOfFavouriteGame(long userId);
 
-    List<UserProfileDto> getAllUserProfiles(Pageable pageable, Long department);
+    List<com.mycompany.hrms.data.dtos.users.response.UserProfileDto> getAllUserProfiles(Pageable pageable, Long department);
 
     void removeGameFromFavourite(long userId, long gameId);
 
@@ -40,10 +42,11 @@ public interface IUserService {
 
     void updateUserProfile(long userId, UpdateUserProfileHr updatedProfile);
 
-    UserProfileDto getUserProfileByUserId(long userId);
+    com.mycompany.hrms.data.dtos.users.response.UserProfileDto getUserProfileByUserId(long userId);
 
     List<String> getAllDesignations();
 
     void deleteUser(long userId);
 
+    List<com.mycompany.hrms.data.dtos.users.response.UserProfileDto> getUsersProfileByName(String name, Long departmentId);
 }

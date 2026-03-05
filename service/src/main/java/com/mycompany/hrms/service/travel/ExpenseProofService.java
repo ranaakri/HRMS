@@ -5,7 +5,7 @@ import com.mycompany.hrms.data.entity.travel.ExpensesProofs;
 import com.mycompany.hrms.data.repository.travel.ExpensesProofsRepo;
 import com.mycompany.hrms.data.repository.travel.ExpensesRepo;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
-import com.mycompany.hrms.service.dtos.travel.response.ExpenseProofRes;
+import com.mycompany.hrms.data.dtos.travel.response.ExpenseProofRes;
 import com.mycompany.hrms.service.exception.InternalServerException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import com.mycompany.hrms.service.exception.UnAuthorizedException;

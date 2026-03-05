@@ -1,9 +1,9 @@
 package com.mycompany.hrms.api.controllers.job;
 
 import com.mycompany.hrms.data.constant.Constants;
-import com.mycompany.hrms.service.dtos.job.request.ReferralJobReq;
-import com.mycompany.hrms.service.dtos.job.response.JobRes;
-import com.mycompany.hrms.service.dtos.job.response.ReferralJobRes;
+import com.mycompany.hrms.data.dtos.job.request.ReferralJobReq;
+import com.mycompany.hrms.data.dtos.job.response.JobRes;
+import com.mycompany.hrms.data.dtos.job.response.ReferralJobRes;
 import com.mycompany.hrms.service.jobs.IReferralService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;

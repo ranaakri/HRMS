@@ -1,8 +1,8 @@
 package com.mycompany.hrms.api.controllers.doc;
 
 import com.mycompany.hrms.service.doc.IDocumentService;
-import com.mycompany.hrms.service.dtos.DocRequest;
-import com.mycompany.hrms.service.dtos.DocResponse;
+import com.mycompany.hrms.data.dtos.DocRequest;
+import com.mycompany.hrms.data.dtos.DocResponse;
 import com.mycompany.hrms.service.exception.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;

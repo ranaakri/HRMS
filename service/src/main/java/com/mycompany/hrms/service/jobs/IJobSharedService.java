@@ -1,8 +1,8 @@
 package com.mycompany.hrms.service.jobs;
 
 import com.mycompany.hrms.data.constant.Constants;
-import com.mycompany.hrms.service.dtos.job.request.JobShareReq;
-import com.mycompany.hrms.service.dtos.job.response.JobSharedRes;
+import com.mycompany.hrms.data.dtos.job.request.JobShareReq;
+import com.mycompany.hrms.data.dtos.job.response.JobSharedRes;
 
 import java.util.List;
 

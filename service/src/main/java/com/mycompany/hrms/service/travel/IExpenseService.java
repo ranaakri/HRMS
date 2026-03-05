@@ -1,8 +1,8 @@
 package com.mycompany.hrms.service.travel;
 
 import com.mycompany.hrms.data.constant.Constants;
-import com.mycompany.hrms.service.dtos.travel.request.AddExpense;
-import com.mycompany.hrms.service.dtos.travel.response.ExpenseRes;
+import com.mycompany.hrms.data.dtos.travel.request.AddExpense;
+import com.mycompany.hrms.data.dtos.travel.response.ExpenseRes;
 
 import java.time.ZonedDateTime;
 import java.util.List;

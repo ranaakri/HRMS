@@ -2,7 +2,7 @@ package com.mycompany.hrms.api.controllers.travel;
 
 import com.mycompany.hrms.api.response.ApiResponse;
 import com.mycompany.hrms.data.constant.Constants;
-import com.mycompany.hrms.service.dtos.travel.response.TravelDocRes;
+import com.mycompany.hrms.data.dtos.travel.response.TravelDocRes;
 import com.mycompany.hrms.service.travel.ITravelDocumentService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +23,17 @@ public class TravelDocumentController {
         this.travelDocumentService = travelDocumentService;
     }
 
+    @Operation(
+            summary = "Get travel documents using traveling user id"
+    )
     @GetMapping("/{travelingUserId}")
     public ResponseEntity<List<TravelDocRes>> getTravelDocByTravelingUserId(@PathVariable long travelingUserId){
         return ResponseEntity.ok(travelDocumentService.getTravelDocumentsByTravelingUserId(travelingUserId));
     }
 
+    @Operation(
+            summary = "Get travel documents by user id and travel id"
+    )
     @GetMapping("/user/{userId}/travel/{travelId}")
     public ResponseEntity<List<TravelDocRes>> getTravelDocByTravelingUserId(@PathVariable long userId, @PathVariable long travelId){
         return ResponseEntity.ok(travelDocumentService.getTravelDocuments(userId, travelId));

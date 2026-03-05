@@ -1,9 +1,9 @@
 package com.mycompany.hrms.service.travel;
 
 import com.mycompany.hrms.data.entity.travel.TravelDetails;
-import com.mycompany.hrms.service.dtos.travel.request.TravelDetailsReq;
-import com.mycompany.hrms.service.dtos.travel.request.UpdateTravelDetailsReq;
-import com.mycompany.hrms.service.dtos.travel.response.TravelDetailsRes;
+import com.mycompany.hrms.data.dtos.travel.request.TravelDetailsReq;
+import com.mycompany.hrms.data.dtos.travel.request.UpdateTravelDetailsReq;
+import com.mycompany.hrms.data.dtos.travel.response.TravelDetailsRes;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

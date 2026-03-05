@@ -1,7 +1,7 @@
 package com.mycompany.hrms.service.doc;
 
-import com.mycompany.hrms.service.dtos.DocRequest;
-import com.mycompany.hrms.service.dtos.DocResponse;
+import com.mycompany.hrms.data.dtos.DocRequest;
+import com.mycompany.hrms.data.dtos.DocResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

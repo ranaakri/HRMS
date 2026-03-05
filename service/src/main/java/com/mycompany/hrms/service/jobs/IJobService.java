@@ -1,8 +1,8 @@
 package com.mycompany.hrms.service.jobs;
 
-import com.mycompany.hrms.service.dtos.job.request.CreateJobReq;
-import com.mycompany.hrms.service.dtos.job.request.UpdateJobReq;
-import com.mycompany.hrms.service.dtos.job.response.JobRes;
+import com.mycompany.hrms.data.dtos.job.request.CreateJobReq;
+import com.mycompany.hrms.data.dtos.job.request.UpdateJobReq;
+import com.mycompany.hrms.data.dtos.job.response.JobRes;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

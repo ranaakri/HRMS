@@ -1,7 +1,7 @@
 package com.mycompany.hrms.service.notification;
 
 import com.mycompany.hrms.data.entity.user.Users;
-import com.mycompany.hrms.service.dtos.notification.response.NotificationRes;
+import com.mycompany.hrms.data.dtos.notification.response.NotificationRes;
 
 import java.util.List;
 

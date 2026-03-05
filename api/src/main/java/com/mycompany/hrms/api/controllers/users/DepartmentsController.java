@@ -1,7 +1,7 @@
 package com.mycompany.hrms.api.controllers.users;
 
-import com.mycompany.hrms.service.dtos.users.DepartmentDto;
-import com.mycompany.hrms.service.dtos.users.request.AddDepartmentDto;
+import com.mycompany.hrms.data.dtos.users.DepartmentDto;
+import com.mycompany.hrms.data.dtos.users.request.AddDepartmentDto;
 import com.mycompany.hrms.service.users.DepartmentsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;

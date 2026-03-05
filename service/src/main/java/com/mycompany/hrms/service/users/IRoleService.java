@@ -1,6 +1,6 @@
 package com.mycompany.hrms.service.users;
 
-import com.mycompany.hrms.service.dtos.users.response.RoleResponse;
+import com.mycompany.hrms.data.dtos.users.response.RoleResponse;
 
 import java.util.List;
 

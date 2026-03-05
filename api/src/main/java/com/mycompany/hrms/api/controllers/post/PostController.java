@@ -1,10 +1,10 @@
 package com.mycompany.hrms.api.controllers.post;
 
-import com.mycompany.hrms.service.dtos.post.request.*;
-import com.mycompany.hrms.service.dtos.post.response.CommentsRes;
-import com.mycompany.hrms.service.dtos.post.response.GetPostData;
-import com.mycompany.hrms.service.dtos.post.response.PostLikeRes;
-import com.mycompany.hrms.service.dtos.post.response.PostResponse;
+import com.mycompany.hrms.data.dtos.post.request.*;
+import com.mycompany.hrms.data.dtos.post.response.CommentsRes;
+import com.mycompany.hrms.data.dtos.post.response.GetPostData;
+import com.mycompany.hrms.data.dtos.post.response.PostLikeRes;
+import com.mycompany.hrms.data.dtos.post.response.PostResponse;
 import com.mycompany.hrms.service.post.IPostService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.PageRequest;

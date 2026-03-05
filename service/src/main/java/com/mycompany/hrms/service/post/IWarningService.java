@@ -1,7 +1,6 @@
 package com.mycompany.hrms.service.post;
 
-import com.mycompany.hrms.service.dtos.post.response.PostResponse;
-import org.springframework.data.domain.Pageable;
+import com.mycompany.hrms.data.dtos.post.response.PostResponse;
 
 import java.time.ZonedDateTime;
 import java.util.List;

@@ -6,8 +6,8 @@ import com.mycompany.hrms.data.entity.user.Users;
 import com.mycompany.hrms.data.repository.game.GameConfigRepo;
 import com.mycompany.hrms.data.repository.game.UserGameStatesRepo;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
-import com.mycompany.hrms.service.dtos.game.request.CreateGameReq;
-import com.mycompany.hrms.service.dtos.game.response.GameResponse;
+import com.mycompany.hrms.data.dtos.game.request.CreateGameReq;
+import com.mycompany.hrms.data.dtos.game.response.GameResponse;
 import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
@@ -107,5 +107,11 @@ public class GameConfigService implements IGameConfigService {
         GameConfig gameConfig = gameConfigRepo.findById(gameId)
                 .orElseThrow(() -> new ResourceNotFoundException(GAME_NOT_FOUND));
         gameConfig.setActive(false);
+    }
+
+    public void deleteGame(long gameId){
+        GameConfig gameConfig = gameConfigRepo.findById(gameId)
+                .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
+        gameConfigRepo.delete(gameConfig);
     }
 }

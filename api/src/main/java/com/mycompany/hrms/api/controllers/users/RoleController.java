@@ -1,6 +1,6 @@
 package com.mycompany.hrms.api.controllers.users;
 
-import com.mycompany.hrms.service.dtos.users.response.RoleResponse;
+import com.mycompany.hrms.data.dtos.users.response.RoleResponse;
 import com.mycompany.hrms.service.users.IRoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;

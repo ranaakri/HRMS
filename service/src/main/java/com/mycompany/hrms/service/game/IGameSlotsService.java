@@ -1,7 +1,7 @@
 package com.mycompany.hrms.service.game;
 
-import com.mycompany.hrms.service.dtos.game.response.GameEventResponse;
-import com.mycompany.hrms.service.dtos.game.response.GameSlotResponse;
+import com.mycompany.hrms.data.dtos.game.response.GameEventResponse;
+import com.mycompany.hrms.data.dtos.game.response.GameSlotResponse;
 
 import java.util.List;
 

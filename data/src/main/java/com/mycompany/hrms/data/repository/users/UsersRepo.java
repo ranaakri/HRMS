@@ -1,12 +1,13 @@
 package com.mycompany.hrms.data.repository.users;
 
 import com.mycompany.hrms.data.entity.user.Users;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +22,13 @@ public interface UsersRepo extends JpaRepository<Users, Long> {
 
     List<Users> findUsersByAssignedUnder_UserId(long assignedUnderUserId);
 
+    Page<Users> findAllByDepartment_DepartmentId(Long departmentId, Pageable pageable);
+
     List<Users> findUsersByUserIdIn(List<Long> userId);
+
+    List<Users> findByNameStartingWith(String name);
+
+    List<Users> findAllByDepartment_DepartmentIdAndNameStartingWith(Long departmentId, String name);
 
     @Query(value = "SELECT * FROM Users " +
             "WHERE DAY(SWITCHOFFSET(birthdate, '+05:30')) = DAY(SWITCHOFFSET(SYSDATETIMEOFFSET(), '+05:30')) \n" +
@@ -38,14 +45,4 @@ SELECT * FROM Users
 
     @Query(value = "EXEC dbo.CheckUserAssignment @UserId = :userId, @AssignedUnderId = :assignedUnder", nativeQuery = true)
     boolean checkUserAssign(@Param("userId") long userId, @Param("assignedUnder") long assignedUnder);
-
-//    @Query(value = "WITH UppersCTE AS ( SELECT   userId, profileUrl, designation, assignedUnder, 0 AS level FROM users WHERE userId = :userId" +
-//            "    UNION ALL SELECT u.userId, u.profileUrl, u.designation, u.assignedUnder, cte.level + 1 FROM users u" +
-//            "    INNER JOIN UppersCTE cte ON u.userId = cte.assignedUnder" +
-//            ")" +
-//            "SELECT *" +
-//            "FROM UppersCTE " +
-//            "WHERE userId <> :userId" +
-//            " ORDER BY level desc OPTION (MAXRECURSION 10);", nativeQuery = true)
-//    List<OrgChartRes> getOrgChart(@Param("userId") long userId);
 }

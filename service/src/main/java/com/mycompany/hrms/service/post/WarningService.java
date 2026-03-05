@@ -8,7 +8,7 @@ import com.mycompany.hrms.data.repository.post.PostCommentsRepo;
 import com.mycompany.hrms.data.repository.post.PostRepo;
 import com.mycompany.hrms.data.repository.post.WarningsRepo;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
-import com.mycompany.hrms.service.dtos.post.response.PostResponse;
+import com.mycompany.hrms.data.dtos.post.response.PostResponse;
 import com.mycompany.hrms.service.email.EmailService;
 import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;

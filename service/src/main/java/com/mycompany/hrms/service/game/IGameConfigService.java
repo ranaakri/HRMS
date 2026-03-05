@@ -1,7 +1,7 @@
 package com.mycompany.hrms.service.game;
 
-import com.mycompany.hrms.service.dtos.game.request.CreateGameReq;
-import com.mycompany.hrms.service.dtos.game.response.GameResponse;
+import com.mycompany.hrms.data.dtos.game.request.CreateGameReq;
+import com.mycompany.hrms.data.dtos.game.response.GameResponse;
 
 import java.util.List;
 
@@ -17,4 +17,6 @@ public interface IGameConfigService {
     List<GameResponse> getAllActiveGames(long userId);
 
     GameResponse getGame(long gameId);
+
+    void deleteGame(long gameId);
 }

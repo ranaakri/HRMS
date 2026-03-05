@@ -8,7 +8,7 @@ import com.mycompany.hrms.data.repository.notifications.ActionNotificationRepo;
 import com.mycompany.hrms.data.repository.notifications.NotificationReceiversRepo;
 import com.mycompany.hrms.data.repository.notifications.NotificationRepo;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
-import com.mycompany.hrms.service.dtos.notification.response.NotificationRes;
+import com.mycompany.hrms.data.dtos.notification.response.NotificationRes;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

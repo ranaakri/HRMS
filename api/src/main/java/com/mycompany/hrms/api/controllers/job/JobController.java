@@ -1,8 +1,8 @@
 package com.mycompany.hrms.api.controllers.job;
 
-import com.mycompany.hrms.service.dtos.job.request.CreateJobReq;
-import com.mycompany.hrms.service.dtos.job.request.UpdateJobReq;
-import com.mycompany.hrms.service.dtos.job.response.JobRes;
+import com.mycompany.hrms.data.dtos.job.request.CreateJobReq;
+import com.mycompany.hrms.data.dtos.job.request.UpdateJobReq;
+import com.mycompany.hrms.data.dtos.job.response.JobRes;
 import com.mycompany.hrms.service.jobs.IJobService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;

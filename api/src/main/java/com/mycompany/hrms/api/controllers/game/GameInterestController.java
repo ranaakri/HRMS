@@ -1,9 +1,8 @@
 package com.mycompany.hrms.api.controllers.game;
 
-import com.mycompany.hrms.service.dtos.game.request.AddGameInterest;
+import com.mycompany.hrms.data.dtos.game.request.AddGameInterest;
 import com.mycompany.hrms.service.game.IGameInterestService;
 import io.swagger.v3.oas.annotations.Operation;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

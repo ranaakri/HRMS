@@ -1,8 +1,7 @@
 package com.mycompany.hrms.service.travel;
 
 import com.mycompany.hrms.data.constant.Constants;
-import com.mycompany.hrms.data.entity.travel.TravelDocuments;
-import com.mycompany.hrms.service.dtos.travel.response.TravelDocRes;
+import com.mycompany.hrms.data.dtos.travel.response.TravelDocRes;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

@@ -1,8 +1,8 @@
 package com.mycompany.hrms.api.controllers.job;
 
 import com.mycompany.hrms.data.constant.Constants;
-import com.mycompany.hrms.service.dtos.job.request.JobShareReq;
-import com.mycompany.hrms.service.dtos.job.response.JobSharedRes;
+import com.mycompany.hrms.data.dtos.job.request.JobShareReq;
+import com.mycompany.hrms.data.dtos.job.response.JobSharedRes;
 import com.mycompany.hrms.service.jobs.IJobSharedService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;

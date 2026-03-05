@@ -1,6 +1,6 @@
 package com.mycompany.hrms.api.controllers.notification;
 
-import com.mycompany.hrms.service.dtos.notification.response.NotificationRes;
+import com.mycompany.hrms.data.dtos.notification.response.NotificationRes;
 import com.mycompany.hrms.service.notification.INotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;

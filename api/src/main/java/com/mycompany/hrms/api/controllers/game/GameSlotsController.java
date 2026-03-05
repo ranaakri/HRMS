@@ -1,7 +1,7 @@
 package com.mycompany.hrms.api.controllers.game;
 
-import com.mycompany.hrms.service.dtos.game.response.GameEventResponse;
-import com.mycompany.hrms.service.dtos.game.response.GameSlotResponse;
+import com.mycompany.hrms.data.dtos.game.response.GameEventResponse;
+import com.mycompany.hrms.data.dtos.game.response.GameSlotResponse;
 import com.mycompany.hrms.service.game.IGameSlotsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,7 +2,7 @@ package com.mycompany.hrms.service.users;
 
 import com.mycompany.hrms.data.entity.user.Roles;
 import com.mycompany.hrms.data.repository.users.RolesRepo;
-import com.mycompany.hrms.service.dtos.users.response.RoleResponse;
+import com.mycompany.hrms.data.dtos.users.response.RoleResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

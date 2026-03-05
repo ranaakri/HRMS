@@ -2,9 +2,9 @@ package com.mycompany.hrms.api.controllers.travel;
 
 import com.mycompany.hrms.api.response.ApiResponse;
 import com.mycompany.hrms.data.constant.Constants;
-import com.mycompany.hrms.service.dtos.travel.request.AddExpense;
-import com.mycompany.hrms.service.dtos.travel.request.UpdateExpenseStatus;
-import com.mycompany.hrms.service.dtos.travel.response.ExpenseRes;
+import com.mycompany.hrms.data.dtos.travel.request.AddExpense;
+import com.mycompany.hrms.data.dtos.travel.request.UpdateExpenseStatus;
+import com.mycompany.hrms.data.dtos.travel.response.ExpenseRes;
 import com.mycompany.hrms.service.travel.IExpenseService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +46,18 @@ public class ExpensesController {
         return ResponseEntity.ok(expenseService.getMyExpenses(travelId, userId));
     }
 
+    @Operation(
+            summary = "Get Expense by expense id"
+    )
     @GetMapping("/expenseId/{expenseId}")
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     public ResponseEntity<ApiResponse<ExpenseRes>> getExpenseByExpenseId(@PathVariable long expenseId){
         return ResponseEntity.ok(ApiResponse.success(expenseService.getExpenseByExpenseId(expenseId), "Expense fetched successfully"));
     }
 
+    @Operation(
+            summary = "Add new expense"
+    )
     @PostMapping("")
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     public ResponseEntity<ApiResponse<Long>> addExpense(@RequestBody AddExpense expense){
@@ -59,6 +65,9 @@ public class ExpensesController {
         return ResponseEntity.ok(ApiResponse.success(expenseId,"New Expense added successfully"));
     }
 
+    @Operation(
+            summary = "Update expense status"
+    )
     @PatchMapping("/{expenseId}")
     @PreAuthorize("hasAnyAuthority('HR')")
     public ResponseEntity<ApiResponse<String>> updateExpenseStatus(@PathVariable long expenseId, @RequestBody UpdateExpenseStatus expenseStatus){
@@ -66,6 +75,9 @@ public class ExpensesController {
         return ResponseEntity.ok(ApiResponse.successMsg("Status updated successfully: " + status.toString()));
     }
 
+    @Operation(
+            summary = "Delete expense"
+    )
     @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
     @DeleteMapping("/{expenseId}")
     public ResponseEntity<ApiResponse<String>> deleteExpense(@PathVariable long expenseId){

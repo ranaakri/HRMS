@@ -1,9 +1,9 @@
 package com.mycompany.hrms.api.controllers.travel;
 
 import com.mycompany.hrms.api.response.ApiResponse;
-import com.mycompany.hrms.service.dtos.travel.request.TravelDetailsReq;
-import com.mycompany.hrms.service.dtos.travel.request.UpdateTravelDetailsReq;
-import com.mycompany.hrms.service.dtos.travel.response.TravelDetailsRes;
+import com.mycompany.hrms.data.dtos.travel.request.TravelDetailsReq;
+import com.mycompany.hrms.data.dtos.travel.request.UpdateTravelDetailsReq;
+import com.mycompany.hrms.data.dtos.travel.response.TravelDetailsRes;
 import com.mycompany.hrms.service.travel.ITravelDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;

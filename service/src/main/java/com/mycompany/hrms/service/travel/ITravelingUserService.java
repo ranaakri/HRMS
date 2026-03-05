@@ -1,9 +1,9 @@
 package com.mycompany.hrms.service.travel;
 
-import com.mycompany.hrms.service.dtos.travel.request.AddTravelingUserReq;
-import com.mycompany.hrms.service.dtos.travel.response.BudgetResponse;
-import com.mycompany.hrms.service.dtos.travel.response.TravelDetailsRes;
-import com.mycompany.hrms.service.dtos.travel.response.TravelingUserRes;
+import com.mycompany.hrms.data.dtos.travel.request.AddTravelingUserReq;
+import com.mycompany.hrms.data.dtos.travel.response.BudgetResponse;
+import com.mycompany.hrms.data.dtos.travel.response.TravelDetailsRes;
+import com.mycompany.hrms.data.dtos.travel.response.TravelingUserRes;
 
 import java.util.List;
 

@@ -2,9 +2,8 @@ package com.mycompany.hrms.service.doc;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.mycompany.hrms.service.dtos.DocRequest;
-import com.mycompany.hrms.service.dtos.DocResponse;
-import com.mycompany.hrms.service.dtos.job.response.UploadCvRes;
+import com.mycompany.hrms.data.dtos.DocRequest;
+import com.mycompany.hrms.data.dtos.DocResponse;
 import com.mycompany.hrms.service.exception.InternalServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -5,10 +5,10 @@ import com.mycompany.hrms.data.entity.travel.*;
 import com.mycompany.hrms.data.entity.user.Users;
 import com.mycompany.hrms.data.repository.travel.*;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
-import com.mycompany.hrms.service.dtos.DocResponse;
-import com.mycompany.hrms.service.dtos.travel.request.AddExpense;
-import com.mycompany.hrms.service.dtos.travel.request.AddExpenseSplit;
-import com.mycompany.hrms.service.dtos.travel.response.ExpenseRes;
+import com.mycompany.hrms.data.dtos.DocResponse;
+import com.mycompany.hrms.data.dtos.travel.request.AddExpense;
+import com.mycompany.hrms.data.dtos.travel.request.AddExpenseSplit;
+import com.mycompany.hrms.data.dtos.travel.response.ExpenseRes;
 import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import com.mycompany.hrms.service.notification.NotificationService;
@@ -132,10 +132,6 @@ public class ExpenseService implements IExpenseService {
             throw new BadRequestException("Exceeded time duration of 10 days");
         }
 
-        if(days < 0){
-            throw new BadRequestException("Can not add expense before trip starts");
-        }
-
         Expenses expenses = modelMapper.map(expense, Expenses.class);
         expenses.setUploadedBy(uploadedBy);
         expenses.setTravelDetails(travelDetails);
@@ -160,19 +156,19 @@ public class ExpenseService implements IExpenseService {
 
             expensesSplitsRepo.save(splitEntity);
 
-            List<ExpensesProofs> proofs = new ArrayList<>();
-            for(DocResponse docRes : expense.getExpenseProof()){
-                ExpensesProofs proof = new ExpensesProofs();
-                proof.setPublicId(docRes.getPublicId());
-                proof.setProofFilePath(docRes.getPath());
-                proof.setExpenses(savedExpense);
-                proofs.add(proof);
-            }
-            expensesProofsRepo.saveAll(proofs);
-
             travelingUser.setUsedBalance(newUsedBalance);
             travelingUserRepo.save(travelingUser);
         }
+
+        List<ExpensesProofs> proofs = new ArrayList<>();
+        for(DocResponse docRes : expense.getExpenseProof()){
+            ExpensesProofs proof = new ExpensesProofs();
+            proof.setPublicId(docRes.getPublicId());
+            proof.setProofFilePath(docRes.getPath());
+            proof.setExpenses(savedExpense);
+            proofs.add(proof);
+        }
+        expensesProofsRepo.saveAll(proofs);
 
         if (splitSum != savedExpense.getAmount())
             throw new BadRequestException("Sum of splits does not match expense amount");
@@ -180,15 +176,16 @@ public class ExpenseService implements IExpenseService {
         travelDetails.setTotalExpense(travelDetails.getTotalExpense() + expense.getAmount());
         travelDetailsRepo.save(travelDetails);
 
-        List<Users> splitWith = expense
+        List<Users> splitWith = new ArrayList<>(expense
                 .getExpensesSplits()
-                .stream().map(
-                        val -> travelingUserRepo
-                                .findById(val.getTravelingUserId())
-                                .orElseThrow(() -> new ResourceNotFoundException("User not found for notification"))
-                                .getUser())
-                .toList();
-
+                .stream()
+                .map(
+            val -> travelingUserRepo
+                    .findById(val.getTravelingUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found for notification"))
+                    .getUser())
+                .toList());
+        splitWith.remove(uploadedBy);
         notificationService.addNotification(splitWith, "EXPENSE_SPLIT", "by " + uploadedBy.getName());
         return expenses.getExpenseId();
     }

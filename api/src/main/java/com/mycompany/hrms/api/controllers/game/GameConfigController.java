@@ -1,10 +1,9 @@
 package com.mycompany.hrms.api.controllers.game;
 
-import com.mycompany.hrms.service.dtos.game.request.CreateGameReq;
-import com.mycompany.hrms.service.dtos.game.response.GameResponse;
+import com.mycompany.hrms.data.dtos.game.request.CreateGameReq;
+import com.mycompany.hrms.data.dtos.game.response.GameResponse;
 import com.mycompany.hrms.service.game.IGameConfigService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,5 +76,15 @@ public class GameConfigController {
     @PutMapping("/{gameId}")
     public ResponseEntity<GameResponse> updateGame(@PathVariable long gameId, @RequestBody CreateGameReq gameReq){
         return ResponseEntity.ok(gameConfigService.updateGame(gameId, gameReq));
+    }
+
+    @Operation(
+            summary = "Delete game"
+    )
+    @PreAuthorize("hasAnyAuthority('HR')")
+    @DeleteMapping("/{gameId}")
+    public ResponseEntity<Void> deleteGame(@PathVariable long gameId){
+        gameConfigService.deleteGame(gameId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

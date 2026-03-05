@@ -1,9 +1,11 @@
 package com.mycompany.hrms.api.controllers.users;
 
-import com.mycompany.hrms.service.dtos.users.request.UpdateUserProfileDto;
-import com.mycompany.hrms.service.dtos.users.request.UpdateUserProfileHr;
-import com.mycompany.hrms.service.dtos.users.request.UserProfileCreate;
-import com.mycompany.hrms.service.dtos.users.response.*;
+import com.mycompany.hrms.data.dtos.users.request.UpdateUserProfileDto;
+import com.mycompany.hrms.data.dtos.users.request.UpdateUserProfileHr;
+import com.mycompany.hrms.data.dtos.users.request.UserProfileCreate;
+import com.mycompany.hrms.data.dtos.users.response.EventRes;
+import com.mycompany.hrms.data.dtos.users.response.OrgChartRes;
+import com.mycompany.hrms.data.dtos.users.response.UserListRes;
 import com.mycompany.hrms.service.users.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -34,7 +36,7 @@ public class UsersController {
     )
     @GetMapping("/id/{userId}")
     @PreAuthorize("hasAnyAuthority('Employee', 'HR', 'Manager')")
-    public ResponseEntity<UserProfileDto> getUserProfileById(@PathVariable long userId){
+    public ResponseEntity<com.mycompany.hrms.data.dtos.users.response.UserProfileDto> getUserProfileById(@PathVariable long userId){
         return new ResponseEntity<>(usersService.getUserProfileByUserId(userId), HttpStatus.OK);
     }
 
@@ -53,7 +55,7 @@ public class UsersController {
     )
     @GetMapping("/email/{email}")
     @PreAuthorize("hasAnyAuthority('Employee')")
-    public ResponseEntity<UserProfileDto> getUserByEmail(@PathVariable String email){
+    public ResponseEntity<com.mycompany.hrms.data.dtos.users.response.UserProfileDto> getUserByEmail(@PathVariable String email){
         return new ResponseEntity<>(usersService.getUserProfileByEmail(email), HttpStatus.OK);
     }
 
@@ -71,7 +73,7 @@ public class UsersController {
     )
     @GetMapping("/game/{userId}")
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
-    public ResponseEntity<FavouriteGameResponse> getFavGameSlots(@PathVariable long userId){
+    public ResponseEntity<com.mycompany.hrms.data.dtos.users.response.FavouriteGameResponse> getFavGameSlots(@PathVariable long userId){
         return ResponseEntity.ok(usersService.getSlotsOfFavouriteGame(userId));
     }
 
@@ -98,7 +100,7 @@ public class UsersController {
     )
     @GetMapping("/list/all")
     @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
-    public ResponseEntity<List<UserProfileDto>> getListOfUsersProfile(
+    public ResponseEntity<List<com.mycompany.hrms.data.dtos.users.response.UserProfileDto>> getListOfUsersProfile(
             @RequestParam(required = false, defaultValue = "0")Integer page,
             @RequestParam(required = false,defaultValue = "10") Integer pageSize,
             @RequestParam(required = false) Long department){
@@ -116,12 +118,22 @@ public class UsersController {
     }
 
     @Operation(
+            summary = "Get users profile list form name"
+    )
+    @PreAuthorize("hasAnyAuthority('HR')")
+    @GetMapping("/name/list/{name}")
+    public ResponseEntity<List<com.mycompany.hrms.data.dtos.users.response.UserProfileDto>> getUsersProfileByName(@PathVariable String name,
+                                                                                                                  @RequestParam(required = false) Long department){
+        return ResponseEntity.ok(usersService.getUsersProfileByName(name,department));
+    }
+
+    @Operation(
             summary = "Create new user profile",
             description = "Create new user profile"
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
     @PostMapping("")
-    public ResponseEntity<UserProfileCreated> createUserProfile(@RequestBody UserProfileCreate userProfileCreate){
+    public ResponseEntity<com.mycompany.hrms.data.dtos.users.response.UserProfileCreated> createUserProfile(@RequestBody UserProfileCreate userProfileCreate){
         return new ResponseEntity<>(usersService.createUserProfile(userProfileCreate), HttpStatus.CREATED);
     }
 
@@ -171,7 +183,7 @@ public class UsersController {
     )
     @PatchMapping("/{userId}")
     @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
-    public ResponseEntity<UpdatedUserProfileDto> updateUserProfile(@PathVariable long userId,@Valid @RequestBody UpdateUserProfileDto updateUserProfile) {
+    public ResponseEntity<com.mycompany.hrms.data.dtos.users.response.UpdatedUserProfileDto> updateUserProfile(@PathVariable long userId, @Valid @RequestBody UpdateUserProfileDto updateUserProfile) {
         return new ResponseEntity<>(usersService.updateUserProfile(userId, updateUserProfile), HttpStatus.OK);
     }
 

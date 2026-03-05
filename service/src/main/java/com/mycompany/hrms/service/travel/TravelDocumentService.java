@@ -9,7 +9,7 @@ import com.mycompany.hrms.data.entity.user.Users;
 import com.mycompany.hrms.data.repository.travel.TravelDocumentsRepo;
 import com.mycompany.hrms.data.repository.travel.TravelingUserRepo;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
-import com.mycompany.hrms.service.dtos.travel.response.TravelDocRes;
+import com.mycompany.hrms.data.dtos.travel.response.TravelDocRes;
 import com.mycompany.hrms.service.exception.InternalServerException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;

@@ -1,7 +1,7 @@
 package com.mycompany.hrms.api.controllers.travel;
 
 import com.mycompany.hrms.api.response.ApiResponse;
-import com.mycompany.hrms.service.dtos.travel.response.ExpenseProofRes;
+import com.mycompany.hrms.data.dtos.travel.response.ExpenseProofRes;
 import com.mycompany.hrms.service.travel.IExpenseProofService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,13 +1,13 @@
 package com.mycompany.hrms.service.post;
 
-import com.mycompany.hrms.service.dtos.post.request.CommentReq;
-import com.mycompany.hrms.service.dtos.post.request.CreatePost;
-import com.mycompany.hrms.service.dtos.post.request.DeletePost;
-import com.mycompany.hrms.service.dtos.post.request.EditCommentReq;
-import com.mycompany.hrms.service.dtos.post.response.CommentsRes;
-import com.mycompany.hrms.service.dtos.post.response.GetPostData;
-import com.mycompany.hrms.service.dtos.post.response.PostLikeRes;
-import com.mycompany.hrms.service.dtos.post.response.PostResponse;
+import com.mycompany.hrms.data.dtos.post.request.CommentReq;
+import com.mycompany.hrms.data.dtos.post.request.CreatePost;
+import com.mycompany.hrms.data.dtos.post.request.DeletePost;
+import com.mycompany.hrms.data.dtos.post.request.EditCommentReq;
+import com.mycompany.hrms.data.dtos.post.response.CommentsRes;
+import com.mycompany.hrms.data.dtos.post.response.GetPostData;
+import com.mycompany.hrms.data.dtos.post.response.PostLikeRes;
+import com.mycompany.hrms.data.dtos.post.response.PostResponse;
 import org.springframework.data.domain.Pageable;
 
 import java.time.ZonedDateTime;

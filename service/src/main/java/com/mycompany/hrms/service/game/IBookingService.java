@@ -1,9 +1,8 @@
 package com.mycompany.hrms.service.game;
 
-import com.mycompany.hrms.data.entity.game.SlotRequest;
-import com.mycompany.hrms.service.dtos.game.response.GameStatusResponse;
-import com.mycompany.hrms.service.dtos.game.response.UserPriorityRes;
-import com.mycompany.hrms.service.dtos.travel.response.CreatedByUser;
+import com.mycompany.hrms.data.dtos.game.response.GameStatusResponse;
+import com.mycompany.hrms.data.dtos.game.response.UserPriorityRes;
+import com.mycompany.hrms.data.dtos.travel.response.CreatedByUser;
 
 import java.util.List;
 

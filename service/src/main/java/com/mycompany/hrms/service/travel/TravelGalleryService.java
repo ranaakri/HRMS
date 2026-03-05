@@ -6,7 +6,7 @@ import com.mycompany.hrms.data.entity.travel.TravelDetails;
 import com.mycompany.hrms.data.entity.travel.TravelGallery;
 import com.mycompany.hrms.data.repository.travel.TravelDetailsRepo;
 import com.mycompany.hrms.data.repository.travel.TravelGalleryRepo;
-import com.mycompany.hrms.service.dtos.travel.response.TravelGalleryRes;
+import com.mycompany.hrms.data.dtos.travel.response.TravelGalleryRes;
 import com.mycompany.hrms.service.exception.InternalServerException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;

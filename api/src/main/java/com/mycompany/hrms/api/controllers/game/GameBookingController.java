@@ -1,10 +1,10 @@
 package com.mycompany.hrms.api.controllers.game;
 
-import com.mycompany.hrms.service.dtos.game.request.BookGameSlot;
-import com.mycompany.hrms.service.dtos.game.request.DeleteSlotRequest;
-import com.mycompany.hrms.service.dtos.game.response.GameStatusResponse;
-import com.mycompany.hrms.service.dtos.game.response.UserPriorityRes;
-import com.mycompany.hrms.service.dtos.travel.response.CreatedByUser;
+import com.mycompany.hrms.data.dtos.game.request.BookGameSlot;
+import com.mycompany.hrms.data.dtos.game.request.DeleteSlotRequest;
+import com.mycompany.hrms.data.dtos.game.response.GameStatusResponse;
+import com.mycompany.hrms.data.dtos.game.response.UserPriorityRes;
+import com.mycompany.hrms.data.dtos.travel.response.CreatedByUser;
 import com.mycompany.hrms.service.game.IBookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;

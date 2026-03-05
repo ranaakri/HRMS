@@ -1,6 +1,10 @@
 package com.mycompany.hrms.service.users;
 
 import com.mycompany.hrms.data.constant.Constants;
+import com.mycompany.hrms.data.dtos.users.response.AuthResponse;
+import com.mycompany.hrms.data.dtos.users.response.EventRes;
+import com.mycompany.hrms.data.dtos.users.response.OrgChartRes;
+import com.mycompany.hrms.data.dtos.users.response.UserListRes;
 import com.mycompany.hrms.data.entity.game.GameConfig;
 import com.mycompany.hrms.data.entity.game.GameSlots;
 import com.mycompany.hrms.data.entity.user.Departments;
@@ -11,18 +15,16 @@ import com.mycompany.hrms.data.repository.game.GameSlotsRepo;
 import com.mycompany.hrms.data.repository.users.DepartmentsRepo;
 import com.mycompany.hrms.data.repository.users.RolesRepo;
 import com.mycompany.hrms.data.repository.users.UsersRepo;
-import com.mycompany.hrms.service.dtos.game.response.GameSlotResponse;
-import com.mycompany.hrms.service.dtos.users.request.UpdateUserProfileDto;
-import com.mycompany.hrms.service.dtos.users.request.UpdateUserProfileHr;
-import com.mycompany.hrms.service.dtos.users.request.UserProfileCreate;
-import com.mycompany.hrms.service.dtos.users.response.*;
+import com.mycompany.hrms.data.dtos.game.response.GameSlotResponse;
+import com.mycompany.hrms.data.dtos.users.request.UpdateUserProfileDto;
+import com.mycompany.hrms.data.dtos.users.request.UpdateUserProfileHr;
+import com.mycompany.hrms.data.dtos.users.request.UserProfileCreate;
 import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.IErrorMessages;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -64,19 +66,18 @@ public class UsersService implements IUserService {
         this.gameConfigRepo = gameConfigRepo;
     }
 
-    public List<UserProfileDto> getAllUserProfiles(Pageable pageable, Long department){
-        Page<Users> users = usersRepo.findAll(pageable);
+    public List<com.mycompany.hrms.data.dtos.users.response.UserProfileDto> getAllUserProfiles(Pageable pageable, Long department){
         if(department!=null){
-            return users.stream().filter(val -> val.getDepartment().getDepartmentId() == department).map(val -> modelMapper.map(val,UserProfileDto.class)).toList();
+            return usersRepo.findAllByDepartment_DepartmentId(department, pageable).stream().map(val -> modelMapper.map(val, com.mycompany.hrms.data.dtos.users.response.UserProfileDto.class)).toList();
         }else{
-            return users.stream().map(val -> modelMapper.map(val,UserProfileDto.class)).toList();
+            return usersRepo.findAll().stream().map(val -> modelMapper.map(val, com.mycompany.hrms.data.dtos.users.response.UserProfileDto.class)).toList();
         }
     }
 
-    public UserProfileDto getUserProfileByUserId(long userId){
+    public com.mycompany.hrms.data.dtos.users.response.UserProfileDto getUserProfileByUserId(long userId){
         Users user = usersRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND));
-        return modelMapper.map(user, UserProfileDto.class);
+        return modelMapper.map(user, com.mycompany.hrms.data.dtos.users.response.UserProfileDto.class);
     }
 
     public List<EventRes> getUsersWithBirthday(){
@@ -86,6 +87,17 @@ public class UsersService implements IUserService {
     public List<UserListRes> getUsersListByName(String name){
         List<Users> users =usersRepo.findUsersByNameLike(name + "%");
         return users.stream().map(val -> modelMapper.map(val, UserListRes.class)).toList();
+    }
+
+    public List<com.mycompany.hrms.data.dtos.users.response.UserProfileDto> getUsersProfileByName(String name, Long departmentId){
+        if(departmentId != null)
+            return usersRepo.findAllByDepartment_DepartmentIdAndNameStartingWith(departmentId, name)
+                    .stream()
+                    .map(val -> modelMapper.map(val, com.mycompany.hrms.data.dtos.users.response.UserProfileDto.class)).toList();
+        else
+            return usersRepo.findByNameStartingWith(name)
+                    .stream()
+                    .map(val -> modelMapper.map(val, com.mycompany.hrms.data.dtos.users.response.UserProfileDto.class)).toList();
     }
 
     public List<String> getAllDesignations(){
@@ -171,13 +183,13 @@ public class UsersService implements IUserService {
         game.getLikedBy().remove(user);
     }
 
-    public FavouriteGameResponse getSlotsOfFavouriteGame(long userId){
+    public com.mycompany.hrms.data.dtos.users.response.FavouriteGameResponse getSlotsOfFavouriteGame(long userId){
         Users user = usersRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND));
         if(user.getFavoriteGame() == null)
             throw new BadRequestException("Favourite game not configured yet");
         List<GameSlots> upComingSlots = gameSlotsRepo.getTop5LatestSlots(user.getFavoriteGame().getGameId());
-        FavouriteGameResponse response = new FavouriteGameResponse();
+        com.mycompany.hrms.data.dtos.users.response.FavouriteGameResponse response = new com.mycompany.hrms.data.dtos.users.response.FavouriteGameResponse();
         response.setName(user.getFavoriteGame().getName());
         response.setGameId(user.getFavoriteGame().getGameId());
         response.setUpComingSlots(upComingSlots.stream().map(val -> modelMapper.map(val, GameSlotResponse.class)).toList());
@@ -188,13 +200,13 @@ public class UsersService implements IUserService {
         return usersRepo.findUsersByAssignedUnder_UserId(userId).stream().map(val -> modelMapper.map(val, OrgChartRes.class)).toList();
     }
 
-    public UserProfileDto getUserProfileByEmail(String email){
+    public com.mycompany.hrms.data.dtos.users.response.UserProfileDto getUserProfileByEmail(String email){
         return modelMapper.map(usersRepo.findUsersByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND)), UserProfileDto.class);
+                .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND)), com.mycompany.hrms.data.dtos.users.response.UserProfileDto.class);
     }
 
     @Transactional
-    public UserProfileCreated createUserProfile(UserProfileCreate userProfileCreate){
+    public com.mycompany.hrms.data.dtos.users.response.UserProfileCreated createUserProfile(UserProfileCreate userProfileCreate){
         Users users = modelMapper.map(userProfileCreate, Users.class);
         users.setRole(rolesRepo.findById(userProfileCreate.getRoleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found in database")));
@@ -208,7 +220,7 @@ public class UsersService implements IUserService {
         users.setPassword(passwordEncoder.encode(userProfileCreate.getPassword()));
         Users newProfile = usersRepo.save(users);
         newProfile.setAssignedUnder(assignedUnder);
-        return modelMapper.map(newProfile, UserProfileCreated.class);
+        return modelMapper.map(newProfile, com.mycompany.hrms.data.dtos.users.response.UserProfileCreated.class);
     }
 
     @Transactional
@@ -224,12 +236,12 @@ public class UsersService implements IUserService {
     }
 
     @Transactional
-    public UpdatedUserProfileDto updateUserProfile(long userId, UpdateUserProfileDto updatedProfile){
+    public com.mycompany.hrms.data.dtos.users.response.UpdatedUserProfileDto updateUserProfile(long userId, UpdateUserProfileDto updatedProfile){
         Users profile = usersRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(IErrorMessages.USER_NOT_FOUND));
         modelMapper.map(updatedProfile, profile);
         profile.setUpdatedAt(ZonedDateTime.now());
-        return  modelMapper.map(profile, UpdatedUserProfileDto.class);
+        return  modelMapper.map(profile, com.mycompany.hrms.data.dtos.users.response.UpdatedUserProfileDto.class);
     }
 
     public void deleteUser(long userId){
