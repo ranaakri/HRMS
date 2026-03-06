@@ -1,10 +1,7 @@
 package com.mycompany.hrms.api.controllers.post;
 
 import com.mycompany.hrms.data.dtos.post.request.*;
-import com.mycompany.hrms.data.dtos.post.response.CommentsRes;
-import com.mycompany.hrms.data.dtos.post.response.GetPostData;
-import com.mycompany.hrms.data.dtos.post.response.PostLikeRes;
-import com.mycompany.hrms.data.dtos.post.response.PostResponse;
+import com.mycompany.hrms.data.dtos.post.response.*;
 import com.mycompany.hrms.service.post.IPostService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +36,15 @@ public class PostController {
     }
 
     @Operation(
+            summary = "Get Profile post counts data form user id"
+    )
+    @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
+    @GetMapping("/profile/count/{userId}")
+    public ResponseEntity<ProfilePostData> getProfilePostData(@PathVariable long userId){
+        return ResponseEntity.ok(postService.getProfilePostData(userId));
+    }
+
+    @Operation(
             summary = "add new post"
     )
     @PostMapping("")
@@ -69,6 +75,17 @@ public class PostController {
         Pageable pageable = PageRequest.of(page, 5, Sort.by(SORT_BY).descending());
 
         return ResponseEntity.ok(postService.getPostByTags(pageable, tag, userId));
+    }
+
+    @Operation(
+            summary = "Get deleted post by user"
+    )
+    @GetMapping("/deleted/{userId}")
+    @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
+    public ResponseEntity<List<PostResponse>> getDeletedPost(@PathVariable long userId, @RequestParam(defaultValue = "0") int page){
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(SORT_BY).descending());
+
+        return ResponseEntity.ok(postService.getDeletedPostByUserId(userId, pageable));
     }
 
     @Operation(
@@ -159,6 +176,16 @@ public class PostController {
     @PutMapping("/updatedBy/{userId}/post/{postId}")
     public ResponseEntity<GetPostData> updatePost(@PathVariable long userId, @PathVariable long postId, @RequestBody CreatePost updatePost){
         return ResponseEntity.ok(postService.updatePost(postId, userId, updatePost));
+    }
+
+    @Operation(
+            summary = "Restore post"
+    )
+    @PreAuthorize("hasAnyAuthority('HR', 'Employee', 'Manager')")
+    @PatchMapping("/restore")
+    public ResponseEntity<GetPostData> restorePost(@RequestBody DeletePost restoreReq){
+        postService.restorePost(restoreReq);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(

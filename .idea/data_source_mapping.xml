@@ -2,5 +2,6 @@
 <project version="4">
   <component name="DataSourcePerFileMappings">
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/9979f6e3-7a00-49b2-a792-022ea3a349a5/console.sql" value="9979f6e3-7a00-49b2-a792-022ea3a349a5" />
+    <file url="file://$PROJECT_DIR$/data/src/main/java/com/mycompany/hrms/data/repository/post/PostRepo.java" value="9979f6e3-7a00-49b2-a792-022ea3a349a5" />
   </component>
 </project>

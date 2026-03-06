@@ -1,5 +1,6 @@
 package com.mycompany.hrms.data.repository.post;
 
+import com.mycompany.hrms.data.dtos.post.response.LikePostCount;
 import com.mycompany.hrms.data.entity.post.Post;
 import com.mycompany.hrms.data.entity.user.Users;
 import org.springframework.data.domain.Page;
@@ -22,10 +23,10 @@ public interface PostRepo extends JpaRepository<Post, Long> {
     boolean likeExistsOnPostByUserIdAndPostId(@Param("userId") long userId, @Param("postId") long postId);
 
     @Query("""
-    SELECT u FROM Post p
-    JOIN p.likes u
-    WHERE p.postId = :postId
-""")
+                SELECT u FROM Post p
+                JOIN p.likes u
+                WHERE p.postId = :postId
+            """)
     Page<Users> findPostLikes(@Param("postId") Long postId, Pageable pageable);
 
     @EntityGraph(attributePaths = {"mentions"})
@@ -45,5 +46,23 @@ public interface PostRepo extends JpaRepository<Post, Long> {
 
     @EntityGraph(attributePaths = {"mentions"})
     @Query(value = "select * from post where createdAt between :startDate and :endDate and isDeleted = 0", nativeQuery = true)
-    Page<Post> findAllBetweenStartDateAndEndDate(@Param("startDate")ZonedDateTime startDate, @Param("endDate")ZonedDateTime endDate, Pageable pageable);
+    Page<Post> findAllBetweenStartDateAndEndDate(@Param("startDate") ZonedDateTime startDate, @Param("endDate") ZonedDateTime endDate, Pageable pageable);
+
+    @Query(value = "select COALESCE(SUM(p.likeCount), 0) as likeCount, COUNT(*) as postCount from Post p where authorId = :userId AND p.isDeleted = 0", nativeQuery = true)
+    LikePostCount findLikeAndPostCountByUserId(@Param("userId") Long userId);
+
+    @Query(value = "select COUNT(*) from PostMentions pm join Post p on p.postId = pm.postId where pm.userId = :userId AND p.isDeleted = 0", nativeQuery = true)
+    long findMentionCountByUserId(@Param("userId") long userId);
+
+    @Query(value = """
+        SELECT p.*
+            FROM Post p
+            LEFT JOIN Warnings w
+                ON p.postId = w.entityId
+                AND w.entityType = 'POST'
+            WHERE p.isDeleted = 1
+              AND p.authorId = :userId
+              AND w.entityId IS NULL
+            """, nativeQuery = true)
+    Page<Post> findAllDeletedPostByUser(@Param("userId") Long userId, Pageable pageable);
 }

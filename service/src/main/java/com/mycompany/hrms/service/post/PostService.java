@@ -1,5 +1,6 @@
 package com.mycompany.hrms.service.post;
 
+import com.mycompany.hrms.data.dtos.post.response.*;
 import com.mycompany.hrms.data.entity.post.Post;
 import com.mycompany.hrms.data.entity.post.PostComments;
 import com.mycompany.hrms.data.entity.user.Users;
@@ -10,10 +11,6 @@ import com.mycompany.hrms.data.dtos.post.request.CommentReq;
 import com.mycompany.hrms.data.dtos.post.request.CreatePost;
 import com.mycompany.hrms.data.dtos.post.request.DeletePost;
 import com.mycompany.hrms.data.dtos.post.request.EditCommentReq;
-import com.mycompany.hrms.data.dtos.post.response.CommentsRes;
-import com.mycompany.hrms.data.dtos.post.response.GetPostData;
-import com.mycompany.hrms.data.dtos.post.response.PostLikeRes;
-import com.mycompany.hrms.data.dtos.post.response.PostResponse;
 import com.mycompany.hrms.service.exception.BadRequestException;
 import com.mycompany.hrms.service.exception.ResourceNotFoundException;
 import com.mycompany.hrms.service.notification.NotificationService;
@@ -128,10 +125,7 @@ public class PostService implements IPostService{
                 .getRole()
                 .getName().equals("Employee");
 
-        boolean isManager = usersRepo.findById(userId)
-                .orElseThrow(() -> new RequestRejectedException(USER_NOT_FOUND))
-                .getRole()
-                .getName().equals("Manager");
+        boolean isManager = !isEmp;
 
         return postRepo.findAllByIsDeletedFalse(pageable)
                 .stream()
@@ -153,10 +147,7 @@ public class PostService implements IPostService{
                 .getRole()
                 .getName().equals("Employee");
 
-        boolean isManager = usersRepo.findById(userId)
-                .orElseThrow(() -> new RequestRejectedException(USER_NOT_FOUND))
-                .getRole()
-                .getName().equals("Manager");
+        boolean isManager = !isEmp;
 
         return postRepo.findAllBetweenStartDateAndEndDate(startDate, endDate, pageable)
                 .stream()
@@ -171,6 +162,14 @@ public class PostService implements IPostService{
 
     public List<PostResponse> getPostByStartDateAndEndDate(long userId, ZonedDateTime startDate, ZonedDateTime endDate, Pageable pageable){
         return postRepo.findAllBetweenStartDateAndEndDate(startDate, endDate, pageable).stream().map(val -> {
+            PostResponse res = modelMapper.map(val, PostResponse.class);
+            res.setLikedByMe(postRepo.likeExistsOnPostByUserIdAndPostId(userId, val.getPostId()));
+            return res;
+        }).toList();
+    }
+
+    public List<PostResponse> getDeletedPostByUserId(long userId, Pageable pageable){
+        return postRepo.findAllDeletedPostByUser(userId, pageable).stream().map(val -> {
             PostResponse res = modelMapper.map(val, PostResponse.class);
             res.setLikedByMe(postRepo.likeExistsOnPostByUserIdAndPostId(userId, val.getPostId()));
             return res;
@@ -195,6 +194,20 @@ public class PostService implements IPostService{
         if(post.isDeleted())
             throw new BadRequestException("Post is deleted");
         return modelMapper.map(post, GetPostData.class);
+    }
+
+    public ProfilePostData getProfilePostData(long userId){
+        Users user = usersRepo.findById(userId).
+            orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+        LikePostCount count = postRepo.findLikeAndPostCountByUserId(userId);
+
+        ProfilePostData data = new ProfilePostData();
+        data.setPostCount(count.getPostCount());
+        data.setLikeCount(count.getLikeCount());
+        data.setProfile(modelMapper.map(user, UserProfileData.class));
+        data.setMentionsCount(postRepo.findMentionCountByUserId(userId));
+
+        return data;
     }
 
     @Transactional
@@ -275,6 +288,15 @@ public class PostService implements IPostService{
         comments.setDeleted(true);
         Post post = comments.getPost();
         post.setCommentCount(post.getCommentCount()-1);
+    }
+
+    @Transactional
+    public void restorePost(DeletePost req){
+        Post post = postRepo.findById(req.getPostId())
+                .orElseThrow(() -> new ResourceNotFoundException(POST_NOT_FOUND));
+        if(post.getAuthor().getUserId() != req.getDeletedById())
+            throw new BadRequestException("Post is not shared by you");
+        post.setDeleted(false);
     }
 
     @Transactional

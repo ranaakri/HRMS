@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/data/src/main/java/com/mycompany/hrms/data/repository/game/GameSlotsRepo.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/data/src/main/java/com/mycompany/hrms/data/repository/game/GameSlotsRepo.java" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/data/src/main/java/com/mycompany/hrms/data/repository/post/PostRepo.java" dialect="TSQL" />
     <file url="file://$PROJECT_DIR$/data/src/main/java/com/mycompany/hrms/data/repository/travel/TravelingUserRepo.java" dialect="TSQL" />
-    <file url="file://$PROJECT_DIR$/data/src/main/java/com/mycompany/hrms/data/repository/users/UsersRepo.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/data/src/main/java/com/mycompany/hrms/data/repository/users/UsersRepo.java" dialect="TSQL" />
   </component>
 </project>
