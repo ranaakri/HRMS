@@ -21,6 +21,8 @@ public interface FinalBookingsRepo extends JpaRepository<FinalBookings, Long> {
 
     boolean existsByConfirmedRequest_RequestId(long requestId);
 
+    boolean existsByGameSlot_SlotId(long slotId);
+
     @Query(value = "select f.* from FinalBookings f join SlotRequest s on s.requestId = f.confirmedRequestId where s.requestBy = :userId and s.slotId = :slotId", nativeQuery = true)
     Optional<FinalBookings> findByUser_UserIdAndGameSlots_SlotId(@Param("userId") long userId, @Param("slotId") long slotId);
 

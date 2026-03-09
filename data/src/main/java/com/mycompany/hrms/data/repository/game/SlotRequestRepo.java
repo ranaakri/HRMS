@@ -17,7 +17,7 @@ public interface SlotRequestRepo extends JpaRepository<SlotRequest, Long> {
             SELECT * FROM GameSlots g
             WHERE g.startTime BETWEEN
                 DATEADD(MINUTE, 14, SYSDATETIMEOFFSET()) AND
-                DATEADD(MINUTE, 16, SYSDATETIMEOFFSET())""", nativeQuery = true)
+                DATEADD(MINUTE, 15, SYSDATETIMEOFFSET())""", nativeQuery = true)
     List<GameSlots> findSlotsStartingSoon();
 
     @Query("SELECT new com.mycompany.hrms.data.constant.SlotEventRes(" +
@@ -29,7 +29,15 @@ public interface SlotRequestRepo extends JpaRepository<SlotRequest, Long> {
     List<SlotEventRes> findAllSlotRequest(@Param("userId") long userId);
 
 
-    List<SlotRequest> findAllByGameSlots_SlotId(Long slotId);
+    @Query(
+            """
+    SELECT r FROM SlotRequest r
+    LEFT JOIN FETCH r.participants p
+    LEFT JOIN FETCH p.user
+    WHERE r.gameSlots.slotId = :slotId
+"""
+    )
+    List<SlotRequest> findAllByGameSlots_SlotId(@Param("slotId") Long slotId);
 
     List<SlotRequest> findAllByGameSlots_SlotIdAndStatus(long slotId, SlotRequest.RequestStatus status);
 

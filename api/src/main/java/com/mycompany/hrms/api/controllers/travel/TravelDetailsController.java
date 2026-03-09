@@ -39,6 +39,16 @@ public class TravelDetailsController {
     }
 
     @Operation(
+            summary = "Search travel details by title"
+    )
+    @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<TravelDetailsRes>>> searchTravelDetailsByTitle(@RequestParam String title, @RequestParam(defaultValue = "0") int page){
+        Pageable pageable = PageRequest.of(page,10, Sort.by("startDate").descending());
+        return ResponseEntity.ok(ApiResponse.success(travelDetailsService.searchTravelDetails(title, pageable), "Searching travel successful"));
+    }
+
+    @Operation(
             summary = "Get all travel plans"
     )
     @PreAuthorize("hasAnyAuthority('HR', 'Manager', 'Employee')")

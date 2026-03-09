@@ -15,14 +15,13 @@ import com.mycompany.hrms.service.notification.NotificationService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService implements IBookingService {
@@ -70,7 +69,8 @@ public class BookingService implements IBookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Requested by user not found"));
 
         if (ZonedDateTime.now().isAfter(gameSlots.getStartTime().minusMinutes(15))) {
-            if (slotRequestRepo.findAllByGameSlots_SlotIdAndStatus(slotId, SlotRequest.RequestStatus.PENDING).isEmpty()) {
+            if (slotRequestRepo.findAllByGameSlots_SlotIdAndStatus(slotId, SlotRequest.RequestStatus.PENDING).isEmpty()
+                    && !finalBookingsRepo.existsByGameSlot_SlotId(slotId)) {
                 SlotRequest request = new SlotRequest();
                 request.setGroupAverageScore(0);
                 request.setRequestTimeStamp(ZonedDateTime.now());
@@ -155,16 +155,15 @@ public class BookingService implements IBookingService {
         request.setGameSlots(gameSlots);
         request.setRequestBy(requested);
 
-        request = slotRequestRepo.save(request);
-
         List<Users> participants = usersRepo.findUsersByUserIdIn(userIds);
 
         for (Users p : participants) {
             RequestParticipants requestParticipants = new RequestParticipants();
-            requestParticipants.setRequest(request);
             requestParticipants.setUser(p);
-            requestParticipantsRepo.save(requestParticipants);
+            request.addRequestParticipants(requestParticipants);
         }
+
+        slotRequestRepo.save(request);
     }
 
     private double validateGroupPriority(List<UserGameStats> gameStats) {

@@ -7,6 +7,7 @@ import com.mycompany.hrms.data.entity.user.Users;
 import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "requestId")
@@ -35,7 +36,7 @@ public class SlotRequest {
     private RequestStatus status = RequestStatus.PENDING;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "request")
-    private Set<RequestParticipants> participants;
+    private Set<RequestParticipants> participants = new HashSet<>();
 
     public enum RequestStatus {
         PENDING,
@@ -94,6 +95,11 @@ public class SlotRequest {
 
     public Set<RequestParticipants> getParticipants() {
         return participants;
+    }
+
+    public void addRequestParticipants(RequestParticipants r){
+        this.participants.add(r);
+        r.setRequest(this);
     }
 
     public void setParticipants(Set<RequestParticipants> participants) {

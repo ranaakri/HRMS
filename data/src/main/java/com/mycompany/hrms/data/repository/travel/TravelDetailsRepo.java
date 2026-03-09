@@ -1,6 +1,7 @@
 package com.mycompany.hrms.data.repository.travel;
 
 import com.mycompany.hrms.data.entity.travel.TravelDetails;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,5 @@ public interface TravelDetailsRepo extends JpaRepository<TravelDetails, Long> {
             "ORDER BY t.startDate ASC")
     List<TravelDetails> findFirstNearestTravel(@Param("userId") Long userId, Pageable pageable);
 
+    Page<TravelDetails> findAllByTitleContainingIgnoreCase(String title, Pageable pageable);
 }

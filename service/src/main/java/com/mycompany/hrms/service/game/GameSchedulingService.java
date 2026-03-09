@@ -7,6 +7,7 @@ import com.mycompany.hrms.data.repository.users.UsersRepo;
 import com.mycompany.hrms.service.email.EmailService;
 import com.mycompany.hrms.service.notification.NotificationService;
 import jakarta.transaction.Transactional;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -100,13 +101,12 @@ public class GameSchedulingService {
                 } else {
                     req.setStatus(SlotRequest.RequestStatus.REJECTED);
 
-                    List<Users> usersList = req.getParticipants().stream().map(RequestParticipants::getUser).toList();
+                    List<Long> userIds = slotRequestRepo.findAllParticipantsId(slot.getSlotId(), req.getRequestId());
+                    List<Users> usersList = usersRepo.findAllById(userIds);
                     notificationService.addNotification(usersList, "SLOT_REJECTED", "Your request for " + slot.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " was not selected");
                     emailService.sendGameSlotRejectedEmail(usersList);
                 }
             }
-
-            slotRequestRepo.saveAll(slotRequests);
 
             FinalBookings bookings = new FinalBookings();
             bookings.setGameSlot(slot);

@@ -42,6 +42,11 @@ public class TravelDetailService implements ITravelDetailsService{
                 .orElseThrow(() -> new ResourceNotFoundException("Travel details not found")));
     }
 
+    public List<TravelDetailsRes> searchTravelDetails(String title, Pageable pageable){
+        Page<TravelDetails> travelDetails = travelDetailsRepo.findAllByTitleContainingIgnoreCase(title, pageable);
+        return  travelDetails.stream().map(this::travelDetailsMapper).toList();
+    }
+
     public List<TravelDetailsRes> getTravelDetailsByUserId(long userId) {
         List<TravelDetails> travelDetails = travelDetailsRepo.findAllByCreatedBy_UserId(userId);
         return travelDetails.stream().map(this::travelDetailsMapper).toList();

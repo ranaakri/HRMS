@@ -16,4 +16,5 @@ public interface ITravelDetailsService {
     TravelDetailsRes updateTravelDetails(long travelId, UpdateTravelDetailsReq travelDetailsReq);
     List<TravelDetailsRes> getTravels(Pageable pageable);
     TravelDetailsRes travelDetailsMapper(TravelDetails travelDetails);
+    List<TravelDetailsRes> searchTravelDetails(String title, Pageable pageable);
 }
