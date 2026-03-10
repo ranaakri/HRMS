@@ -15,13 +15,11 @@ import com.mycompany.hrms.service.notification.NotificationService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class BookingService implements IBookingService {
@@ -184,18 +182,20 @@ public class BookingService implements IBookingService {
             throw new ResourceNotFoundException("Game slot not found");
         }
 
-        List<SlotRequest> slotRequests = slotRequestRepo.findAllByGameSlots_SlotId(slotId);
-
+        List<SlotRequest> slotRequests = slotRequestRepo.findAllByGameSlots_SlotId(slotId)
+                .stream()
+                .filter(val -> !val.getStatus().equals(SlotRequest.RequestStatus.DELETED)).toList();
 
         List<UserPriorityRes> response = new ArrayList<>();
         for (SlotRequest s : slotRequests) {
             Users requestedBy = s.getRequestBy();
             response.add(new UserPriorityRes(s.getRequestId(), (int) s.getGroupAverageScore(), new RequestedByUser(requestedBy.getUserId(), requestedBy.getName(), requestedBy.getEmail())));
         }
-        return response.stream().sorted(
-                Comparator.comparing(UserPriorityRes::getPriority)
-                        .reversed()
-                        .thenComparing(UserPriorityRes::getRequestId, Comparator.nullsFirst(Comparator.naturalOrder()))).toList();
+        return response.stream()
+                .sorted(
+                        Comparator.comparing(UserPriorityRes::getPriority)
+                                .reversed()
+                                .thenComparing(UserPriorityRes::getRequestId, Comparator.nullsFirst(Comparator.naturalOrder()))).toList();
     }
 
     @Transactional
@@ -234,7 +234,7 @@ public class BookingService implements IBookingService {
 
         finalBookingsRepo.delete(finalBookings);
 
-        List<SlotRequest> pendingRequest = slotRequestRepo.findAllByGameSlots_SlotIdAndStatus(slot.getSlotId(), SlotRequest.RequestStatus.PENDING);
+        List<SlotRequest> pendingRequest = slotRequestRepo.findAllByGameSlots_SlotIdAndStatus(slot.getSlotId(), SlotRequest.RequestStatus.REJECTED);
 
         SlotRequest nextBestRequest = pendingRequest.stream()
                 .max(Comparator.comparing(SlotRequest::getGroupAverageScore)

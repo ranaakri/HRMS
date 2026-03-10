@@ -17,7 +17,7 @@ public interface SlotRequestRepo extends JpaRepository<SlotRequest, Long> {
             SELECT * FROM GameSlots g
             WHERE g.startTime BETWEEN
                 DATEADD(MINUTE, 14, SYSDATETIMEOFFSET()) AND
-                DATEADD(MINUTE, 15, SYSDATETIMEOFFSET())""", nativeQuery = true)
+                DATEADD(MINUTE, 16, SYSDATETIMEOFFSET())""", nativeQuery = true)
     List<GameSlots> findSlotsStartingSoon();
 
     @Query("SELECT new com.mycompany.hrms.data.constant.SlotEventRes(" +
@@ -31,11 +31,11 @@ public interface SlotRequestRepo extends JpaRepository<SlotRequest, Long> {
 
     @Query(
             """
-    SELECT r FROM SlotRequest r
-    LEFT JOIN FETCH r.participants p
-    LEFT JOIN FETCH p.user
-    WHERE r.gameSlots.slotId = :slotId
-"""
+                        SELECT r FROM SlotRequest r
+                        LEFT JOIN FETCH r.participants p
+                        LEFT JOIN FETCH p.user
+                        WHERE r.gameSlots.slotId = :slotId
+                    """
     )
     List<SlotRequest> findAllByGameSlots_SlotId(@Param("slotId") Long slotId);
 
@@ -46,7 +46,7 @@ public interface SlotRequestRepo extends JpaRepository<SlotRequest, Long> {
     boolean existsByGameSlots_SlotIdAndParticipants_User_UserIdIn(Long slotId, List<Long> userId);
 
     @Query(value = "select rs.userId AS participantId from GameSlots gs join SlotRequest sr on gs.slotId = sr.slotId join RequestParticipants rs on sr.requestId = rs.requestId where gs.slotId = :slotId and sr.requestId = :requestId", nativeQuery = true)
-    List<Long> findAllParticipantsId(@Param("slotId") long slotId,@Param("requestId") long requestId);
+    List<Long> findAllParticipantsId(@Param("slotId") long slotId, @Param("requestId") long requestId);
 
     @Query(value = "select s.* from SlotRequest s join RequestParticipants rp on rp.requestId = s.requestId where rp.userId = :userId and s.slotId = :slotId", nativeQuery = true)
     Optional<SlotRequest> findByGameSlots_SlotIdAndUser_SlotId(@Param("slotId") long slotId, @Param("userId") long userId);
