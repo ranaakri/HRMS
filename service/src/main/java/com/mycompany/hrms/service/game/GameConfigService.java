@@ -14,6 +14,8 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -84,6 +86,10 @@ public class GameConfigService implements IGameConfigService {
         if (createGameReq.getOpenTime().compareTo(createGameReq.getCloseTime()) >= 10) {
             throw new BadRequestException("Minimum slot should be at least of 10 minutes");
         }
+        if(createGameReq.getOpenTime().isAfter(createGameReq.getCloseTime()))
+            throw new BadRequestException("Invalid opening and closing time");
+        if(ChronoUnit.MINUTES.between(createGameReq.getOpenTime(), createGameReq.getCloseTime()) < createGameReq.getSlotDuration())
+            throw new BadRequestException("Opening and closing time should be more then slot duration");
         GameConfig game = modelMapper.map(createGameReq, GameConfig.class);
         return modelMapper.map(gameConfigRepo.save(game), GameResponse.class);
     }
@@ -98,6 +104,10 @@ public class GameConfigService implements IGameConfigService {
         if (updateGame.getOpenTime().compareTo(updateGame.getCloseTime()) >= 10) {
             throw new BadRequestException("Minimum slot should be at least of 10 minutes");
         }
+        if(updateGame.getOpenTime().isAfter(updateGame.getCloseTime()))
+            throw new BadRequestException("Invalid opening and closing time");
+        if(ChronoUnit.MINUTES.between(updateGame.getOpenTime(), updateGame.getCloseTime()) < updateGame.getSlotDuration())
+            throw new BadRequestException("Opening and closing time should be more then slot duration");
         modelMapper.map(updateGame, game);
         return modelMapper.map(game, GameResponse.class);
     }

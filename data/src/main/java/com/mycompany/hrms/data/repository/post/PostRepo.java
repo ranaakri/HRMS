@@ -44,8 +44,7 @@ public interface PostRepo extends JpaRepository<Post, Long> {
     @EntityGraph(attributePaths = {"mentions"})
     Page<Post> findAllByTagsContainingAndIsDeletedFalse(String tag, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"mentions"})
-    @Query(value = "select * from post where createdAt between :startDate and :endDate and isDeleted = 0", nativeQuery = true)
+    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.mentions m WHERE p.createdAt BETWEEN :startDate AND :endDate AND p.isDeleted = false")
     Page<Post> findAllBetweenStartDateAndEndDate(@Param("startDate") ZonedDateTime startDate, @Param("endDate") ZonedDateTime endDate, Pageable pageable);
 
     @Query(value = "select COALESCE(SUM(p.likeCount), 0) as likeCount, COUNT(*) as postCount from Post p where authorId = :userId AND p.isDeleted = 0", nativeQuery = true)

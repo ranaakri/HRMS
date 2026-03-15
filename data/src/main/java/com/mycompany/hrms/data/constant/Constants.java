@@ -32,7 +32,8 @@ public class Constants {
         PENDING,
         ONHOLD,
         CLOSED,
-        COMPETED
+        COMPETED,
+        ONGOING
     }
 
     public enum DocStatus{

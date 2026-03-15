@@ -121,6 +121,8 @@ public class ExpenseService implements IExpenseService {
         Users uploadedBy = usersRepo.findById(expense.getUploadedByUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Uploaded by user details not found"));
 
+        if(!(travelDetails.getStatus().equals(Constants.TravelStatus.ONGOING.toString()) || travelDetails.getStatus().equals(Constants.TravelStatus.PENDING.toString())))
+            throw new BadRequestException("Can not add new expense");
         if (travelDetails.getTotalExpense() >= travelDetails.getAssignedBudget())
             throw new BadRequestException("Assigned budget is already used");
 
